@@ -719,21 +719,19 @@ private
 
 The following lemma is useful when we have a commutative diagram of
 morphisms which are all known to be isomorphisms, which we want to “flip
-around” by way of inversion. For example, given each of the morphisms in
+around” by way of inversion. For example, given all the morphisms in
 
 ~~~{.quiver .attach-around}
 \begin{tikzcd}
-	x && a && c && b \\
-	y &&& z &&& d
+	x && \bullet && \bullet && b \\
+	y &&& \bullet &&& d
 	\arrow["\alpha", from=1-1, to=1-3]
-	\arrow["p"', shift right, no head, from=1-1, to=2-1]
+	\arrow[equals, from=1-1, to=2-1]
 	\arrow["\beta", from=1-3, to=1-5]
 	\arrow["\gamma", from=1-5, to=1-7]
-	\arrow[shift right, no head, from=1-7, to=2-7]
-	\arrow[shift right, no head, from=2-1, to=1-1]
+	\arrow[equals, from=1-7, to=2-7]
 	\arrow["\phi"', from=2-1, to=2-4]
 	\arrow["\psi"', from=2-4, to=2-7]
-	\arrow["q"', shift right, no head, from=2-7, to=1-7]
 \end{tikzcd}
 ~~~
 
@@ -752,7 +750,7 @@ abstract
 
 <details>
 <summary>The proof is an unenlightening `PathP`{.Agda} juggle and is 
-therefore ommitted.
+therefore omitted.
 </summary>
 ```agda
   inverse-unique =
