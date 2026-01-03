@@ -38,7 +38,7 @@ module _ {o ℓ} {C : Precategory o ℓ} (M : Monoidal-category C) where
 ```
 -->
 
-# Monoids in a monoidal category
+# Monoids in a monoidal category {defines="monoid-object"}
 
 Let $(\cC, \otimes, 1)$ be a [monoidal category] you want to study.
 It can be, for instance, one of the [endomorphism categories] in a
