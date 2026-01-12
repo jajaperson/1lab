@@ -69,6 +69,43 @@ Indeed, a displayed functor $F'$ over $F$ can be thought of as a
 repackaging of the data of a functor $\int F'$ for which this diagram
 commutes.
 
+The total functor of the displayed identity functor `Id'`{.Agda} is of
+course the ordinary identity functor `Id`{.Agda}.
+
+<!-- 
+```agda
+module _
+  {oa ℓa oe ℓe}
+  {A : Precategory oa ℓa} {ℰ : Displayed A oe ℓe}
+  where
+```
+-->
+
+```agda
+  ∫ᶠId'≡Id : ∫ᶠ (Id' {ℰ = ℰ}) ≡ Id
+  ∫ᶠId'≡Id = Functor-path (λ x → refl) λ f → refl
+```
+
+Similarly, the composite of two total functors is the total of the
+composite.
+
+<!--
+```agda
+module _
+  {oa ℓa ob ℓb oc ℓc oe ℓe of ℓf og ℓg}
+  {A : Precategory oa ℓa} {B : Precategory ob ℓb} {C : Precategory oc ℓc}
+  {ℰ : Displayed A oe ℓe} {ℱ : Displayed B of ℓf} {𝒢 : Displayed C og ℓg}
+  {F : Functor B C} {G : Functor A B}
+  {F' : Displayed-functor F ℱ 𝒢} {G' : Displayed-functor G ℰ ℱ}
+  where
+```
+-->
+
+```agda
+  ∫ᶠ∘ : ∫ᶠ (F' F∘' G') ≡ ∫ᶠ F' F∘ ∫ᶠ G'
+  ∫ᶠ∘ = Functor-path (λ x → refl) λ f → refl
+```
+
 ## Total natural transformations {defines="total-natural-transformation"}
 
 Suppose we have an additional [[displayed functor]] $G' : \cE \to \cF$
