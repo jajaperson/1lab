@@ -16,10 +16,9 @@ module Cat.Natural.Whiskering
 
 <!--
 ```agda
-module ℰ where
-  open Precategory ℰ public
-module 𝒟 where
-  open Precategory 𝒟 public
+private 
+  module ℰ = Precategory ℰ
+  module 𝒟 = Precategory 𝒟
 ```
 -->
 
