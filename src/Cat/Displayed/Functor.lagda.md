@@ -566,7 +566,7 @@ module _
 
   idnt↓ : ∀ {F} → F =>↓ F
   idnt↓ .η' x' = ℱ.id'
-  idnt↓ .is-natural' x' y' f' = ℱ.to-pathp[] (DR.id-comm[] ℱ)
+  idnt↓ .is-natural' x' y' f' = ℱ.to-pathp[] (DR.id-comm-sym[] ℱ)
 
   _∘nt↓_ : ∀ {F G H} → G =>↓ H → F =>↓ G → F =>↓ H
   (f ∘nt↓ g) .η' x' = f .η' _ ℱ↓.∘ g .η' x'
