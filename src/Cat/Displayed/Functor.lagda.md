@@ -506,11 +506,11 @@ module
 
 <!--
 ```agda
-  private unquoteDecl make-=[]=>-iso = declare-record-iso make-=[]=>-iso (quote _=[_]=>_)
+  private unquoteDecl make-Nat'-iso = declare-record-iso make-Nat'-iso (quote _=[_]=>_)
 
   instance
-    H-Level-=[]=> : ∀ {F G α} {F' : Displayed-functor F ℰ ℱ} {G' : Displayed-functor G ℰ ℱ} {n} → H-Level (F' =[ α ]=> G') (2 + n)
-    H-Level-=[]=> = basic-instance 2 (Iso→is-hlevel 2 make-=[]=>-iso (hlevel 2))
+    H-Level-Nat' : ∀ {F G α} {F' : Displayed-functor F ℰ ℱ} {G' : Displayed-functor G ℰ ℱ} {n} → H-Level (F' =[ α ]=> G') (2 + n)
+    H-Level-Nat' = basic-instance 2 (Iso→is-hlevel 2 make-Nat'-iso (hlevel 2))
 
   instance
     Extensional-displayed-natural-transformation
@@ -518,7 +518,7 @@ module
       → ⦃ e : Extensional (∀ {x} (x' : ℰ.Ob[ x ]) → ℱ.Hom[ α .η x ] (₀' F' x') (₀' G' x')) ℓr ⦄
       → Extensional (F' =[ α ]=> G') ℓr
     Extensional-displayed-natural-transformation {α = α} {F' = F'} {G' = G'} ⦃ e ⦄ = 
-      injection→extensional! {f = _=[_]=>_.η' {α = α}} (λ p → Iso.injective make-=[]=>-iso (Σ-prop-path! p)) e
+      injection→extensional! {f = _=[_]=>_.η' {α = α}} (λ p → Iso.injective make-Nat'-iso (Σ-prop-path! p)) e
 
   open _=[_]=>_
 
