@@ -29,7 +29,7 @@ private
 
 Let $\cE$ be a [[displayed category]] over $\cA$, and $\cF$ be a
 displayed category over the [[total category]] $\int \cE$. The 
-**Σ-category** $\Sum_{\cE} \cF$ of $\cF$ over $\cA$ is a displayed 
+**Σ-category** $\sum_{\cE} \cF$ of $\cF$ over $\cA$ is a displayed 
 category over $\cA$.
 
 ```agda 

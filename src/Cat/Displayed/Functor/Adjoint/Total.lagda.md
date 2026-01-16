@@ -72,7 +72,7 @@ The zig-zag identities follow from their displayed counterparts after
 taking care of the extra identity morphisms due to `∫ᶠ∘`{.Agda} and 
 `∫ᶠId'≅Id`{.Agda}.
 
-```
+```agda
 ∫⊣ .zig {(x , x')} = ∫Hom-path ℱ 
   ( (B.id B.∘ L⊣R.ε (₀ L x) B.∘ B.id) B.∘ ₁ L (A.id A.∘ L⊣R.η x A.∘ A.id) ≡⟨ ap (B._∘ ₁ L (A.id A.∘ L⊣R.η x A.∘ A.id)) (B.idlr (L⊣R.ε (₀ L x))) ⟩
     L⊣R .ε (₀ L x) B.∘ ₁ L (A.id A.∘ L⊣R.η x A.∘ A.id)                    ≡⟨ ap (λ f → L⊣R.ε (F₀ L x) B.∘ ₁ L f) (A.idlr (L⊣R.η x)) ⟩
