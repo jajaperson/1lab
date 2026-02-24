@@ -1,10 +1,11 @@
 <!--
 ```agda
+open import 1Lab.Function.Fibrewise
+
 open import Cat.Displayed.Reasoning as Dr
 open import Cat.Displayed.Functor
 open import Cat.Displayed.Base
 open import Cat.Reasoning as Cr
-open import 1Lab.Function.Fibrewise
 open import Cat.Prelude
 ```
 -->
