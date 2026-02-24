@@ -94,7 +94,7 @@ helper function:
 We can generalise the properties of being [[injective]], [[surjective]], 
 or an [equivalence] to functions over:
 
-[eqyuivalence]: 1Lab.Equiv.html
+[equivalence]: 1Lab.Equiv.html
 
 ```agda
   injective[] : P -[ f ]→ Q → Type _
