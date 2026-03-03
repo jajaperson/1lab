@@ -1,9 +1,5 @@
 <!--
 ```agda
-open import 1Lab.Function.Surjection
-open import 1Lab.Function.Embedding
-open import 1Lab.Equiv.Fibrewise using (_≃[_]_)
-open import 1Lab.Equiv
 open import 1Lab.Path
 open import 1Lab.Type
 ```
@@ -22,7 +18,7 @@ with different base types.
 Let $A$ and $B$ be types, $a : A \vdash P(a)$ and $b : B \vdash Q(b)$ be
 type families, and $f : A \to B$ be a function. A **function over** $f$
 consists of a function $f'_{a, b, p} : P(a) \to P(b)$ for every pair of
-points $a : A, b : B$ with a path $p : f(a) =_B b$.
+points $a : A, b : B$ with a path $p : f(a) \equiv_B b$.
 
 <!--
 ```agda
@@ -45,6 +41,20 @@ module _ {P : A → Type ℓ}  {Q : B → Type ℓ'} where
   private variable f : A → B
 ```
 -->
+
+Allowing the mapping behaviour depend on the path $p : f(a) \equiv_B b$
+like this may at first seem too general, but the [[contractibility of 
+singletons]] forces $f'_{a,a,\rm{refl}}$ and $f'_{a,b,p}$ to agree in 
+the following sense:
+
+```agda
+  _ : ∀ f (f' : P -[ f ]→ Q)
+    → ∀ a b (p : f a ≡ b)
+    → ∀ a' → subst Q p (f' a (f a) refl a') ≡ f' a b p a'
+  _ = λ f f' a b p a' → J
+    (λ y q → subst Q q (f' a (f a) refl a') ≡ f' a y q a') 
+    (transport-refl (f' a (f a) refl a')) p
+```
 
 A function over $f$ induces a function between total spaces
 
@@ -81,49 +91,11 @@ where $\sum f'$ denotes `over→total f'`{.Agda ident="over→total"}.
     _ = refl
 ```
 
-In the simplest cases we can construct a map over using the following
-helper function:
+Usually we can construct a function over $f$ from functions 
+$f'_a : P(a) \to Q(f(a))$ for each $a$, i.e. the case where 
+$f(a) = b$ _definitionally_.
 
 ```agda
   over-left→over : (∀ (a : A) → P a → Q (f a)) → P -[ f ]→ Q
-  over-left→over f' a b p a' = subst  Q  p (f' a a')
-```
-
-## Properties
-
-We can generalise the properties of being [[injective]], [[surjective]], 
-or an [equivalence] to functions over:
-
-[equivalence]: 1Lab.Equiv.html
-
-```agda
-  injective[] : P -[ f ]→ Q → Type _
-  injective[] f' = ∀ a b p → injective (f' a b p)
-
-  is-surjective[] : P -[ f ]→ Q → Type _
-  is-surjective[] f' = ∀ a b p → is-surjective (f' a b p)
-
-  is-equiv[] : P -[ f ]→ Q → Type _
-  is-equiv[] f' = ∀ a b p → is-equiv (f' a b p)
-```
-
-When we are dealing with a map over an equivalence, having the property
- `is-equiv[]`{.Agda} amounts to being an [[equivalence over]]:
-
-```agda
-  module _ {e : A ≃ B} where
-    private module e = Equiv e
-    private map-over+equiv = Σ (P -[ e.to ]→ Q) λ e' → is-equiv[] e'
-
-    map-over→equiv-over : map-over+equiv → P ≃[ e ] Q
-    map-over→equiv-over (e' , e'-eqv) a b p = e' a b p , e'-eqv a b p
-
-    equiv-over→map-over : P ≃[ e ] Q → map-over+equiv
-    equiv-over→map-over e' = (λ a b p → e' a b p .fst) , λ a b p → e' a b p .snd
-
-    map-over≃equiv=over : map-over+equiv ≃ (P ≃[ e ] Q)
-    map-over≃equiv=over = Iso→Equiv
-      (map-over→equiv-over , iso equiv-over→map-over (λ _ → refl) λ _ → refl)
-
-    module map-over≃equiv=over = Equiv map-over≃equiv=over
+  over-left→over f' a b p a' = subst Q  p (f' a a')
 ```
