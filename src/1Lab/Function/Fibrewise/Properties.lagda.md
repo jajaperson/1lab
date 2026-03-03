@@ -2,11 +2,11 @@
 ```agda
 open import 1Lab.Function.Surjection
 open import 1Lab.Function.Embedding
-open import 1Lab.Equiv.Fibrewise using (_≃[_]_)
-open import 1Lab.Equiv
 open import 1Lab.Function.Fibrewise
-open import 1Lab.Path
+open import 1Lab.Equiv.Fibrewise
 open import 1Lab.Type.Sigma
+open import 1Lab.Equiv
+open import 1Lab.Path
 open import 1Lab.Type
 ```
 -->
@@ -122,7 +122,7 @@ We can also generalise `equiv→inverse`{.Agda}:
     → ∀ a b p b'
     → e' a b p (equiv-over→inverse-over eqv' b a (sym (e.adjunctl p)) b') ≡ b'
   equiv-over→counit-over {e' = e'} eqv' a b p b' = ε' where
-    ε' : e' a b p (equiv→invere (eqv' a b (e.adjunctr (e.adjunctl p))) b') ≡ b'
+    ε' : e' a b p (equiv→inverse (eqv' a b (e.adjunctr (e.adjunctl p))) b') ≡ b'
     ε' = subst 
       (λ q → e' a b p (equiv→inverse (eqv' a b q) b') ≡ b') 
       (sym (Equiv.η e.adjunct p)) 

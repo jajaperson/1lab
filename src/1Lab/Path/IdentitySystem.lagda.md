@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import 1Lab.Function.Embedding
+open import 1Lab.Function.Fibrewise
 open import 1Lab.Equiv.Fibrewise
 open import 1Lab.HLevel.Closure
 open import 1Lab.Type.Sigma

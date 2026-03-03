@@ -108,7 +108,7 @@ for $\Loop S^1$.
 
 ```agda
   ΩS¹-integers .map-out-unique f {p} {r} frefl floop = ΩS¹-elim _
-    (Regularity.precise! frefl) $ over-left→over rotΩS¹ λ a →
+    (Regularity.precise! frefl) $ over-left→equiv-over rotΩS¹ λ a →
       (f a ≡ go a)                    ≃⟨ ap-equiv r ⟩
       (r .fst (f a) ≡ r .fst (go a))  ≃⟨ ∙-pre-equiv (floop a) ⟩
       (f (a ∙ loop) ≡ r .fst (go a))  ≃⟨ ∙-post-equiv (Regularity.precise! refl) ⟩
@@ -145,7 +145,7 @@ P(l)$. The family associated to this action will be called
 ```agda
   ΩS¹-elim P pr pl l = subst P (pathβ base l) attempt where
     totl : S¹ → Type _
-    totl = equiv→family (over→total rotΩS¹ pl)
+    totl = equiv→family (equiv-over→total rotΩS¹ pl)
 ```
 
 By rotating the basepoint (given by the method $\rm{pr} : P\

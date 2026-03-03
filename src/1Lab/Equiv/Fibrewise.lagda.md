@@ -5,6 +5,7 @@ description: |
 ---
 <!--
 ```agda
+open import 1Lab.Function.Fibrewise
 open import 1Lab.Equiv.FromPath
 open import 1Lab.HLevel.Closure
 open import 1Lab.Path.Reasoning
@@ -21,18 +22,12 @@ open import 1Lab.Type
 module 1Lab.Equiv.Fibrewise where
 ```
 
-# Fibrewise equivalences
+# Fibrewise equivalences {defines="fibrewise-equivalence"}
 
-:::{.definition #fibrewise-map}
-In HoTT, a type family `P : A → Type` can be seen as a [_fibration_]
-with total space `Σ P`, with the fibration being the projection
-`fst`{.Agda}. Because of this, a function with type `(x : _) → P x → Q
-x` can be referred as a **fibrewise map**.
-:::
-
-[_fibration_]: https://ncatlab.org/nlab/show/fibration
-
-A function like this can be lifted to a function on total spaces:
+A [[fibrewise map]] `f : (x : _) → P x → Q x` is a **fibrewise 
+equivalence** iff. `f x` is an equivalence for all $x$. It follows from 
+the above that a fibrewise transformation is a fibrewise equivalence 
+iff. it induces an equivalence of total spaces by `total`.
 
 <!--
 ```agda
@@ -42,46 +37,6 @@ private variable
   P Q : A → Type ℓ
 ```
 -->
-
-```agda
-total : ((x : A) → P x → Q x)
-      → Σ A P → Σ A Q
-total f (x , y) = x , f x y
-```
-
-Furthermore, the fibres of `total f` correspond to fibres of f, in the
-following manner:
-
-```agda
-total-fibres : {f : (x : A) → P x → Q x} {x : A} {v : Q x}
-             → Iso (fibre (f x) v) (fibre (total f) (x , v))
-total-fibres {A = A} {P = P} {Q = Q} {f = f} {x = x} {v = v} = the-iso where
-
-  to : {x : A} {v : Q x} → fibre (f x) v → fibre (total f) (x , v)
-  to (v' , p) = (_ , v') , λ i → _ , p i
-
-  from : {x : A} {v : Q x} → fibre (total f) (x , v) → fibre (f x) v
-  from ((x , v) , p) = transport (λ i → fibre (f (p i .fst)) (p i .snd)) (v , refl)
-
-  the-iso : {x : A} {v : Q x} → Iso (fibre (f x) v) (fibre (total f) (x , v))
-  the-iso .fst = to
-  the-iso .snd .is-iso.from = from
-  the-iso .snd .is-iso.rinv ((x , v) , p) =
-    J (λ { _ p → to (from ((x , v) , p)) ≡ ((x , v) , p) })
-      (ap to (J-refl {A = Σ A Q} (λ { (x , v) _ → fibre (f x) v } ) (v , refl)))
-      p
-  the-iso .snd .is-iso.linv (v , p) =
-    J (λ { _ p → from (to (v , p)) ≡ (v , p) })
-      (J-refl {A = Σ A Q} (λ { (x , v) _ → fibre (f x) v } ) (v , refl))
-      p
-```
-
-:::{.definition #fibrewise-equivalence}
-A fibrewise map `f : (x : _) → P x → Q` is a **fibrewise equivalence**
-iff. `f x` is an equivalence for all $x$. It follows from the above that
-a fibrewise transformation is a fibrewise equivalence iff. it induces an
-equivalence of total spaces by `total`.
-:::
 
 ```agda
 total→equiv
@@ -112,9 +67,13 @@ say that $P$ and $Q$ are **equivalent over** $e$ if $P(a) \simeq Q(b)$
 whenever $a : A$ and $b : B$ are identified [[over|path over]] $e$.
 
 Using univalence, we can see this as a special case of [[dependent paths]],
-where the base type is taken to be the universe and the type family sends
-a type $A$ to the type of type families over $A$. However, the
-following explicit definition is easier to work with.
+where the base type is taken to be the universe and the type family 
+sends a type $A$ to the type of type families over $A$. Alternatively we 
+could view being an equivalence over $e$ [as a property] of a [[function
+over]] $e$. However, the following explicit definition is easier to 
+work with.
+
+[as a property]: 1Lab.Function.Fibrewise.Properties.html
 
 <!--
 ```agda
@@ -138,11 +97,11 @@ make it easier to *build* equivalences over.
 -->
 
 ```agda
-    over-left→over : (∀ (a : A) → P a ≃ Q (e.to a)) → P ≃[ e ] Q
-    over-left→over e' a b p = e' a ∙e line→equiv (λ i → Q (p i))
+    over-left→equiv-over : (∀ (a : A) → P a ≃ Q (e.to a)) → P ≃[ e ] Q
+    over-left→equiv-over e' a b p = e' a ∙e line→equiv (λ i → Q (p i))
 
-    over-right→over : (∀ (b : B) → P (e.from b) ≃ Q b) → P ≃[ e ] Q
-    over-right→over e' a b p = line→equiv (λ i → P (e.adjunctl p i)) ∙e e' b
+    over-right→equiv-over : (∀ (b : B) → P (e.from b) ≃ Q b) → P ≃[ e ] Q
+    over-right→equiv-over e' a b p = line→equiv (λ i → P (e.adjunctl p i)) ∙e e' b
 
     prop-over-ext
       : (∀ {a} → is-prop (P a))
@@ -158,8 +117,8 @@ make it easier to *build* equivalences over.
 An equivalence over $e$ induces an equivalence of total spaces:
 
 ```agda
-    over→total : P ≃[ e ] Q → Σ A P ≃ Σ B Q
-    over→total e' = Σ-ap e λ a → e' a (e.to a) refl
+    equiv-over→total : P ≃[ e ] Q → Σ A P ≃ Σ B Q
+    equiv-over→total e' = Σ-ap e λ a → e' a (e.to a) refl
 ```
 
 <!--

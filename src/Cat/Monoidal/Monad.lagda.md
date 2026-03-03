@@ -708,6 +708,6 @@ of a symmetric commutative strength.
       ≃ Σ (Monad-strength Cᵐ monad) (λ s →
         is-commutative-strength s × is-symmetric-monad-strength Cᵇ s)
     symmetric-monoidal≃symmetric-commutative =
-      over→total monoidal≃commutative symmetric≃symmetric
+      equiv-over→total monoidal≃commutative symmetric≃symmetric
       ∙e Σ-assoc e⁻¹
 ```

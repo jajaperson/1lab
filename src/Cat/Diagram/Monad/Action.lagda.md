@@ -85,7 +85,7 @@ module _
 
 ```agda
   Algebra≃⊤Action : Algebra-on Mᵐ ≃[ !Const , !Const-is-equiv ] Action-on Mᵐ
-  Algebra≃⊤Action = over-left→over (_ , !Const-is-equiv) λ where
+  Algebra≃⊤Action = over-left→equiv-over (_ , !Const-is-equiv) λ where
     c .fst alg → λ where
       .α → !constⁿ (alg .ν)
       .α-unit → ext λ _ → alg .ν-unit
