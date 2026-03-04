@@ -1,18 +1,16 @@
 <!--
 ```agda
-open import 1Lab.Function.Surjection
-open import 1Lab.Function.Embedding
 open import 1Lab.Function.Fibrewise
 open import 1Lab.Equiv.Fibrewise
-open import 1Lab.Type.Sigma
 open import 1Lab.Equiv
 open import 1Lab.Path
+open import 1Lab.Type.Sigma
 open import 1Lab.Type
 ```
 -->
 
 ```agda
-module 1Lab.Function.Fibrewise.Properties 
+module 1Lab.Function.Fibrewise.Equiv 
   {ℓa ℓb ℓp ℓq} {A : Type ℓa} {B : Type ℓb} {P : A → Type ℓp} {Q : B → Type ℓq}
   where
 ```
@@ -23,41 +21,19 @@ private variable f : A → B
 ```
 -->
 
-# Properties of functions over
+# Equivalences over functions
 
-We can generalise the properties of being [[injective]], [[surjective]], 
-or an [equivalence] to functions over:
-
-[equivalence]: 1Lab.Equiv.html
+We can generalize the property `is-equiv`{.Agda} to a [[function over]]:
 
 ```agda
-injective-over : P -[ f ]→ Q → Type _
-injective-over f' = ∀ a b p → injective (f' a b p)
-
-is-surjective-over : P -[ f ]→ Q → Type _
-is-surjective-over f' = ∀ a b p → is-surjective (f' a b p)
-
 is-equiv-over : P -[ f ]→ Q → Type _
 is-equiv-over f' = ∀ a b p → is-equiv (f' a b p)
 ```
 
-To prove any of these, it suffices to prove the case for $f_{a, f(a), \rm{refl}}$
+To prove a function over $f$ is an equivalence over $f$, it suffices to
+prove the case for $f_{a, f(a), \rm{refl}}$:
 
 ```agda
-injective→injective-over 
-  : ∀ {f' : P -[ f ]→ Q}
-  → (∀ a → injective (f' a (f a) refl))
-  → injective-over f'
-injective→injective-over {f' = f'} inj a b = 
-  J (λ y p → injective (f' a y p)) (inj a)
-
-is-surjective→is-surjective-over
-  : ∀ {f' : P -[ f ]→ Q}
-  → (∀ a → is-surjective (f' a (f a) refl))
-  → is-surjective-over f'
-is-surjective→is-surjective-over {f' = f'} surj a b =
-  J (λ y p → is-surjective (f' a y p)) (surj a)
-
 is-equiv→is-equiv-over
   : ∀ {f' : P -[ f ]→ Q}
   → (∀ a → is-equiv (f' a (f a) refl))
@@ -66,33 +42,29 @@ is-equiv→is-equiv-over {f' = f'} eqv a b =
   J (λ y p → is-equiv (f' a y p)) (eqv a)
 ```
 
-Being an equivalence over a $f$ implies being both injective and
-surjective over $f$, as well as the existence of an inverse:
+## Equivalences over equivalences
 
+<!--
 ```agda
-is-equiv-over→injective-over 
-  : ∀ {f' : P -[ f ]→ Q} 
-  → is-equiv-over f' → injective-over f'
-is-equiv-over→injective-over {f' = f'} eqv' a b p = 
-  Equiv.injective (f' a b p , eqv' a b p)
+_ = _≃[_]_ -- for inline code
 
-is-equiv-over→is-surjective-over 
-  : ∀ {f' : P -[ f ]→ Q} 
-  → is-equiv-over f' → is-surjective-over f'
-is-equiv-over→is-surjective-over {f' = f'} eqv' a b p = 
-  is-equiv→is-surjective (eqv' a b p)
-```
-
-## Relation to equivalences over
-
-When we are dealing with a function over an equivalence, having the 
-property `is-equiv-over`{.Agda} amounts to being an [[equivalence over]]:
-
-```agda
 module _ {e : A ≃ B} where
   private module e = Equiv e
-  private map-over+equiv = Σ (P -[ e.to ]→ Q) λ e' → is-equiv-over e'
+```
+-->
 
+This differs very slightly from out other notion of [[equivalence over]]
+in that we don't require the base function $f$ to be an equivalence.
+Given an equivalence `e`, the type `P ≃[ e ] Q`{.Agda ident="_≃[_]_"} is
+equivalent to the type
+
+```agda
+  map-over+equiv = Σ (P -[ e.to ]→ Q) λ e' → is-equiv-over e'
+```
+
+by
+
+```agda
   map-over→equiv-over 
     :  ∀ (e' : P -[ e.to ]→ Q) 
     → is-equiv-over e' → P ≃[ e ] Q

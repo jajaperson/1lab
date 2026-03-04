@@ -73,7 +73,7 @@ could view being an equivalence over $e$ [as a property] of a [[function
 over]] $e$. However, the following explicit definition is easier to 
 work with.
 
-[as a property]: 1Lab.Function.Fibrewise.Properties.html
+[as a property]: 1Lab.Function.Fibrewise.Equiv.html
 
 <!--
 ```agda
