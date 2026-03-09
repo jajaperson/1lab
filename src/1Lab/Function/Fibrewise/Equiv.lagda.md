@@ -49,7 +49,10 @@ is-equiv→is-equiv-over {f' = f'} eqv a b =
 _ = _≃[_]_ -- for inline code
 
 module _ {e : A ≃ B} where
-  private module e = Equiv e
+  private 
+    module e = Equiv e
+    e⁻¹ = e.inverse
+    module e⁻¹ = Equiv e.inverse
 ```
 -->
 
@@ -88,23 +91,23 @@ We can also generalise `equiv→inverse`{.Agda}:
     → Q -[ e.from ]→ P
   equiv-over→inverse-over eqv' b a p b' = equiv→inverse 
     (eqv' a b (e.adjunctr (sym p))) b'
-  
-  equiv-over→counit-over
+
+  equiv-over→counit
     : {e' : P -[ e.to ]→ Q} → (eqv' : is-equiv-over e')
     → ∀ a b p b'
     → e' a b p (equiv-over→inverse-over eqv' b a (sym (e.adjunctl p)) b') ≡ b'
-  equiv-over→counit-over {e' = e'} eqv' a b p b' = ε' where
+  equiv-over→counit {e' = e'} eqv' a b p b' = ε' where
     ε' : e' a b p (equiv→inverse (eqv' a b (e.adjunctr (e.adjunctl p))) b') ≡ b'
     ε' = subst 
       (λ q → e' a b p (equiv→inverse (eqv' a b q) b') ≡ b') 
       (sym (Equiv.η e.adjunct p)) 
       (equiv→counit (eqv' a b p) b')
 
-  equiv-over→unit-over  
+  equiv-over→unit
     : {e' : P -[ e.to ]→ Q} → (eqv' : is-equiv-over e')
     → ∀ a b p a'
-    → equiv→inverse (eqv' a b (e.adjunctr (e.adjunctl p))) (e' a b p a') ≡ a'
-  equiv-over→unit-over {e' = e'} eqv' a b p a' = η' where
+    → equiv-over→inverse-over eqv' b a (sym (e.adjunctl p)) (e' a b p a') ≡ a'
+  equiv-over→unit {e' = e'} eqv' a b p a' = η' where
     η' : equiv→inverse (eqv' a b (e.adjunctr (e.adjunctl p))) (e' a b p a') ≡ a'
     η' = subst 
       (λ q → equiv→inverse (eqv' a b q) (e' a b p a') ≡ a')  
