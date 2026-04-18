@@ -5,8 +5,9 @@ open import Cat.Displayed.Morphism as Dm
 open import Cat.Functor.Properties
 open import Cat.Displayed.Functor
 open import Cat.Displayed.Base
-open import Cat.Reasoning as Cr
 open import Cat.Prelude
+
+import Cat.Reasoning as Cr
 ```
 -->
 
@@ -40,63 +41,129 @@ open Displayed-functor
 
 This module mirrors the corresponding one for [ordinary functors]
 by defining the corresponding classes of [[displayed functors|displayed functor]].
+Suppose $F : \cA \to \cB$ is a functor and $F' : \cE \to_F \cF$ is a 
+displayed functor over $F$.
+
+```agda
+module _ {F} (F' : Displayed-functor F ℰ ℱ) where
+```
 
 [ordinary functors]: Cat.Functor.Properties.html
 
 :::{.definition #fully-displayed-functor}
-A displayed functor is **fully displayed** when its action on hom-sets 
-_over_ any morphism is surjective:
+$F'$ is **fully displayed** when its action on hom-sets _over_ any 
+morphism is surjective:
 
 ```agda
-is-full' : Displayed-functor F ℰ ℱ → Type _
-is-full' F' = ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]}
-  → is-surjective {A = ℰ.Hom[ f ] x' y'} (₁' F')
+  is-full[] : Type _
+  is-full[] = 
+    ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]}
+    → is-surjective {A = ℰ.Hom[ f ] x' y'} (₁' F')
 ```
 :::
 
 :::{.definition #faithfully-displayed-functor}
-A displayed functor is **faithfully displayed** when its action on
-hom-sets _over_ any morphism is injective:
+$F : \cE$ functor is **faithfully displayed** when its action on hom-sets
+_over_ any morphism is injective. The obvious way to write this up is
 
 ```agda
-is-faithful' : Displayed-functor F ℰ ℱ → Type _
-is-faithful' F' = ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]}
-  → injective {A = ℰ.Hom[ f ] x' y'} (₁' F')
+  is-fibrewise-injective : Type _
+  is-fibrewise-injective = 
+    ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]}
+    → injective {A = ℰ.Hom[ f ] x' y'} (₁' F')
+```
+
+this form is inconvenient to use, since two displayed morphisms being
+compared need definitionally equal base morphisms. Hence we reserve 
+`is-faithful[]`{.Agda} for a more useful, but logically equivalent form:
+
+```agda
+  is-faithful[] : Type _
+  is-faithful[] = 
+    ∀ {x y f g} {f=g : f ≡ g}
+      {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]} 
+      {f' : ℰ.Hom[ f ] x' y'} {g' : ℰ.Hom[ g ] x' y'}
+    → ₁' F' f' ℱ.≡[ ap (₁ F) f=g ] ₁' F' g'
+    → f' ℰ.≡[ f=g ] g'
+
+  fibrewise-injective→faithful[] : is-fibrewise-injective → is-faithful[]
+  fibrewise-injective→faithful[] inj' {x} {y} {f} {g} {f=g} = 
+    J (λ h f=h → 
+        ∀ {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]}
+          {f' : ℰ.Hom[ f ] x' y'} {h' : ℰ.Hom[ h ] x' y'} 
+        → ₁' F' f' ℱ.≡[ ap (₁ F) f=h ] ₁' F' h' 
+        → f' ℰ.≡[ f=h ] h') 
+      inj' f=g
+  
+  faithful[]→fibrewise-injective[] : is-faithful[] → is-fibrewise-injective
+  faithful[]→fibrewise-injective[] faith' = faith'
 ```
 :::
 
-## Fully faithfully displayed functors {defines="fully-faithfully-displayed-functor fully-faithfully-functor"}
+## Fully faithfully displayed functors {defines="fully-faithfully-displayed-functor fully-faithfully-displayed"}
 
 A displayed functor is **fully faithfully displayed** when its action on
 hom-sets _over_ any morphism is an equivalence.
 
 ```agda
-is-ff' : Displayed-functor F ℰ ℱ → Type _
-is-ff' F' = ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]} 
-  →  is-equiv {A = ℰ.Hom[ f ] x' y'} (₁' F')
+  is-ff[] : Type _
+  is-ff[] = ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]} 
+    →  is-equiv {A = ℰ.Hom[ f ] x' y'} (₁' F')
 
-ff'→faithful' : {F' : Displayed-functor F ℰ ℱ} → is-ff' F' → is-faithful' F'
-ff'→faithful' {F' = F'} has-is-ff = Equiv.injective (₁' F' , has-is-ff)
+  ff[]→faithful[] : is-ff[] → is-faithful[]
+  ff[]→faithful[] ff' = 
+    fibrewise-injective→faithful[] (Equiv.injective (₁' F' , ff'))
 
-ff'→full' : {F' : Displayed-functor F ℰ ℱ} → is-ff' F' → is-full' F'
-ff'→full' has-is-ff f' = inc (equiv→inverse has-is-ff f' , equiv→counit has-is-ff f')
+  ff[]→full[] : is-ff[] → is-full[]
+  ff[]→full[] ff' f' = inc (equiv→inverse ff' f' , equiv→counit ff' f')
 
-full'+faithful'→ff' : {F' : Displayed-functor F ℰ ℱ}
-  → is-full' F' → is-faithful' F' → is-ff' F'
-full'+faithful'→ff' {F = F} {F' = F'} has-is-full has-is-faithful .is-eqv = p where
-  img-is-prop : ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]} f'
-    → is-prop (fibre {A = ℰ.Hom[ f ] x' y'} (₁' F') f')
-  img-is-prop f' (g' , p) (h' , q) = Σ-prop-path 
-    (λ x → ℱ.Hom[ ₁ F _ ]-set (₀' F' _) (₀' F' _) (₁' F' x) f') 
-    (has-is-faithful (p ∙ sym q))
+  full[]+faithful[]→ff[] : is-full[] → is-faithful[] → is-ff[]
+  full[]+faithful[]→ff[] full' faith' .is-eqv = p where
+    img-is-prop : ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]} f'
+      → is-prop (fibre {A = ℰ.Hom[ f ] x' y'} (₁' F') f')
+    img-is-prop f' (g' , p) (h' , q) = Σ-prop-path 
+      (λ x → ℱ.Hom[ ₁ F _ ]-set (₀' F' _) (₀' F' _) (₁' F' x) f') 
+      (faith' (p ∙ sym q))
 
-  p : ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]} f' 
-    → is-contr (fibre {A = ℰ.Hom[ f ] x' y'} (₁' F') f')
-  p f' .centre = ∥-∥-elim (λ _ → img-is-prop f') (λ x → x) (has-is-full f')
-  p f' .paths = img-is-prop f' _
+    p : ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]} f' 
+      → is-contr (fibre {A = ℰ.Hom[ f ] x' y'} (₁' F') f')
+    p f' .centre = ∥-∥-elim (λ _ → img-is-prop f') (λ x → x) (full' f')
+    p f' .paths = img-is-prop f' _
 ```
 
-## Essential fibres
+A fully faithfully functor over a fully faithful functor gives an 
+[[equivalence over]] between displayed hom-sets:
+
+```agda
+  ff[ff]→equiv-over
+      : ∀ (ff : is-fully-faithful F) (ff' : is-ff[])
+      → ∀ {x y} (x' : ℰ.Ob[ x ]) (y' : ℰ.Ob[ y ])
+      → (λ f → ℰ.Hom[ f ] x' y') ≃[ ₁ F , ff ] λ f → ℱ.Hom[ f ] (₀' F' x') (₀' F' y')
+  ff[ff]→equiv-over ff ff' {x = x} {y = y} x' y' f g Ff=g = Iso→Equiv 
+    (to , (iso from rinv linv))
+    where
+      module ff' = Equiv (₁' F' {x} {y} {f} {x'} {y'}, ff')
+      
+      to : ℰ.Hom[ f ] x' y' → ℱ.Hom[ g ] (₀' F' x') (₀' F' y')
+      to f' = ℱ.hom[ Ff=g ] (₁' F' f')
+
+      from : ℱ.Hom[ g ] (₀' F' x') (₀' F' y') → ℰ.Hom[ f ] x' y'
+      from = λ g' → ff'.from (ℱ.hom[ Ff=g ]⁻ g')
+
+      rinv : is-right-inverse from to
+      rinv g' = 
+        ℱ.hom[ Ff=g ] ⌜ ₁' F' (ff'.from (ℱ.hom[ Ff=g ]⁻ g')) ⌝ ≡⟨ ap! (ff'.ε _) ⟩ 
+        ℱ.hom[ Ff=g ] (ℱ.hom[ Ff=g ]⁻ g')                      ≡˘⟨ ℱ.coh[ refl ] _ ∙ ℱ.duplicate _ _ _ ⟩
+        g'                                                     ∎
+
+      linv : is-left-inverse from to
+      linv f' =
+        ff'.from ⌜ ℱ.hom[ Ff=g ]⁻ (ℱ.hom[ Ff=g ] (₁' F' f')) ⌝ ≡˘⟨ ap¡ (ℱ.coh[ refl ] _ ∙ ℱ.duplicate _ _ _) ⟩
+        ff'.from (₁' F' f')                                    ≡⟨ ff'.η _ ⟩
+        f'                                                     ∎
+```
+
+## Essential fibres {defines="essentially-split-surjective-over"}
 
 One way to generalize [[essential fibres|essential fibre]] is as 
 follows:
