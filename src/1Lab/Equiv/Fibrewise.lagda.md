@@ -156,6 +156,110 @@ An equivalence over $e$ induces an equivalence of total spaces:
     over→total e' = Σ-ap e λ a → e' a (e.to a) refl
 ```
 
+Like ordinary equivalences, an equivalence over has an inverse which is
+also an equivalence over:
+
+```agda
+module _ (e : A ≃ B) (e' : P ≃[ e ] Q) where
+  private module e = Equiv e
+
+  inverse-over : Q ≃[ Equiv.inverse e ] P
+  inverse-over b a eb=a = Equiv.inverse (e' a b (e.adjunctr (sym eb=a)))
+  
+  counit-over 
+    : ∀ a b₁ ea=b₁ b₂ e⁻¹b₂=a b' 
+    → PathP (λ i → Q ((sym ea=b₁ ∙ e.adjunctr (sym e⁻¹b₂=a)) i)) 
+      (e' a b₁ ea=b₁ .fst (inverse-over b₂ a e⁻¹b₂=a .fst b')) 
+      b'
+
+  unit-over
+    : ∀ b a₁ e⁻¹b=a₁ a₂ ea₂=b a'
+    → PathP (λ i → P ((sym e⁻¹b=a₁ ∙ sym (e.adjunctl ea₂=b)) i))
+      (inverse-over b a₁ e⁻¹b=a₁ .fst (e' a₂ b ea₂=b .fst a'))
+      a'
+```
+
+<details>
+<summary>The actual constructions of `counit-over`{.Agda} and 
+`unit-over`{.Agda} are a bit hairy.</summary>
+```agda
+  counit-over = λ _ _ ea=b₁ b₂ e⁻¹b₂=a b' → ε₂ b₂ e⁻¹b₂=a ea=b₁ b' where abstract
+    p : ∀ b b' 
+      → PathP (λ i → Q ((refl ∙ refl ∙ e.ε b) i))
+        (e' (e.from b) _ refl 
+          .fst (inverse-over b _ refl .fst b'))
+        (e' _ _ (refl ∙ e.ε b) 
+          .fst (Equiv.inverse (e' _ _ (refl ∙ e.ε b)) .fst b'))
+    p b b' i = 
+      e' 
+        (e.from b) ((refl ∙ refl ∙ e.ε b) i) 
+        (λ j → ∙-filler refl (refl ∙ e.ε b) j i)
+      .fst (Equiv.inverse (e' (e.from b) b (refl ∙ e.ε b)) .fst b')
+
+    ε₁ 
+      : ∀ b b' 
+      → PathP (λ i → Q (((λ _ → e.to (e.from b)) ∙ e.adjunctr refl) i))
+        (e' (e.from b) _ refl .fst (inverse-over b _ refl .fst b')) 
+        b'
+    ε₁ b b' = p b b' ▷ (equiv→counit (e' (e.from b) b (refl ∙ e.ε b) .snd) b')
+
+    ε₂ 
+      : ∀ b₂ {a} e⁻¹b₂=a {b₁} ea=b₁ b' 
+      → PathP (λ i → Q ((sym ea=b₁ ∙ e.adjunctr (sym e⁻¹b₂=a)) i))
+        (e' a b₁ ea=b₁ .fst (inverse-over b₂ a e⁻¹b₂=a .fst b')) 
+        b'
+    ε₂ b₂ = J 
+      (λ a e⁻¹b₂=a → ∀ {b₁} ea=b₁ b' 
+        → PathP (λ i → Q ((sym ea=b₁ ∙ e.adjunctr (sym e⁻¹b₂=a)) i))
+          (e' a b₁ ea=b₁ .fst (inverse-over b₂ a e⁻¹b₂=a .fst b')) 
+          b') 
+      (J 
+        (λ b₁ ee⁻¹b₂=b₁ → ∀ b' 
+          → PathP (λ i → Q ((sym ee⁻¹b₂=b₁ ∙ e.adjunctr refl) i)) 
+            (e' _ b₁ ee⁻¹b₂=b₁ .fst (inverse-over b₂ _ refl .fst b')) 
+            b') 
+        λ b' → ε₁ b₂ b')
+  
+  unit-over = λ _ _ e⁻¹b=a₁ a₂ ea₂=b a' → η₂ a₂ ea₂=b e⁻¹b=a₁ a' where abstract
+    p : ∀ a → refl ∙ e.ε (e.to a) ≡ ap e.to (refl ∙ e.η a ∙ refl)
+    p a = ∙-idl _ ∙∙ sym (e.zig a) ∙∙ ap (ap e.to) (sym (∙-idl _ ∙ ∙-idr _))
+
+    q : ∀ a a' 
+      → PathP (λ i → P ((refl ∙ e.η a ∙ refl) i))
+        (inverse-over (e.to a) _ refl .fst (e' a _ refl .fst a'))
+        (Equiv.inverse (e' a _ refl) .fst (e' a _ refl .fst a'))
+    q a a' i = 
+      Equiv.inverse (e' 
+        ((refl ∙ e.η a ∙ refl) i) (e.to a) 
+        λ j → ∨-square (p a) j i) 
+      .fst (e' a _ refl .fst a')
+
+    η₁
+      : ∀ a a'
+      → PathP (λ i → P (((λ _ → e.from (e.to a)) ∙ sym (e.adjunctl refl)) i))
+        (inverse-over (e.to a) _ refl .fst (e' a _ refl .fst a'))
+        a'
+    η₁ a a' = q a a' ▷ equiv→unit (e' a (e.to a) refl .snd) a'
+
+    η₂ 
+      : ∀ a₂ {b} ea₂=b {a₁} e⁻¹b=a₁ a'
+      → PathP (λ i → P ((sym e⁻¹b=a₁ ∙ sym (e.adjunctl ea₂=b)) i))
+        (inverse-over b a₁ e⁻¹b=a₁ .fst (e' a₂ b ea₂=b .fst a'))
+        a'
+    η₂ a₂ = J 
+      (λ b ea₂=b → ∀ {a₁} e⁻¹b=a₁ a' 
+        → PathP (λ i → P ((sym e⁻¹b=a₁ ∙ sym (e.adjunctl ea₂=b)) i))
+          (inverse-over b a₁ e⁻¹b=a₁ .fst (e' a₂ b ea₂=b .fst a'))
+          a') 
+      (J 
+        (λ a₁ e⁻¹ea₂=a₁ → ∀ a' 
+          → PathP (λ i → P ((sym e⁻¹ea₂=a₁ ∙ sym (e.adjunctl refl)) i)) 
+            (inverse-over _ a₁ e⁻¹ea₂=a₁ .fst (e' a₂ _ refl .fst a')) 
+            a') 
+        λ a' → η₁ a₂ a')  
+```
+</details>
+
 <!--
 ```agda
 subst-fibrewise
