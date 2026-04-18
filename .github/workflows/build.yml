@@ -16,15 +16,15 @@ jobs:
 
     steps:
       - name: Checkout ⬇️
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0 # we need the commit history for authors
 
       - name: Install Nix ❄️
-        uses: cachix/install-nix-action@v26
+        uses: cachix/install-nix-action@v31
 
       - name: Set up Cachix ♻️
-        uses: cachix/cachix-action@v14
+        uses: cachix/cachix-action@v17
         with:
           name: 1lab
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
@@ -39,13 +39,17 @@ jobs:
           fi
 
       - name: Build the Shakefile 🧰
+
+        # Actually pre-builds everything that we need for the rest of
+        # CI.
         run: |
+          nix-shell . --run true
           hash=$(nix-build -A shakefile --no-out-link)
           hash=${hash#/nix/store/} hash=${hash%%-*}
           echo "shake_version=$hash" >> "$GITHUB_ENV"
 
       - name: Cache _build ♻️
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: _build
           key: shake-5-${{ env.shake_version }}-${{ github.run_id }}
@@ -62,7 +66,7 @@ jobs:
           build_command: |
             set -eu
             1lab-shake _build/all-pages.agda
-            agda _build/all-pages.agda -j4 +RTS -A32M -s -RTS
+            agda-nodebug _build/all-pages.agda -j4 +RTS -s -RTS
 
       - name: Build 🛠️
         run: |
@@ -96,7 +100,7 @@ jobs:
             eval "$installPhase"
 
       - name: Upload site ⬆️
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: _build/site
           retention-days: 1

@@ -101,7 +101,7 @@ of $\cD$'s [[Yoneda embedding]] with precomposition by $F$.
 ```agda
     Nerve : Functor D (PSh κ C)
     Nerve .F₀ c    = Hom-into D c F∘ Functor.op F
-    Nerve .F₁ f    = よ₁ D f ◂ (Functor.op F)
+    Nerve .F₁ f    = よ D .F₁ f ◂ (Functor.op F)
     Nerve .F-id    = ext λ _ _ → D.idl _
     Nerve .F-∘ _ _ = ext λ _ _ → sym (D.assoc _ _ _)
 ```
@@ -245,8 +245,7 @@ below we denote `elem`{.Agda}.
 [category of elements]: Cat.Instances.Elements.html
 
 ```agda
-    elem : (P : Functor (C ^op) (Sets κ)) (i : C.Ob)
-         → (arg : P ʻ i) → ↓Obj (よ C) (!Const P)
+    elem : ∀ P i → P ʻ i → ↓Obj (よ C) (!Const P)
     elem P i arg .dom = i
     elem P i arg .cod = tt
     elem P i arg .map .η j h = P .F₁ h arg

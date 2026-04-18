@@ -31,7 +31,6 @@ private
   module Sets = Cat.Reasoning (Sets κ)
 open Element-hom
 open Functor
-open Element
 open _=>_
 ```
 -->
@@ -86,8 +85,9 @@ morphisms in the same way must be isomorphic.
 [Yoneda lemma]: Cat.Functor.Hom.html
 
 ```agda
-representation-unique : {F : Functor (C ^op) (Sets κ)} (X Y : Representation F)
-                      → X .rep C.≅ Y .rep
+representation-unique
+  : {F : Functor (C ^op) (Sets κ)} (X Y : Representation F)
+  → X .rep C.≅ Y .rep
 representation-unique X Y =
   is-ff→essentially-injective {F = よ C} (よ-is-fully-faithful C) よX≅よY where
     よX≅よY : よ₀ C (X .rep) C^.≅ よ₀ C (Y .rep)
@@ -152,21 +152,21 @@ componentwise invertible, as the calculation below shows, so it
 constitutes a natural isomorphism.
 
 ```agda
-  nat : F => よ₀ C (top .ob)
+  nat : F => よ₀ C (top .fst)
   nat .η ob section = has⊤ (elem ob section) .centre .hom
   nat .is-natural x y f = funext λ sect → ap hom $ has⊤ _ .paths $ elem-hom _ $
-    F.₁ (has⊤ _ .centre .hom C.∘ f) (top .section)   ≡⟨ happly (F.F-∘ _ _) _ ⟩
-    F.₁ f (F.₁ (has⊤ _ .centre .hom) (top .section)) ≡⟨ ap (F.₁ f) (has⊤ _ .centre .commute) ⟩
-    F.₁ f sect                                       ∎
+    F.₁ (has⊤ _ .centre .hom C.∘ f) (top .snd)   ≡⟨ happly (F.F-∘ _ _) _ ⟩
+    F.₁ f (F.₁ (has⊤ _ .centre .hom) (top .snd)) ≡⟨ ap (F.₁ f) (has⊤ _ .centre .commute) ⟩
+    F.₁ f sect                                   ∎
 
   inv : ∀ x → Sets.is-invertible (nat .η x)
   inv x = Sets.make-invertible
-    (λ f → F.₁ f (top .section))
+    (λ f → F.₁ f (top .snd))
     (funext λ x → ap hom $ has⊤ _ .paths (elem-hom x refl))
     (funext λ x → has⊤ _ .centre .commute)
 
   f-rep : Representation F
-  f-rep .rep = top .ob
+  f-rep .rep = top .fst
   f-rep .represents = C^.invertible→iso nat $
     invertible→invertibleⁿ nat inv
 ```
@@ -184,8 +184,8 @@ representation→terminal-element {F} F-rep = term where
   open Terminal
 
   term : Terminal (∫ C F)
-  term .top .ob = F-rep .rep
-  term .top .section = R.from .η _ C.id
+  term .top .fst = F-rep .rep
+  term .top .snd = R.from .η _ C.id
   term .has⊤ (elem o s) .centre .hom = R.to .η _ s
   term .has⊤ (elem o s) .centre .commute =
     F.₁ (R.to .η o s) (R.from .η _ C.id) ≡˘⟨ R.from .is-natural _ _ _ $ₚ _ ⟩
@@ -269,8 +269,8 @@ corepresentation-unique
 
 ```agda
 corepresentation-unique X Y =
-  is-ff→essentially-injective {F = record { Functor (Functor.op (よcov C)) }}
-    (よcov-is-fully-faithful C)
+  is-ff→essentially-injective {F = record { Functor (Functor.op (Hom[-,-] C)) }}
+    (Hom[-,-]-is-fully-faithful C)
     (iso→co-iso (Cat[ C , Sets κ ]) ni)
   where
     ni : Hom-from C (Y .corep) ≅ⁿ Hom-from C (X .corep)
@@ -335,23 +335,22 @@ corepresentation→initial-element
 initial-element→corepresentation {F} init = f-corep where
   module F = Functor F
   open Initial init
-  open Co.Element
   open Co.Element-hom
-  nat : F => Hom-from C (bot .ob)
+  nat : F => Hom-from C (bot .fst)
   nat .η ob section = has⊥ (Co.elem ob section) .centre .hom
   nat .is-natural x y f = funext λ sect → ap hom $ has⊥ _ .paths $ Co.elem-hom _ $
-    F.₁ (f C.∘ has⊥ _ .centre .hom) (bot .section)   ≡⟨ happly (F.F-∘ _ _) _ ⟩
-    F.₁ f (F.₁ (has⊥ _ .centre .hom) (bot .section)) ≡⟨ ap (F.₁ f) (has⊥ _ .centre .commute) ⟩
-    F.₁ f sect                                       ∎
+    F.₁ (f C.∘ has⊥ _ .centre .hom) (bot .snd)   ≡⟨ happly (F.F-∘ _ _) _ ⟩
+    F.₁ f (F.₁ (has⊥ _ .centre .hom) (bot .snd)) ≡⟨ ap (F.₁ f) (has⊥ _ .centre .commute) ⟩
+    F.₁ f sect                                   ∎
 
   inv : ∀ x → Sets.is-invertible (nat .η x)
   inv x = Sets.make-invertible
-    (λ f → F.₁ f (bot .section))
+    (λ f → F.₁ f (bot .snd))
     (funext λ x → ap hom $ has⊥ _ .paths (Co.elem-hom x refl))
     (funext λ x → has⊥ _ .centre .commute)
 
   f-corep : Corepresentation F
-  f-corep .corep = bot .ob
+  f-corep .corep = bot .fst
   f-corep .corepresents = [C,Sets].invertible→iso nat $
     invertible→invertibleⁿ nat inv
 
@@ -359,12 +358,11 @@ corepresentation→initial-element {F} F-corep = init where
   module F = Functor F
   module R = corep F-corep
   open Initial
-  open Co.Element
   open Co.Element-hom
 
   init : Initial (Co.∫ F)
-  init .bot .ob = F-corep .corep
-  init .bot .section = R.from .η _ C.id
+  init .bot .fst = F-corep .corep
+  init .bot .snd = R.from .η _ C.id
   init .has⊥ (Co.elem o s) .centre .hom = R.to .η _ s
   init .has⊥ (Co.elem o s) .centre .commute =
     F.₁ (R.to .η o s) (R.from .η _ C.id) ≡˘⟨ R.from .is-natural _ _ _ $ₚ _ ⟩

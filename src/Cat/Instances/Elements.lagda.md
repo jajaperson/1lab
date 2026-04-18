@@ -25,13 +25,10 @@ is a means of unpacking the data of the presheaf. Its objects are pairs of an
 object $x$, and a section $s : P x$.
 
 ```agda
-  record Element : Type (o ⊔ s) where
-    constructor elem
-    field
-      ob : Ob
-      section : P ʻ ob
+  Element : Type (o ⊔ s)
+  Element = Σ[ ob ∈ Ob ] P ʻ ob
 
-  open Element
+  pattern elem x s = x , s
 ```
 
 We can think of this as taking an eraser to the data of $P$. If $P(x) =
@@ -53,10 +50,9 @@ $P(f)$ on a single point.
 ```agda
   record Element-hom (x y : Element) : Type (ℓ ⊔ s) where
     constructor elem-hom
-    no-eta-equality
     field
-      hom : Hom (x .ob) (y .ob)
-      commute : P.₁ hom (y .section) ≡ x .section
+      hom : Hom (x .fst) (y .fst)
+      commute : P.₁ hom (y .snd) ≡ x .snd
 
   open Element-hom
 ```
@@ -68,7 +64,7 @@ space of `Element-hom`{.Agda}.
   Element-hom-path : {x y : Element} {f g : Element-hom x y} → f .hom ≡ g .hom → f ≡ g
   Element-hom-path p i .hom = p i
   Element-hom-path {x = x} {y = y} {f = f} {g = g} p i .commute =
-    is-prop→pathp (λ j → P.₀ (x .ob) .is-tr (P.₁ (p j) (y .section)) (x .section))
+    is-prop→pathp (λ j → P.₀ (x .fst) .is-tr (P.₁ (p j) (y .snd)) (x .snd))
       (f .commute)
       (g .commute) i
 ```
@@ -78,11 +74,9 @@ space of `Element-hom`{.Agda}.
 unquoteDecl H-Level-Element-hom = declare-record-hlevel 2 H-Level-Element-hom (quote Element-hom)
 
 module _ {o ℓ s} {C : Precategory o ℓ} {P : Functor (C ^op) (Sets s)} where instance
-  open Element
-
   Extensional-element-hom
     : ∀ {x y : Element C P} {ℓr}
-    → ⦃ ext : Extensional (C .Precategory.Hom (x .ob) (y .ob)) ℓr ⦄
+    → ⦃ ext : Extensional (C .Precategory.Hom (x .fst) (y .fst)) ℓr ⦄
     → Extensional (Element-hom C P x y) ℓr
   Extensional-element-hom ⦃ ext ⦄ = injection→extensional
     (C .Precategory.Hom-set _ _) (Element-hom-path C P) ext
@@ -92,7 +86,6 @@ module _ {o ℓ s} (C : Precategory o ℓ) (P : Functor (C ^op) (Sets s)) where
   open Precategory C
   open Functor
   open Element-hom
-  open Element
 ```
 -->
 
@@ -100,8 +93,8 @@ One interesting fact is that morphisms $f : X \to Y$ in $C$ induce
 morphisms in the category of elements for each $py : P(y)$.
 
 ```agda
-  induce : ∀ {x y} (f : Hom x y) (py : P ʻ y)
-        → Element-hom C P (elem x (P.₁ f py)) (elem y py)
+  induce
+    : ∀ {x y} (f : Hom x y) py → Element-hom C P (elem x (P.₁ f py)) (elem y py)
   induce f _ = elem-hom f refl
 ```
 
@@ -113,14 +106,14 @@ $P$!
   ∫ .Precategory.Ob = Element C P
   ∫ .Precategory.Hom = Element-hom C P
   ∫ .Precategory.Hom-set _ _ = hlevel 2
-  ∫ .Precategory.id {x = x} = elem-hom id λ i → P.F-id i (x .section)
+  ∫ .Precategory.id {x = x} = elem-hom id λ i → P.F-id i (x .snd)
   ∫ .Precategory._∘_ {x = x} {y = y} {z = z} f g = elem-hom (f .hom ∘ g .hom) comm where abstract
-    comm : P.₁ (f .hom ∘ g .hom) (z .section) ≡ x .section
+    comm : P.₁ (f .hom ∘ g .hom) (z .snd) ≡ x .snd
     comm =
-      P.₁ (f .hom ∘ g .hom) (z .section)       ≡⟨ happly (P.F-∘ (g .hom) (f .hom)) (z .section) ⟩
-      P.₁ (g .hom) (P.₁ (f .hom) (z .section)) ≡⟨ ap (P.F₁ (g .hom)) (f .commute)  ⟩
-      P.₁ (g .hom) (y .section)                ≡⟨ g .commute ⟩
-      x .section ∎
+      P.₁ (f .hom ∘ g .hom) (z .snd)       ≡⟨ happly (P.F-∘ (g .hom) (f .hom)) (z .snd) ⟩
+      P.₁ (g .hom) (P.₁ (f .hom) (z .snd)) ≡⟨ ap (P.F₁ (g .hom)) (f .commute)  ⟩
+      P.₁ (g .hom) (y .snd)                ≡⟨ g .commute ⟩
+      x .snd ∎
   ∫ .Precategory.idr f = ext (idr _)
   ∫ .Precategory.idl f = ext (idl _)
   ∫ .Precategory.assoc f g h = ext (assoc _ _ _)
@@ -134,7 +127,7 @@ morphism actions.
 
 ```agda
   πₚ : Functor ∫ C
-  πₚ .F₀ x = x .ob
+  πₚ .F₀ x = x .fst
   πₚ .F₁ f = f .hom
   πₚ .F-id = refl
   πₚ .F-∘ f g = refl

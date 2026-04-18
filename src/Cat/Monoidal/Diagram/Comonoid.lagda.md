@@ -34,11 +34,11 @@ module _ {o ℓ} {C : Precategory o ℓ} (Cᵐ : Monoidal-category C) where
 
 # Comonoids in a monoidal category {defines="comonoid-object"}
 
-A **comonoid** in a [monoidal category] is the dual concept of a [monoid], 
-similarly consisting of diagrams in $\cC$ centred around an object $M$, 
+A **comonoid** in a [monoidal category] is the dual concept of a [monoid],
+similarly consisting of diagrams in $\cC$ centred around an object $M$,
 the comonoid itself.
 
-Instead of a unit we have a "counit" map $\epsilon : M \to 1$ and 
+Instead of a unit we have a "counit" map $\epsilon : M \to 1$ and
 "comultiplication" map $\Delta : M \to M \otimes M$. The intuition is
 that $\epsilon$ describes a way to destroy data and $\Delta$ describes a
 way to duplicate data. Again, these maps should be compatible with the
@@ -54,9 +54,9 @@ unitors and associator of the underlying monoidal category:
       ε : C.Hom M C.Unit
       Δ : C.Hom M (M C.⊗ M)
 
-      Δ-counitl : (ε C.⊗₁ C.id) C.∘ Δ ≡ C.λ→
-      Δ-counitr : (C.id C.⊗₁ ε) C.∘ Δ ≡ C.ρ→
-      Δ-coassoc : (C.id C.⊗₁ Δ) C.∘ Δ ≡ (C.α→ _ _ _) C.∘ (Δ C.⊗₁ C.id) C.∘ Δ
+      Δ-counitl : (ε C.◀ _) C.∘ Δ ≡ C.λ→ _
+      Δ-counitr : (_ C.▶ ε) C.∘ Δ ≡ C.ρ→ _
+      Δ-coassoc : (_ C.▶ Δ) C.∘ Δ ≡ C.α→ _ C.∘ (Δ C.◀ _) C.∘ Δ
 ```
 
 ## The category Comon(C)
@@ -75,11 +75,11 @@ module _ {o ℓ} {C : Precategory o ℓ} (Cᵐ : Monoidal-category C) where
   private module C where
     open Cat.Reasoning C public
     open Monoidal-category Cᵐ public
-``` 
+```
 -->
 
 This means constructing a predicate on maps $f : m \to n$ expressing the
-condition of being a comonoid homomorphism, which is dual to 
+condition of being a comonoid homomorphism, which is dual to
 `is-monoid-hom`{.Agda}.
 
 ```agda
@@ -90,7 +90,7 @@ condition of being a comonoid homomorphism, which is dual to
     private
       module m = Comonoid-on mo
       module n = Comonoid-on no
-    
+
     field
       pres-ε : n.ε C.∘ f ≡ m.ε
       pres-Δ : n.Δ C.∘ f ≡ (f C.⊗₁ f) C.∘ m.Δ
@@ -106,10 +106,10 @@ the displayed category.
     unquoteDecl eqv = declare-record-iso eqv (quote is-comonoid-hom)
 
     instance
-      H-Level-is-comonoid-hom : ∀ {m n} {f : C .Precategory.Hom m n} {mo no} {k} 
+      H-Level-is-comonoid-hom : ∀ {m n} {f : C .Precategory.Hom m n} {mo no} {k}
         → H-Level (is-comonoid-hom f mo no) (suc k)
       H-Level-is-comonoid-hom = prop-instance $ Iso→is-hlevel! 1 eqv
-    
+
   open Displayed
   open Functor
   open is-comonoid-hom
@@ -123,14 +123,14 @@ the displayed category.
     Hom[_] = is-comonoid-hom
 
     id' = record where
-      pres-ε = (C.idr _)
-      pres-Δ = (C.idr _ ∙ C.introl (C.-⊗- .F-id))
-    
+      pres-ε = C.idr _
+      pres-Δ = C.idr _ ∙ C.introl C.⊗.F-id
+
     _∘'_ {x = x} {y} {z} {f} {g} fh gh = record where
-      pres-ε = (C.pulll (fh .pres-ε) ∙ gh .pres-ε)
+      pres-ε = C.pulll (fh .pres-ε) ∙ gh .pres-ε
       pres-Δ =
         z .Comonoid-on.Δ C.∘ f C.∘ g                    ≡⟨ C.extendl (fh .pres-Δ) ⟩
-        (f C.⊗₁ f) C.∘ y .Comonoid-on.Δ C.∘ g           ≡⟨ (C.refl⟩∘⟨ gh .pres-Δ) ⟩ 
-        (f C.⊗₁ f) C.∘ (g C.⊗₁ g) C.∘ x .Comonoid-on.Δ  ≡˘⟨ C.pushl (C.-⊗- .F-∘ _ _) ⟩
+        (f C.⊗₁ f) C.∘ y .Comonoid-on.Δ C.∘ g           ≡⟨ (C.refl⟩∘⟨ gh .pres-Δ) ⟩
+        (f C.⊗₁ f) C.∘ (g C.⊗₁ g) C.∘ x .Comonoid-on.Δ  ≡˘⟨ C.pushl (C.⊗.F-∘ _ _) ⟩
         (f C.∘ g C.⊗₁ f C.∘ g) C.∘ x .Comonoid-on.Δ     ∎
 ```

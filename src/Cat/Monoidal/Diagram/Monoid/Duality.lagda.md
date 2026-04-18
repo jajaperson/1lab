@@ -26,7 +26,7 @@ module Cat.Monoidal.Diagram.Monoid.Duality {o ℓ}
   where
 ```
 
-<!-- 
+<!--
 ```agda
 private module C where
   open Monoidal-category Cᵐ public
@@ -44,15 +44,15 @@ private unquoteDecl Monoid-on-path = declare-record-path Monoid-on-path (quote M
 
 # Duality of monoids and comonoids
 
-The duality of [monoids] and [comonoids] in a [[monoidal category]] 
-$\cC$ is manifested by an [[isomorphism of precategories]] 
+The duality of [monoids] and [comonoids] in a [[monoidal category]]
+$\cC$ is manifested by an [[isomorphism of precategories]]
 $\rm{Comon}(\cC\op) \cong \rm{Mon}(\cC\op)\op$.
 
 [monoids]: Cat.Monoidal.Diagram.Monoid.html
 [comonoids]: Cat.Monoidal.Diagram.Comonoid.html
 
 Our first step is to show that for any $x \in \cC$, the structure of a
-`Monoid-object-on`{.Agda} $x$ in $\cC\op$ is the same as the structure 
+`Monoid-object-on`{.Agda} $x$ in $\cC\op$ is the same as the structure
 of a `Comonoid-object-on`{.Agda} $x$ in the category $\cC\op$.
 
 ```agda
@@ -77,7 +77,7 @@ module On {x : C.Ob} where
   Monᵒᵖ≅Comon = Monᵒᵖ→Comon , iso Comon→Monᵒᵖ rinv linv where
     rinv : is-right-inverse Comon→Monᵒᵖ Monᵒᵖ→Comon
     rinv xᶜ = Comonoid-on-path refl refl
-        
+
     linv : is-left-inverse Comon→Monᵒᵖ Monᵒᵖ→Comon
     linv xᵐ = Monoid-on-path refl refl
 
@@ -85,14 +85,14 @@ module On {x : C.Ob} where
   Monᵒᵖ≃Comon = Iso→Equiv Monᵒᵖ≅Comon
 ```
 
-<!-- 
+<!--
 ```agda
 private
-  unquoteDecl is-comonoid-hom-iso = declare-record-iso is-comonoid-hom-iso 
+  unquoteDecl is-comonoid-hom-iso = declare-record-iso is-comonoid-hom-iso
     (quote is-comonoid-hom)
 
   instance
-    H-Level-is-comonoid-hom : ∀ {m n} {f : C .Precategory.Hom m n} {mo no} {k} 
+    H-Level-is-comonoid-hom : ∀ {m n} {f : C .Precategory.Hom m n} {mo no} {k}
       → H-Level (is-comonoid-hom Cᵐ f mo no) (suc k)
     H-Level-is-comonoid-hom = prop-instance $ Iso→is-hlevel! 1 is-comonoid-hom-iso
 ```
@@ -109,12 +109,12 @@ Monᵒᵖ→Comon = record where
   F₀' = On.Monᵒᵖ→Comon
   F₁' fᵐ = record where
     pres-ε = fᵐ .is-monoid-hom.pres-η
-    pres-Δ = fᵐ .is-monoid-hom.pres-μ
+    pres-Δ = fᵐ .is-monoid-hom.pres-μ ∙ (C.-⊗-.rlmap _ _ C.⟩∘⟨refl)
   F-id' = prop!
   F-∘' = prop!
 ```
 
-```agda 
+```agda
 Comon[C] : Precategory (o ⊔ ℓ) ℓ
 Comon[C] = ∫ Comon[ Cᵐ ]
 
@@ -125,7 +125,7 @@ F-Monᵒᵖ→Comon : Functor Mon[Cᵒᵖ]ᵒᵖ Comon[C]
 F-Monᵒᵖ→Comon .F₀ (x , xᵐ) = x , On.Monᵒᵖ→Comon xᵐ
 F-Monᵒᵖ→Comon .F₁ f = ∫hom (f .∫Hom.fst) record where
    pres-ε = f .∫Hom.snd .is-monoid-hom.pres-η
-   pres-Δ = f .∫Hom.snd .is-monoid-hom.pres-μ
+   pres-Δ = f .∫Hom.snd .is-monoid-hom.pres-μ ∙ (C.-⊗-.rlmap _ _ C.⟩∘⟨refl)
 F-Monᵒᵖ→Comon .F-id = ∫Hom-path Comon[ Cᵐ ] refl prop!
 F-Monᵒᵖ→Comon .F-∘ f g = ∫Hom-path Comon[ Cᵐ ] refl prop!
 ```

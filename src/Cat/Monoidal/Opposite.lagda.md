@@ -5,6 +5,7 @@ open import Cat.Functor.Naturality
 open import Cat.Monoidal.Base
 open import Cat.Prelude
 
+import Cat.Monoidal.Reasoning as Mr
 import Cat.Reasoning
 
 open Monoidal-category
@@ -19,9 +20,7 @@ module Cat.Monoidal.Opposite {o ℓ}
 
 <!--
 ```agda
-private module C where
-  open Monoidal-category Cᵐ public
-  open Cat.Reasoning C public
+private module C = Mr Cᵐ
 open _=>_
 ```
 -->
@@ -30,7 +29,7 @@ open _=>_
 
 If $\cC$ has the structure of a [[monoidal category]], then there is
 a natural monoidal structure on its [[opposite category]] $\cC\op$,
-with the same unit and the [[opposite bifunctor]] for the tensor 
+with the same unit and the [[opposite bifunctor]] for the tensor
 product.
 
 ```agda
@@ -45,25 +44,28 @@ can take the inverses of the coherence isomorphisms for $\cC$.
 
 ```agda
 _^mop .unitor-l = to-natural-iso record where
-  eta x = C.λ←
-  inv x = C.λ→
+  eta x = C.λ← _
+  inv x = C.λ→ _
   eta∘inv x = C.invl C.λ≅
   inv∘eta x = C.invr C.λ≅
-  natural x y f = Isoⁿ.from C.unitor-l .is-natural y x f
+  natural x y f = C.λ←nat _
 
 _^mop .unitor-r = to-natural-iso record where
-  eta x = C.ρ←
-  inv x = C.ρ→
+  eta x = C.ρ← _
+  inv x = C.ρ→ _
   eta∘inv x = C.invl C.ρ≅
   inv∘eta x = C.invr C.ρ≅
-  natural x y f = Isoⁿ.from C.unitor-r .is-natural y x f
+  natural x y f = C.ρ←nat _
 
 _^mop .associator = to-natural-iso record where
-  eta (x , y , z) = C.α← x y z
-  inv (x , y , z) = C.α→ x y z
+  eta (x , y , z) = C.α← (x , y , z)
+  inv (x , y , z) = C.α→ (x , y , z)
   eta∘inv (x , y , z) = C.invl C.α≅
   inv∘eta (x , y , z) = C.invr C.α≅
-  natural (x , y , z) (x' , y' , z') f = Isoⁿ.from C.associator .is-natural _ _ f
+  natural (x , y , z) (x' , y' , z') f =
+       C.cdr (C.car (ap (_ C.▶_) (C.-⊗-.rlmap _ _)) ∙ C.-⊗-.rlmap _ _)
+    ∙∙ Isoⁿ.from C.associator .is-natural _ _ f
+    ∙∙ C.car (C.-⊗-.lrmap _ _ ∙ C.cdr (ap (C._◀ _) (C.-⊗-.lrmap _ _)))
 ```
 
 The triangle and pentagon identities are acquired from those of $\cC$
@@ -75,10 +77,10 @@ _^mop .triangle = C.inverse-unique₀
   (C.α≅ C.Iso⁻¹ C.∙Iso C.◀.F-map-iso C.ρ≅ C.Iso⁻¹) 
   (C.▶.F-map-iso C.λ≅ C.Iso⁻¹) 
   C.triangle
-    
+
 _^mop .pentagon = sym (C.assoc _ _ _) ∙ C.inverse-unique₀
-  ( C.▶.F-map-iso (C.α≅ C.Iso⁻¹) 
-    C.∙Iso (C.α≅ C.Iso⁻¹) 
+  ( C.▶.F-map-iso (C.α≅ C.Iso⁻¹)
+    C.∙Iso (C.α≅ C.Iso⁻¹)
     C.∙Iso C.◀.F-map-iso (C.α≅ C.Iso⁻¹))
   (C.α≅ C.Iso⁻¹ C.∙Iso C.α≅ C.Iso⁻¹)
   (sym (C.assoc _ _ _) ∙ C.pentagon)

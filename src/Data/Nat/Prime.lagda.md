@@ -110,6 +110,8 @@ abstract instance
   H-Level-is-composite : ∀ {n k} → H-Level (is-composite n) (suc k)
   H-Level-is-composite = prop-instance λ a@record{p = p ; q = q} b@record{p = p' ; q = q'} →
     let
+      record{ } = a .p-prime
+
       open is-composite using (factors)
 
       ap=bp : p ≡ p'
@@ -123,19 +125,19 @@ abstract instance
 
 prime-not-composite : ∀ n → is-prime n → ¬ is-composite n
 prime-not-composite n x@record{ primality = α } y@record{ p = p ; q = q ; factors = β } with α _ (fibre→∣ (p , *-commutative p q ∙ β))
-... | inl p=1 = case subst (2 ≤_) p=1 (y .q-proper) of λ { (s≤s ()) }
+... | inl p=1 = case subst (2 ≤_) p=1 (y .q-proper) of λ ()
 ... | inr p=n =
   let
     1=p = *-injl n 1 p (*-oner n ∙∙ sym β ∙∙ ap (_* p) p=n)
   in y .p-prime .prime≠1 (sym 1=p)
 
-prime-divisor-lt : ∀ p q n .⦃ _ : Positive n ⦄ → is-prime p → q * p ≡ n → q < n
+prime-divisor-lt : ∀ p q n ⦃ _ : Positive n ⦄ → is-prime p → q * p ≡ n → q < n
 prime-divisor-lt p q n pprime div with ≤-strengthen (m∣n→m≤n {q} {n} (fibre→∣ (p , *-commutative p q ∙ div)))
 ... | inr less = less
 ... | inl same = absurd (pprime .prime≠1 $
   *-injr n p 1 (sym (+-zeror n ∙ sym div ∙ *-commutative q p ∙ ap (p *_) same)))
 
-prime-remainder-positive : ∀ p q n .⦃ _ : Positive n ⦄ → ¬ is-prime n → is-prime p → q * p ≡ n → 1 < q
+prime-remainder-positive : ∀ p q n ⦃ _ : Positive n ⦄ → ¬ is-prime n → is-prime p → q * p ≡ n → 1 < q
 prime-remainder-positive p 0 n@(suc _) _ _ div = absurd (zero≠suc div)
 prime-remainder-positive p 1 n@(suc _) nn pp div = absurd (nn (subst is-prime (sym (+-zeror p) ∙ div) pp))
 prime-remainder-positive p (suc (suc _)) (suc _) _ _ _ = s≤s (s≤s 0≤x)
@@ -157,7 +159,7 @@ distinct-primes→coprime {a@(suc a')} {b@(suc b')} apr bpr a≠b = record
 
 ```agda
 is-prime-or-composite : ∀ n → 1 < n → is-prime n ⊎ is-composite n
-is-prime-or-composite n@(suc (suc m)) (s≤s p)
+is-prime-or-composite n@(suc (suc m)) 1<n
   with Fin-omniscience {n = n} (λ k → 1 < k .lower × k .lower ∣ n)
 ... | inr prime = inl record { prime≠1 = suc≠zero ∘ suc-inj ; primality = no-divisors→prime } where
   no-divisors→prime : ∀ d → d ∣ n → d ≡ 1 ⊎ d ≡ n
@@ -217,7 +219,7 @@ record Factorisation (n : Nat) : Type where
     where
     work : ∀ x xs → is-prime x → (∀ x → x ∈ₗ xs → is-prime x) → x ∣ product xs → x ∈ₗ xs
     work x [] xp ps xd = absurd (prime≠1 xp (∣-1 xd))
-    work x (y ∷ xs) xp ps xd with x ≡ᵢ? y
+    work x (y ∷ xs) xp@record{} ps xd with x ≡ᵢ? y
     ... | yes x=y = here x=y
     ... | no ¬p = there $ work x xs xp (λ x w → ps x (there w))
       (|-*-coprime-cancel x y (product xs)
@@ -234,8 +236,8 @@ factorisation-unique' a b p p∈a =
   in find-prime-factor b (all-∈ (a .is-primes) p∈a) p∣n
 
 factorisation-worker
-  : ∀ n → (∀ k → k < n → .⦃ _ : Positive k ⦄ → Factorisation k)
-  → .⦃ _ : Positive n ⦄ → Factorisation n
+  : ∀ n → (∀ k → k < n → ⦃ _ : Positive k ⦄ → Factorisation k)
+  → ⦃ _ : Positive n ⦄ → Factorisation n
 factorisation-worker 1 ind = factored [] refl []
 factorisation-worker n@(suc (suc m)) ind with is-prime-or-composite n (s≤s (s≤s 0≤x))
 ... | inl prime     = factored (n ∷ []) (ap (2 +_) (*-oner m)) (prime ∷ [])
@@ -259,7 +261,7 @@ factorisation-worker n@(suc (suc m)) ind with is-prime-or-composite n (s≤s (s�
 ... | no m≠n  = |-*l-pres {suc m} {suc n} {factorial n} $
   ∣-factorial n {m} (≤-uncap (suc m) n m≠n m≤n)
 
-factorise : (n : Nat) .⦃ _ : Positive n ⦄ → Factorisation n
+factorise : (n : Nat) ⦃ _ : Positive n ⦄ → Factorisation n
 factorise = Wf-induction _<_ <-wf _ factorisation-worker
 
 new-prime : (n : Nat) → Σ[ p ∈ Nat ] n < p × is-prime p

@@ -144,7 +144,7 @@ instance
     → ⦃ _ : 2 ≤ n ⦄
     → ⦃ _ : H-Level A (suc n) ⦄
     → H-Level (x ∈ₗ xs) n
-  H-Level-∈ₗ {n = suc (suc n)} ⦃ s≤s (s≤s _) ⦄ ⦃ ahl ⦄ = hlevel-instance (∈ₗ-is-hlevel n (ahl .H-Level.has-hlevel))
+  H-Level-∈ₗ {n = suc (suc n)} ⦃ 2≤n ⦄ ⦃ ahl ⦄ = hlevel-instance (∈ₗ-is-hlevel n (ahl .H-Level.has-hlevel))
 ```
 -->
 
@@ -252,18 +252,17 @@ has-member→nonempty
 has-member→nonempty {xs = x ∷ xs} x∈xs = nonempty
 
 nonempty→has-member
-  : ∀ {xs : List A}
+  : ∀ {A : Type ℓ} {xs : List A}
   → is-nonempty xs
   → Σ[ x ∈ A ] (x ∈ xs)
 nonempty→has-member {xs = x ∷ xs} ne = x , here reflᵢ
 
 nonempty≃has-member
-  : ∀ (xs : List A)
+  : ∀ {A : Type ℓ} (xs : List A)
   → is-nonempty xs ≃ (∃[ x ∈ A ] (x ∈ xs))
-nonempty≃has-member xs =
-  prop-ext!
-    (λ ne → inc (nonempty→has-member ne))
-    (rec! (λ x x∈xs → has-member→nonempty x∈xs))
+nonempty≃has-member xs = prop-ext!
+  (λ ne → inc (nonempty→has-member ne))
+  (rec! λ x x∈xs → has-member→nonempty x∈xs)
 ```
 
 <!-- [TODO: Reed M, 26/08/2025] Prose for these. -->

@@ -87,7 +87,7 @@ $\Sets$ along the global sections functor.
 
 ```agda
 Scones : Displayed B (lsuc ℓ) ℓ
-Scones = Change-of-base Hom[ top ,-] (Slices (Sets ℓ))
+Scones = Change-of-base (Hom-from top) (Slices (Sets ℓ))
 ```
 
 We can unfold the abstract definition to see that we obtain the same
@@ -100,11 +100,11 @@ private module Scones = Displayed Scones
 -->
 
 ```agda
-scone : ∀ {X} → (U : Set ℓ) → (∣ U ∣ → Hom top X) → Scones ʻ X
+scone : ∀ {X} U → (∣ U ∣ → Hom top X) → Scones ʻ X
 scone U s = cut {dom = U} s
 
 scone-hom
-  : ∀ {X Y} {f : Hom X Y} {U V : Set ℓ}
+  : ∀ {X Y} {f : Hom X Y} {U V}
   → {su : ∣ U ∣ → Hom top X} {sv : ∣ V ∣ → Hom top Y}
   → (uv : ∣ U ∣ → ∣ V ∣)
   → (∀ u → sv (uv u) ≡ f ∘ (su u))

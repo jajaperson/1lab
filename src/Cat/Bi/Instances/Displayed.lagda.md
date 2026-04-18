@@ -2,9 +2,12 @@
 ```agda
 open import Cat.Functor.Naturality
 open import Cat.Displayed.Functor
+open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
 open import Cat.Displayed.Fibre
 open import Cat.Displayed.Base
+open import Cat.Functor.Closed
+open import Cat.Functor.Base
 open import Cat.Bi.Base
 open import Cat.Prelude
 
@@ -73,6 +76,7 @@ module _ {o ℓ} (B : Precategory o ℓ) (o' ℓ' : Level) where
   open make-natural-iso
   open Functor
   open _=>↓_
+  open Make-bifunctor
 ```
 -->
 
@@ -82,12 +86,12 @@ vertical functor categories, with the functoriality condition precisely
 as in the nondisplayed case.
 
 ```agda
-  ∘V-functor : ∀ {E F G : Displayed B o' ℓ'} → Functor (Vf F G ×ᶜ Vf E F) (Vf E G)
-  ∘V-functor .F₀ (G , F) = G ∘V F
-  ∘V-functor .F₁ (f , g) = f ◆↓ g
-  ∘V-functor {G = 𝒢} .F-id {F , G} = ext λ x → ap₂ G._∘_ (F .F-id') refl ∙ G.idr _ where
+  ∘V-functor' : ∀ {E F G : Displayed B o' ℓ'} → Functor (Vf F G ×ᶜ Vf E F) (Vf E G)
+  ∘V-functor' .F₀ (G , F) = G ∘V F
+  ∘V-functor' .F₁ (f , g) = f ◆↓ g
+  ∘V-functor' {G = 𝒢} .F-id {F , G} = ext λ x → ap₂ G._∘_ (F .F-id') refl ∙ G.idr _ where
     module G {x} = Cat (Fibre 𝒢 x)
-  ∘V-functor {F = ℱ} {G = 𝒢} .F-∘ {X , Y} {Z , W} {U , V} (α , β) (δ , γ) = ext λ x →
+  ∘V-functor' {F = ℱ} {G = 𝒢} .F-∘ {X , Y} {Z , W} {U , V} (α , β) (δ , γ) = ext λ x →
     U .F₁' (β .η' x F.∘ γ .η' x) G.∘ (α .η' _ G.∘ δ .η' _)          ≡⟨ G.pushl (F-∘↓ U) ⟩
     U .F₁' (β .η' x) G.∘ U .F₁' (γ .η' x) G.∘ α .η' _ G.∘ δ .η' _   ≡⟨ G.extend-inner (sym (is-natural↓ α _ _ _)) ⟩
     U .F₁' (β .η' x) G.∘ α .η' _ G.∘ Z .F₁' (γ .η' _) G.∘ δ .η' _   ≡⟨ G.pulll refl ⟩
@@ -95,22 +99,31 @@ as in the nondisplayed case.
     where
       module G {x} = Cat (Fibre 𝒢 x) using (_∘_ ; pushl ; extend-inner ; pulll)
       module F {x} = Cat (Fibre ℱ x) using (_∘_)
+
+  ∘V-functor : ∀ {E F G : Displayed B o' ℓ'} → Bifunctor (Vf F G) (Vf E F) (Vf E G)
+  ∘V-functor = Curry ∘V-functor'
 ```
 
 <!--
 ```agda
   private
     assoc : Associator-for Vf ∘V-functor
-    assoc {D = D} = to-natural-iso ni where
+    assoc {C = C} {D = D} = to-natural-iso ni where
       module D = Disp D
-      module D' {x} = Cat (Fibre D x) using (_∘_ ; idl ; idr ; elimr ; pushl ; introl)
+      module D' {x} = Cat (Fibre D x)
+      module C' {x} = Cat (Fibre C x)
 
       ni : make-natural-iso {D = Vf _ _} _ _
       ni .eta _ = record { η' = λ x' → D.id' ; is-natural' = λ x y f → D.to-pathp[] D.id-comm-sym[] }
       ni .inv _ = record { η' = λ x' → D.id' ; is-natural' = λ x y f → D.to-pathp[] D.id-comm-sym[] }
       ni .eta∘inv _ = ext λ _ → D'.idl _
       ni .inv∘eta _ = ext λ _ → D'.idl _
-      ni .natural x y f = ext λ _ → D'.idr _ ∙∙ D'.pushl (F-∘↓ (y .fst)) ∙∙ D'.introl refl
+      ni .natural x y f = ext λ _ →
+          D'.pullr (D'.cancelr (D'.idr _) ∙ ap (x .fst .F₁') (ap₂ C'._∘_ (C'.eliml (y .snd .fst .F-id')) (C'.elimr refl)))
+        ∙ sym (D'.eliml refl
+          ∙ D'.pullr (D'.pullr (ap₂ D'._∘_ (D'.elimr refl) (D'.elimr refl)) ∙ ap₂ D'._∘_ refl (sym (Vertical-functor.Fibre-map (x .fst) _ .Functor.F-∘ _ _)))
+          ∙ D'.pulll (D'.eliml (ap (y .fst .F₁') (y .snd .fst .F-id') ∙ y .fst .F-id') ∙ D'.eliml (y .fst .F-id'))
+          ∙ ap₂ D'._∘_ (D'.introl (y .fst .F-id')) refl)
 ```
 -->
 

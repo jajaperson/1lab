@@ -161,8 +161,8 @@ $f^n(\bot)$.
     fⁿ (suc n) x = f · (fⁿ n x)
 
     fⁿ-mono : ∀ {i j} → i Nat.≤ j → fⁿ i bot ≤ fⁿ j bot
-    fⁿ-mono Nat.0≤x = ¡
-    fⁿ-mono (Nat.s≤s p) = f.monotone (fⁿ-mono p)
+    fⁿ-mono {0} {j} i≤j = ¡
+    fⁿ-mono {suc i} {suc j} i≤j = f.monotone (fⁿ-mono (Nat.≤-peel i≤j))
 
     fⁿ⊥ : Lift o Nat → Ob
     fⁿ⊥ (lift n) = fⁿ n bot
@@ -179,14 +179,14 @@ namely for any $y$ such that $f y \le y$, $\bigcup (f^{n}(\bot)) \le y$.
 This follows from som quick induction.
 
 ```agda
-    fⁿ⊥≤fix : ∀ (y : Ob) → f · y ≤ y → ∀ n → fⁿ⊥ n ≤ y
+    fⁿ⊥≤fix : ∀ y → f · y ≤ y → ∀ n → fⁿ⊥ n ≤ y
     fⁿ⊥≤fix y p (lift zero) = ¡
     fⁿ⊥≤fix y p (lift (suc n)) =
       f · (fⁿ n bot)   ≤⟨ f.monotone (fⁿ⊥≤fix y p (lift n)) ⟩
       f · y            ≤⟨ p ⟩
       y                ≤∎
 
-    least-fix : ∀ (y : Ob) → f · y ≤ y → ⋃ fⁿ⊥ fⁿ⊥-dir ≤ y
+    least-fix : ∀ y → f · y ≤ y → ⋃ fⁿ⊥ fⁿ⊥-dir ≤ y
     least-fix y p = ⋃.least _ _ _ (fⁿ⊥≤fix y p)
 ```
 
@@ -240,7 +240,7 @@ module _ {o ℓ} {D E : DCPO o ℓ} where
 ```agda
   is-strictly-scott-continuous : (f : DCPOs.Hom D E) → Type _
   is-strictly-scott-continuous f =
-    ∀ (x : D.Ob) → is-bottom D.poset x → is-bottom E.poset (f · x)
+    ∀ x → is-bottom D.poset x → is-bottom E.poset (f · x)
 ```
 
 ```agda

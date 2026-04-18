@@ -8,11 +8,13 @@ open import Cat.Monoidal.Instances.Cartesian
 open import Cat.Displayed.Instances.Slice
 open import Cat.Diagram.Exponential
 open import Cat.Displayed.Section
+open import Cat.Functor.Bifunctor
 open import Cat.Functor.Kan.Nerve
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
 open import Cat.Instances.Slice
 open import Cat.Displayed.Base
+open import Cat.Functor.Closed
 open import Cat.Monoidal.Base
 open import Cat.Functor.Base
 open import Cat.Functor.Hom
@@ -28,7 +30,6 @@ import Cat.Instances.Presheaf.Exponentials as Pe
 import Cat.Displayed.Instances.Gluing
 import Cat.Instances.Presheaf.Limits as Pl
 import Cat.Displayed.Reasoning
-import Cat.Functor.Bifunctor as Bifunctor
 
 open Slice-hom
 open Functor
@@ -236,7 +237,7 @@ interpretation $f$ of the base types in $\cD$.
 
 ```agda
     (cco  : Cartesian-closed-over D cart Free-closed)
-    (f : (x : Node) → D ʻ (` x))
+    (f : ∀ x → D ʻ (` x))
   where
 ```
 
@@ -252,7 +253,7 @@ This lets us construct a section of the objects of $\cD$, i.e. a method
 that turns any type $\tau$ into an object $S(\tau) \liesover \tau$.
 
 ```agda
-  Ty-elim : (x : Ty) → D ʻ x
+  Ty-elim : ∀ x → D ʻ x
   Ty-elim `⊤       = top'
   Ty-elim (` x)    = f x
   Ty-elim (τ `× σ) = Ty-elim τ ⊗₀' Ty-elim σ
@@ -268,10 +269,10 @@ basic term $e$.
 
 ```agda
   base-method : Type _
-  base-method = ∀ {x y} (e : Edge x y) → Hom[ ` e ] (Ty-elim x) (f y)
+  base-method = ∀ {x y} e → Hom[ ` e ] (Ty-elim x) (f y)
 
   private module _ (h : base-method) where
-    go : ∀ {x y} (m : Mor x y) → Hom[ m ] (Ty-elim x) (Ty-elim y)
+    go : ∀ {x y} m → Hom[ m ] (Ty-elim x) (Ty-elim y)
 ```
 
 By a long and uninteresting case bash, we can extend
@@ -1025,7 +1026,7 @@ ren-⟦⟧ₙ ρ (lam t) =
   ∙ sym (Cartesian-closed.unique Free-closed _ (ap₂ _`∘_ refl rem₁ ∙ Syn.pulll `ƛβ ∙ ap₂ _`∘_ refl (ap₂ _`,_ refl `idl)))
   where
   rem₁ : (⟦ lam t ⟧ₙ `∘ ⟦ ρ ⟧ʳ) Syn.⊗₁ `id ≡ (⟦ lam t ⟧ₙ Syn.⊗₁ `id) `∘ ⟦ ρ ⟧ʳ Syn.⊗₁ `id
-  rem₁ = Bifunctor.first∘first Syn.×-functor
+  rem₁ = Bifunctor.lmap-∘ (Curry Syn.×-functor) _ _
 
 ren-⟦⟧ₙ ρ (pair a b) = ap₂ _`,_ (ren-⟦⟧ₙ ρ a) (ren-⟦⟧ₙ ρ b) ∙ sym (Syn.⟨⟩∘ _)
 ren-⟦⟧ₙ ρ (ne x) = ren-⟦⟧ₛ ρ x
@@ -1270,8 +1271,8 @@ These are required to make the following triangles commute.
 :::
 
 ```agda
-    com₀ : {Γ : Cx} (n : Ne Γ τ)     → ⟦ reflect n ⟧ₚ ≡ ⟦ n ⟧ₛ
-    com₁ : {Γ : Cx} (x : P .dom ʻ Γ) → ⟦ x ⟧ₚ ≡ ⟦ reify x ⟧ₙ
+    com₀ : ∀ {Γ} (n : Ne Γ τ)     → ⟦ reflect n ⟧ₚ ≡ ⟦ n ⟧ₛ
+    com₁ : ∀ {Γ} (x : P .dom ʻ Γ) → ⟦ x ⟧ₚ ≡ ⟦ reify x ⟧ₙ
 ```
 
 <!--
@@ -1279,7 +1280,7 @@ These are required to make the following triangles commute.
   reifyₙ : ∀ {Γ Δ} {ρ : Ren Γ Δ} {x : P .dom ʻ Δ} → reify (P .dom ⟪ ρ ⟫ x) ≡ ren-nf ρ (reify x)
   reifyₙ {Γ} {Δ} {ρ} {x} = reifies .is-natural Δ Γ ρ $ₚ x
 
-  reflectₙ : ∀ {Γ Δ} {ρ : Ren Γ Δ} {x : Ne Δ τ} → reflect (ren-ne ρ x) ≡ P .dom ⟪ ρ ⟫ (reflect x)
+  reflectₙ : ∀ {Γ Δ} {ρ : Ren Γ Δ} {x} → reflect (ren-ne ρ x) ≡ P .dom ⟪ ρ ⟫ (reflect x)
   reflectₙ {Γ} {Δ} {ρ} {x} = reflects .is-natural Δ Γ ρ $ₚ x
 
 GlTm-closed = Gl-closed PSh-closed Free-closed PSh-pullbacks
@@ -1295,7 +1296,7 @@ map --- embedding neutrals into normals --- is not literally the identity
 function, but an inductive constructor instead.
 
 ```agda
-Gl-base : (n : Node) → Gl ʻ (` n)
+Gl-base : ∀ n → Gl ʻ (` n)
 Gl-base x = cut (rnf {` x})
 
 base-nfa : ∀ {x} → Nfa (Gl-base x)
@@ -1502,9 +1503,7 @@ into normals, namely `reifies`{.Agda}.
 
 ```agda
   private
-    terms
-      : ∀ {x : Ty} {y : Node} (e : Edge x y)
-      → Gl.Hom[ (` e) ] (Ty-nf x) (Gl-base y)
+    terms : ∀ {x y} e → Gl.Hom[ (` e) ] (Ty-nf x) (Gl-base y)
     terms {x = x} {y = y} e .map =
           NT (λ Γ x → ne (hom e x)) (λ x y f → refl)
       ∘nt Nfa.reifies (normalisation x)
@@ -1540,8 +1539,8 @@ $$
 which is exactly what we wanted! We're finally `done`{.Agda}.
 
 ```agda
-idsec : (Γ : Cx) → ⟦ ⟦ Γ ⟧ᶜ ⟧₀ .dom ʻ Γ
-idsecβ : (Γ : Cx) → ⟦ ⟦ Γ ⟧ᶜ ⟧₀ .map .η Γ (idsec Γ) ≡ `id
+idsec  : ∀ Γ → ⟦ ⟦ Γ ⟧ᶜ ⟧₀ .dom ʻ Γ
+idsecβ : ∀ Γ → ⟦ ⟦ Γ ⟧ᶜ ⟧₀ .map .η Γ (idsec Γ) ≡ `id
 ```
 
 <!--

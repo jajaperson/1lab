@@ -6,6 +6,7 @@ open import Data.Sum.Base
 
 open import Order.Instances.Pointwise
 open import Order.Instances.Props
+open import Order.Instances.Upper
 open import Order.Diagram.Bottom
 open import Order.Diagram.Join
 open import Order.Diagram.Meet
@@ -22,7 +23,7 @@ import Order.Reasoning as Pr
 module Order.Instances.Lower where
 ```
 
-# Lower sets
+# Lower sets {defines="lower-set"}
 
 Imagine you have a poset $(P, \le)$ which does _not_ have all [joins],
 and you want to freely (co)complete it into a poset $P'$ which _does_,
@@ -109,7 +110,7 @@ operator automatically propositionally truncates.
 
 <!--
 ```agda
-  Lower-sets-meets : (a b : Lower-set P) → Meet (Lower-sets P) a b
+  Lower-sets-meets : ∀ a b → Meet (Lower-sets P) a b
   Lower-sets-meets a b .Meet.glb .hom i = (a · i) ∧Ω (b · i)
   Lower-sets-meets a b .Meet.glb .pres-≤ j≤i (aj , bj) =
     a .pres-≤ j≤i aj , b .pres-≤ j≤i bj
@@ -118,7 +119,7 @@ operator automatically propositionally truncates.
   Lower-sets-meets a b .Meet.has-meet .is-meet.greatest lb' f g x x∈lb' =
     (f x x∈lb') , (g x x∈lb')
 
-  Lower-sets-joins : (a b : Lower-set P) → Join (Lower-sets P) a b
+  Lower-sets-joins : ∀ a b → Join (Lower-sets P) a b
   Lower-sets-joins a b .Join.lub .hom i = (a · i) ∨Ω (b · i)
   Lower-sets-joins a b .Join.lub .pres-≤ j≤i =
     ∥-∥-map [ (inl ⊙ a .pres-≤ j≤i) , inr ⊙ b .pres-≤ j≤i ]
@@ -138,3 +139,14 @@ operator automatically propositionally truncates.
   Lower-sets-bottom .Bottom.has-bottom _ _ ff = absurd ff
 ```
 -->
+
+## Duality
+
+Lower sets are dual to [[upper sets]].
+
+```agda
+Lower-sets≅op-Upper-sets
+  : ∀ {o ℓ} (P : Poset o ℓ)
+  → Lower-sets P Posets.≅ (Upper-sets (P ^opp))
+Lower-sets≅op-Upper-sets P = Posets.id-iso
+```
