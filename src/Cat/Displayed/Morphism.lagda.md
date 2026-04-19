@@ -406,6 +406,9 @@ record _≅[_]_
     inverses' : Inverses[ i .inverses ] to' from'
 
   open Inverses[_] inverses' public
+
+Isomorphism[_] : ∀ {a b} (i : a ≅ b) (a' : Ob[ a ]) (b' : Ob[ b ]) → Type ℓ'
+Isomorphism[ i ] a' b' = a' ≅[ i ] b'
 ```
 
 <!--
@@ -522,7 +525,7 @@ is-invertible[]-inverse
   : ∀ {x y x' y'} {f : Hom x y} {f-inv : is-invertible f}
     {f' : Hom[ f ] x' y'} (f'-inv : is-invertible[ f-inv ] f')
   → is-invertible[ is-invertible-inverse f-inv ] (f'-inv .is-invertible[_].inv')
-is-invertible[]-inverse f'-inv = 
+is-invertible[]-inverse f'-inv =
   record { inv' = _ ; inverses' = record { invl' = g'.invr' ; invr' = g'.invl' } }
   where module g' = Inverses[_] (f'-inv .is-invertible[_].inverses')
 
@@ -567,6 +570,20 @@ id-iso↓ : ∀ {x} {x' : Ob[ x ]} → x' ≅↓ x'
 id-iso↓ = make-iso[ id-iso ] id' id' (idl' id') (idl' id')
 ```
 
+We take the opportunity to define the displayed counterpart to
+`path→iso`{.Agda}:
+
+```agda
+path[_]→iso[]
+  : ∀ {a} {b} (p : a ≡ b) {a'} {b'} (q : PathP (λ i → Ob[ p i ]) a' b')
+  → a' ≅[ path→iso p ] b'
+path[ p ]→iso[] {a'} {b'} p' = transport
+  (λ i → Isomorphism[ id=path→iso i ] a' (p' i)) id-iso↓
+  where
+    id=path→iso : PathP (λ i → _ ≅ p i) id-iso (path→iso p)
+    id=path→iso = transport-filler (λ i → _ ≅ p i) id-iso
+```
+
 We also have that displayed isos compose
 
 ```agda
@@ -581,7 +598,7 @@ Inverses-∘' {finv = finv} {ginv} {f' = f'} {f'⁻¹} {g'} {g'⁻¹} finv' ginv
     module gfinv = Inverses (Inverses-∘ ginv finv)
     module finv' = Inverses[_] finv'
     module ginv' = Inverses[_] ginv'
-    
+
     l' : (g' ∘' f') ∘' f'⁻¹ ∘' g'⁻¹ ≡[ gfinv.invl ] id'
     l' = begin[]
       (g' ∘' f') ∘' f'⁻¹ ∘' g'⁻¹    ≡[]⟨ assoc' (g' ∘' f') f'⁻¹ g'⁻¹ ⟩
@@ -590,7 +607,7 @@ Inverses-∘' {finv = finv} {ginv} {f' = f'} {f'⁻¹} {g'} {g'⁻¹} finv' ginv
       (g' ∘' id') ∘' g'⁻¹           ≡[]⟨ (idr' g') ⟩∘'⟨refl ⟩
       g' ∘' g'⁻¹                    ≡[]⟨ ginv'.invl' ⟩
       id'                           ∎[]
-    
+
     r' : (f'⁻¹ ∘' g'⁻¹) ∘' g' ∘' f' ≡[ gfinv.invr ] id'
     r' = begin[]
       (f'⁻¹ ∘' g'⁻¹) ∘' g' ∘' f'    ≡[]⟨ assoc' (f'⁻¹ ∘' g'⁻¹) g' f' ⟩
