@@ -1,5 +1,7 @@
 <!--
 ```agda
+open import 1Lab.Equiv.Fibrewise
+
 open import Cat.Displayed.Functor.Naturality
 open import Cat.Displayed.Functor.Properties
 open import Cat.Displayed.Instances.Functor
@@ -10,10 +12,8 @@ open import Cat.Displayed.Functor
 open import Cat.Functor.Adjoint
 open import Cat.Displayed.Base
 open import Cat.Prelude
-open import 1Lab.Equiv.Fibrewise
 
-import Cat.Displayed.Reasoning as Dr
-import Cat.Displayed.Morphism as Dm
+import Cat.Displayed.Morphism.Reasoning as Dr
 import Cat.Reasoning as Cr
 
 open Displayed-functor
@@ -39,54 +39,63 @@ where the the unit and counit are [[displayed natural isomorphisms]].
 
 ```agda
 record is-equivalence[_]
+```
+
+<!--
+```agda
   {oa ℓa ob ℓb oe ℓe of ℓf}
   {A : Precategory oa ℓa} {B : Precategory ob ℓb}
   {ℰ : Displayed A oe ℓe} {ℱ : Displayed B of ℓf}
-  {F : Functor A B} (F-is-equiv : is-equivalence F)
-  (F' : Displayed-functor F ℰ ℱ)
+  {F : Functor A B}
+```
+-->
+
+```agda
+  (F-is-equiv : is-equivalence F) (F' : Displayed-functor F ℰ ℱ)
   : Type (adj-level' ℰ ℱ) where
 
   open is-equivalence F-is-equiv public
-
-  field
-    F'⁻¹ : Displayed-functor F⁻¹ ℱ ℰ
-    F'⊣F'⁻¹ : F' ⊣[ F⊣F⁻¹ ] F'⁻¹
-
-  open _⊣[_]_ F'⊣F'⁻¹ public
-
-  field
-    unit'-iso : ∀ {x} x' →  Dm.is-invertible[_] ℰ (unit-iso x) (unit' .η' x')
-    counit'-iso : ∀ {x} x' →  Dm.is-invertible[_] ℱ (counit-iso x) (counit' .η' x')
 ```
-
-Again, we see that natural families of invertible morphisms give rise to
-displayed isomorphisms in the [[displayed functor category]]:
 
 <!--
 ```agda
   private
     module F = Functor F
     module F⁻¹ = Functor F⁻¹
-    module F' = Displayed-functor F'
-    module F'⁻¹ = Displayed-functor F'⁻¹
     module A = Cr A
     module B = Cr B
-    module ℰ where
-      open Dr ℰ public
-      open Dm ℰ public
-    module ℱ where
-      open Dr ℱ public
-      open Dm ℱ public
+    module ℰ = Dr ℰ
+    module ℱ = Dr ℱ
     [ℰ,ℰ] = DisCat[ ℰ , ℰ ]
     [ℱ,ℱ] = DisCat[ ℱ , ℱ ]
-    module [ℰ,ℰ] where
-      open Dr [ℰ,ℰ] public
-      open Dm [ℰ,ℰ] public
-    module [ℱ,ℱ] where
-      open Dr [ℱ,ℱ] public
-      open Dm [ℱ,ℱ] public
+    module [ℰ,ℰ] = Dr [ℰ,ℰ]
+    module [ℱ,ℱ] = Dr [ℱ,ℱ]
+    module F' = Displayed-functor F'
 ```
 -->
+
+```agda
+  field
+    F'⁻¹ : Displayed-functor F⁻¹ ℱ ℰ
+    F'⊣F'⁻¹ : F' ⊣[ F⊣F⁻¹ ] F'⁻¹
+
+  open _⊣[_]_ F'⊣F'⁻¹ public
+```
+
+<!--
+```agda
+  private module F'⁻¹ = Displayed-functor F'⁻¹
+```
+-->
+
+```agda
+  field
+    unit'-iso : ∀ {x} x' →  ℰ.is-invertible[ unit-iso x ] (unit' .η' x')
+    counit'-iso : ∀ {x} x' →  ℱ.is-invertible[ counit-iso x ] (counit' .η' x')
+```
+
+Again, we see that natural families of invertible morphisms give rise to
+displayed isomorphisms in the [[displayed functor category]]:
 
 ```agda
   F'∘F'⁻¹≅Id' : F' F∘' F'⁻¹ [ℱ,ℱ].≅[ F∘F⁻¹≅Id ] Id'
@@ -155,34 +164,33 @@ faithfully displayed]] and [[essentially split surjective over]] $F$.
 
 ```agda
 module _
-  {oa ℓa ob ℓb oe ℓe of ℓf}
-  {A : Precategory oa ℓa} {B : Precategory ob ℓb}
-  {ℰ : Displayed A oe ℓe} {ℱ : Displayed B of ℓf}
-  {F : Functor A B} {F' : Displayed-functor F ℰ ℱ}
-  (ff : is-fully-faithful F) (eso : is-split-eso F)
-  (ff' : is-ff[] F') (eso' : is-split-eso[ eso ] F')
-  where
-
-  private module ff[]+split-eso[]is-equivalence[] where
 ```
 
 <!--
 ```agda
+  {oa ℓa ob ℓb oe ℓe of ℓf}
+  {A : Precategory oa ℓa} {B : Precategory ob ℓb}
+  {ℰ : Displayed A oe ℓe} {ℱ : Displayed B of ℓf}
+  {F : Functor A B} {F' : Displayed-functor F ℰ ℱ}
+```
+-->
+
+```agda
+  (ff : is-fully-faithful F) {eso : is-split-eso F}
+  (ff' : is-ff[] F') (eso' : is-split-eso[ eso ] F')
+  where
+
+  private module ff[ff]+split-eso[]→is-equivalence[] where
     F-is-equiv = ff+split-eso→is-equivalence {F = F} ff eso
     open is-equivalence F-is-equiv
+```
 
-    module A where
-      open Cr A public
-      open _≅_ public
-    module B where
-      open Cr B public
-      open _≅_ public
-    module ℰ where
-      open Dr ℰ public
-      open Dm ℰ public
-    module ℱ where
-      open Dr ℱ public
-      open Dm ℱ public
+<!--
+```agda
+    module A = Cr A
+    module B = Cr B
+    module ℰ = Dr ℰ
+    module ℱ = Dr ℱ
     module F = Functor F
     module F' = Displayed-functor F'
     module F⁻¹ = Functor F⁻¹
@@ -207,33 +215,34 @@ On account of this transport, we need displayed variants of the usual
 `η` and `ε` equalities for the equivalence given by `ff'`{.Agda}.
 
 ```agda
-    module ff' where
-      module _ {x} {y} {f} {x'} {y'} where
-        open Equiv (F'.₁' , ff' {x} {y} {f} {x'} {y'}) public
-      ε[]
-        : ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]}
-          (f' : ℱ.Hom[ f ] (F'.₀' x') (F'.₀' y'))
-        → F'.₁' (ff'⁻¹ f') ℱ.≡[ ff.ε f ] f'
+    ε[]
+      : ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]}
+        (f' : ℱ.Hom[ f ] (F'.₀' x') (F'.₀' y'))
+      → F'.₁' (ff'⁻¹ f') ℱ.≡[ ff.ε f ] f'
 
-      η[]
-        : ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]} (f' : ℰ.Hom[ f ] x' y')
-        → ff'⁻¹ (F'.₁' f') ℰ.≡[ ff.η f ] f'
+    η[]
+      : ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]} (f' : ℰ.Hom[ f ] x' y')
+      → ff'⁻¹ (F'.₁' f') ℰ.≡[ ff.η f ] f'
 ```
 
 <details>
 <summary>The derivations of these equalities are a little hairy.</summary>
 ```agda
-      ε[] {f = f} f' = ℱ.begin[]
-        F'.₁' (equiv→inverse ff' (ℱ.hom[ sym (ff.ε f) ] f'))  ℱ.≡[]⟨ ε (ℱ.hom[ sym (ff.ε f) ] f') ⟩
-        ℱ.hom[ sym (ff.ε f) ] f'                              ℱ.≡[]˘⟨ ℱ.coh[ sym (ff.ε f) ] f' ⟩
-        f'                                                    ℱ.∎[]
+    ε[] {f = f} f' = ℱ.begin[]
+      F'.₁' (equiv→inverse ff' (ℱ.hom[ sym (ff.ε f) ] f'))  ℱ.≡[]⟨ ε (ℱ.hom[ sym (ff.ε f) ] f') ⟩
+      ℱ.hom[ sym (ff.ε f) ] f'                              ℱ.≡[]˘⟨ ℱ.coh[ sym (ff.ε f) ] f' ⟩
+      f'                                                    ℱ.∎[]
+      where
+        open Equiv (F'.₁' , ff') using (ε)
 
-      η[] {f = f} f' = ℰ.begin[]
-        equiv→inverse (ff' {f = ff .is-eqv (F.₁ f) .centre .fst}) (ℱ.hom[ sym (ff.ε (F.₁ f)) ] (F'.₁' f'))  ℰ.≡[]⟨ apd (λ _ → equiv→inverse ff') (ℱ.coh[ ap (F.₁) (ff.η f) ] (ℱ.hom[ sym (ff.ε (F.₁ f)) ] (F'.₁' f'))) ⟩
-        equiv→inverse (ff' {f = f}) (ℱ.hom[ ap (F.₁) (ff.η f) ] (ℱ.hom[ sym (ff.ε (F.₁ f)) ] (F'.₁' f')))   ℰ.≡[]⟨ apd (λ _ → equiv→inverse (ff' {f = f})) (ℱ.hom[]-∙ (sym (ff.ε (F.₁ f))) (ap (F.₁) (ff.η f))) ⟩
-        equiv→inverse (ff' {f = f}) (ℱ.hom[ sym (ff.ε (F.₁ f)) ∙ ap (F.₁) (ff.η f) ] (F'.₁' f'))            ℰ.≡[]˘⟨ apd (λ _ → equiv→inverse (ff' {f = f})) (ℱ.cast[] $ ℱ.coh[ sym (ff.ε (F.₁ f)) ∙ ap (F.₁) (ff.η f) ]  (F'.₁' f')) ⟩
-        equiv→inverse (ff' {f = f}) (F'.₁' f')                                                              ℰ.≡[]⟨ η f' ⟩
-        f'                                                                                                  ℰ.∎[]
+    η[] {f = f} f' = ℰ.begin[]
+      equiv→inverse (ff' {f = ff .is-eqv (F.₁ f) .centre .fst}) (ℱ.hom[ sym (ff.ε (F.₁ f)) ] (F'.₁' f'))  ℰ.≡[]⟨ apd (λ _ → equiv→inverse ff') (ℱ.coh[ ap (F.₁) (ff.η f) ] (ℱ.hom[ sym (ff.ε (F.₁ f)) ] (F'.₁' f'))) ⟩
+      equiv→inverse (ff' {f = f}) (ℱ.hom[ ap (F.₁) (ff.η f) ] (ℱ.hom[ sym (ff.ε (F.₁ f)) ] (F'.₁' f')))   ℰ.≡[]⟨ apd (λ _ → equiv→inverse (ff' {f = f})) (ℱ.hom[]-∙ (sym (ff.ε (F.₁ f))) (ap (F.₁) (ff.η f))) ⟩
+      equiv→inverse (ff' {f = f}) (ℱ.hom[ sym (ff.ε (F.₁ f)) ∙ ap (F.₁) (ff.η f) ] (F'.₁' f'))            ℰ.≡[]˘⟨ apd (λ _ → equiv→inverse (ff' {f = f})) (ℱ.cast[] $ ℱ.coh[ sym (ff.ε (F.₁ f)) ∙ ap (F.₁) (ff.η f) ]  (F'.₁' f')) ⟩
+      equiv→inverse (ff' {f = f}) (F'.₁' f')                                                              ℰ.≡[]⟨ η f' ⟩
+      f'                                                                                                  ℰ.∎[]
+      where
+        open Equiv (F'.₁' , ff') using (η)
 ```
 </details>
 
@@ -253,7 +262,7 @@ We can use this together with essential surjectivity to define `F'⁻¹`{.Agda}
       ff'⁻¹ (ffx' ℱ.∘' ℱ.id' ℱ.∘' ftx') ℰ.≡[]⟨ apd (λ _ f' → ff'⁻¹ (ffx' ℱ.∘' f')) (ℱ.idl' ftx') ⟩
       ff'⁻¹ (ffx' ℱ.∘' ftx')            ℰ.≡[]⟨ apd (λ _ → ff'⁻¹) (f*x'-iso.invr') ⟩
       ff'⁻¹ ℱ.id'                       ℰ.≡[]˘⟨ apd (λ _ → ff'⁻¹) (F' .F-id') ⟩
-      ff'⁻¹ (F'.₁' ℰ.id')               ℰ.≡[]⟨ ff'.η[] ℰ.id' ⟩
+      ff'⁻¹ (F'.₁' ℰ.id')               ℰ.≡[]⟨ η[] ℰ.id' ⟩
       ℰ.id'                             ℰ.∎[]
       where
         open Σ (eso' x') renaming (fst to f*x' ; snd to f*x'-iso)
@@ -263,15 +272,15 @@ We can use this together with essential surjectivity to define `F'⁻¹`{.Agda}
 
 
     F'⁻¹ .F-∘' {a' = x'} {y'} {z'} {f'} {g'} = ff[]→faithful[] F' ff' $ ℱ.begin[]
-      F'.₁' (ff'⁻¹ (ffz' ℱ.∘' (f' ℱ.∘' g') ℱ.∘' ftx'))                                    ℱ.≡[]⟨ ff'.ε[] (ffz' ℱ.∘' (f' ℱ.∘' g') ℱ.∘' ftx') ⟩
+      F'.₁' (ff'⁻¹ (ffz' ℱ.∘' (f' ℱ.∘' g') ℱ.∘' ftx'))                                    ℱ.≡[]⟨ ε[] (ffz' ℱ.∘' (f' ℱ.∘' g') ℱ.∘' ftx') ⟩
       ffz' ℱ.∘' (f' ℱ.∘' g') ℱ.∘' ftx'                                                    ℱ.≡[]˘⟨ apd (λ _ → ffz' ℱ.∘'_) (ℱ.assoc' f' g' ftx') ⟩
       ffz' ℱ.∘' f' ℱ.∘' g' ℱ.∘' ftx'                                                      ℱ.≡[]˘⟨ apd (λ _ h' → ffz' ℱ.∘' f' ℱ.∘' h') (ℱ.idl' (g' ℱ.∘' ftx')) ⟩
       ffz' ℱ.∘' f' ℱ.∘' ℱ.id' ℱ.∘' g' ℱ.∘' ftx'                                           ℱ.≡[]˘⟨ apd (λ _ h' → ffz' ℱ.∘' f' ℱ.∘' h' ℱ.∘' g' ℱ.∘' ftx')  (f*y'-iso .ℱ.invl') ⟩
       ffz' ℱ.∘' f' ℱ.∘' (fty' ℱ.∘' ffy') ℱ.∘' g' ℱ.∘' ftx'                                ℱ.≡[]˘⟨ apd (λ _ h' → ffz' ℱ.∘' f' ℱ.∘' h') (ℱ.assoc' fty' ffy' (g' ℱ.∘' ftx')) ⟩
       ffz' ℱ.∘' f' ℱ.∘' fty' ℱ.∘' (ffy' ℱ.∘' g' ℱ.∘' ftx')                                ℱ.≡[]⟨ apd (λ _ → ffz' ℱ.∘'_) (ℱ.assoc' f' fty' (ffy' ℱ.∘' g' ℱ.∘' ftx'))⟩
       ffz' ℱ.∘' (f' ℱ.∘' fty') ℱ.∘' (ffy' ℱ.∘' g' ℱ.∘' ftx')                              ℱ.≡[]⟨ ℱ.assoc' ffz' (f' ℱ.∘' fty') (ffy' ℱ.∘' g' ℱ.∘' ftx') ⟩
-      (ffz' ℱ.∘' f' ℱ.∘' fty') ℱ.∘' (ffy' ℱ.∘' g' ℱ.∘' ftx')                              ℱ.≡[]˘⟨ apd (λ _ → ℱ._∘' (ffy' ℱ.∘' g' ℱ.∘' ftx')) (ff'.ε[] (ffz' ℱ.∘' f' ℱ.∘' fty')) ⟩
-      F'.₁' (ff'⁻¹ (ffz' ℱ.∘' f' ℱ.∘' fty')) ℱ.∘' (ffy' ℱ.∘' g' ℱ.∘' ftx')                ℱ.≡[]˘⟨ apd (λ _ → F'.₁' (ff'⁻¹ (ffz' ℱ.∘' f' ℱ.∘' fty')) ℱ.∘'_) (ff'.ε[] (ffy' ℱ.∘' g' ℱ.∘' ftx')) ⟩
+      (ffz' ℱ.∘' f' ℱ.∘' fty') ℱ.∘' (ffy' ℱ.∘' g' ℱ.∘' ftx')                              ℱ.≡[]˘⟨ apd (λ _ → ℱ._∘' (ffy' ℱ.∘' g' ℱ.∘' ftx')) (ε[] (ffz' ℱ.∘' f' ℱ.∘' fty')) ⟩
+      F'.₁' (ff'⁻¹ (ffz' ℱ.∘' f' ℱ.∘' fty')) ℱ.∘' (ffy' ℱ.∘' g' ℱ.∘' ftx')                ℱ.≡[]˘⟨ apd (λ _ → F'.₁' (ff'⁻¹ (ffz' ℱ.∘' f' ℱ.∘' fty')) ℱ.∘'_) (ε[] (ffy' ℱ.∘' g' ℱ.∘' ftx')) ⟩
       F'.₁' (ff'⁻¹ (ffz' ℱ.∘' f' ℱ.∘' fty')) ℱ.∘' F'.₁' (ff'⁻¹ (ffy' ℱ.∘' g' ℱ.∘' ftx'))  ℱ.≡[]˘⟨ F' .F-∘' {f' = (ff'⁻¹ (ffz' ℱ.∘' f' ℱ.∘' fty'))} {g' = (ff'⁻¹ (ffy' ℱ.∘' g' ℱ.∘' ftx'))}⟩
       F'.₁' (ff'⁻¹ (ffz' ℱ.∘' f' ℱ.∘' fty') ℰ.∘' ff'⁻¹ (ffy' ℱ.∘' g' ℱ.∘' ftx'))          ℱ.∎[]
       where
@@ -304,11 +313,11 @@ are all given by straightforward (if tedious) adaptions of those for
 
       unit' .is-natural' x' y' f' = ff[]→faithful[] F' ff' $ ℱ.begin[]
         F'.₁' (η'y' ℰ.∘' f')                                                  ℱ.≡[]⟨ F'.F-∘' ⟩
-        F'.₁' (ff'⁻¹ ffy') ℱ.∘' F'.₁' f'                                      ℱ.≡[]⟨ ff'.ε[] ffy' ℱ.⟩∘'⟨refl ⟩
+        F'.₁' (ff'⁻¹ ffy') ℱ.∘' F'.₁' f'                                      ℱ.≡[]⟨ ε[] ffy' ℱ.⟩∘'⟨refl ⟩
         ffy' ℱ.∘' F'.₁' f'                                                    ℱ.≡[]˘⟨ ℱ.refl⟩∘'⟨ ℱ.idr' _ ⟩
         ffy' ℱ.∘' F'.₁' f' ℱ.∘' ℱ.id'                                         ℱ.≡[]˘⟨ ℱ.refl⟩∘'⟨ ℱ.refl⟩∘'⟨ f*x'-iso.invl' ⟩
         ffy' ℱ.∘' F'.₁' f' ℱ.∘' ftx' ℱ.∘' ffx'                                ℱ.≡[]⟨ (ℱ.refl⟩∘'⟨ ℱ.assoc' _ _ _ ) ℱ.∙[]  ℱ.assoc' _ _ _ ⟩
-        (ffy' ℱ.∘' F'.₁' f' ℱ.∘' ftx') ℱ.∘' ffx'                              ℱ.≡[]˘⟨ ff'.ε[] _ ℱ.⟩∘'⟨ ff'.ε[] _ ⟩
+        (ffy' ℱ.∘' F'.₁' f' ℱ.∘' ftx') ℱ.∘' ffx'                              ℱ.≡[]˘⟨ ε[] _ ℱ.⟩∘'⟨ ε[] _ ⟩
         F'.₁' (ff'⁻¹ (ffy' ℱ.∘' F'.₁' f' ℱ.∘' ftx')) ℱ.∘' F'.₁' (ff'⁻¹ ffx')  ℱ.≡[]˘⟨ F'.F-∘' ⟩
         F'.₁' (₁' (F'⁻¹ F∘' F') f' ℰ.∘' η'x')                                 ℱ.∎[]
         where
@@ -328,7 +337,7 @@ are all given by straightforward (if tedious) adaptions of those for
         ftx' = f*x'-iso .ℱ.to'
 
       counit' .is-natural' x' y' f' = ℱ.begin[]
-        fty' ℱ.∘' F'.₁' (ff'⁻¹ (ffy' ℱ.∘' f' ℱ.∘' ftx'))  ℱ.≡[]⟨ ℱ.refl⟩∘'⟨ ff'.ε[] _ ⟩
+        fty' ℱ.∘' F'.₁' (ff'⁻¹ (ffy' ℱ.∘' f' ℱ.∘' ftx'))  ℱ.≡[]⟨ ℱ.refl⟩∘'⟨ ε[] _ ⟩
         fty' ℱ.∘' ffy' ℱ.∘' f' ℱ.∘' ftx'                  ℱ.≡[]⟨ ℱ.cancell[] _ f*y'-iso.invl' ⟩
         f' ℱ.∘' ftx'                                      ℱ.∎[]
         where
@@ -344,7 +353,7 @@ are all given by straightforward (if tedious) adaptions of those for
         : ∀ {x} {x' : ℰ.Ob[ x ]}
         → counit' .η' (F'.₀' x') ℱ.∘' F'.₁' (unit' .η' x') ℱ.≡[ zig ] ℱ.id'
       zig' {x' = x'} = ℱ.begin[]
-        ftx' ℱ.∘' F'.₁' (ff'⁻¹ ffx')  ℱ.≡[]⟨ ℱ.refl⟩∘'⟨ ff'.ε[] _ ⟩
+        ftx' ℱ.∘' F'.₁' (ff'⁻¹ ffx')  ℱ.≡[]⟨ ℱ.refl⟩∘'⟨ ε[] _ ⟩
         ftx' ℱ.∘' ffx'                ℱ.≡[]⟨ f*x'-iso.invl' ⟩
         ℱ.id'                         ℱ.∎[]
         where
@@ -358,7 +367,7 @@ are all given by straightforward (if tedious) adaptions of those for
         → F'⁻¹.₁' (counit' .η' x') ℰ.∘' unit' .η' (F'⁻¹.₀' x') ℰ.≡[ zag ] ℰ.id'
       zag' {x' = x'} = ff[]→faithful[] F' ff' $ ℱ.begin[]
         F'.₁' (ff'⁻¹ (ffx' ℱ.∘' ftx' ℱ.∘' fftx') ℰ.∘' ff'⁻¹ fffx')            ℱ.≡[]⟨ F'.F-∘' ⟩
-        F'.F₁' (ff'⁻¹ (ffx' ℱ.∘' ftx' ℱ.∘' fftx')) ℱ.∘' F'.F₁' (ff'⁻¹ fffx')  ℱ.≡[]⟨ ff'.ε[] _ ℱ.⟩∘'⟨ ff'.ε[] _ ⟩
+        F'.F₁' (ff'⁻¹ (ffx' ℱ.∘' ftx' ℱ.∘' fftx')) ℱ.∘' F'.F₁' (ff'⁻¹ fffx')  ℱ.≡[]⟨ ε[] _ ℱ.⟩∘'⟨ ε[] _ ⟩
         (ffx' ℱ.∘' ftx' ℱ.∘' fftx') ℱ.∘' fffx'                                ℱ.≡[]⟨ (ℱ.assoc' _ _ _ ℱ.⟩∘'⟨refl) ⟩
         ((ffx' ℱ.∘' ftx') ℱ.∘' fftx') ℱ.∘' fffx'                              ℱ.≡[]˘⟨ ℱ.assoc' _ _ _ ⟩
         (ffx' ℱ.∘' ftx') ℱ.∘' (fftx' ℱ.∘' fffx')                              ℱ.≡[]⟨ f*x'-iso.invr' ℱ.⟩∘'⟨ f*f*x'-iso.invl' ⟩
@@ -386,13 +395,13 @@ are all given by straightforward (if tedious) adaptions of those for
       ; inverses' = record
         { invl' = ff[]→faithful[] F' ff' $ ℱ.begin[]
           F'.₁' (ff'⁻¹ ffx' ℰ.∘' ff'⁻¹ ftx')          ℱ.≡[]⟨ F'.F-∘' ⟩
-          F'.₁' (ff'⁻¹ ffx') ℱ.∘' F'.₁' (ff'⁻¹ ftx')  ℱ.≡[]⟨ ff'.ε[] _ ℱ.⟩∘'⟨ ff'.ε[] _ ⟩
+          F'.₁' (ff'⁻¹ ffx') ℱ.∘' F'.₁' (ff'⁻¹ ftx')  ℱ.≡[]⟨ ε[] _ ℱ.⟩∘'⟨ ε[] _ ⟩
           ffx' ℱ.∘' ftx'                              ℱ.≡[]⟨ f*x'-iso.invr' ⟩
           ℱ.id'                                       ℱ.≡[]˘⟨ F'.F-id' ⟩
           F'.₁' ℰ.id'                                 ℱ.∎[]
         ; invr' = ff[]→faithful[] F' ff' $ ℱ.begin[]
           F'.₁' (ff'⁻¹ ftx' ℰ.∘' ff'⁻¹ ffx')          ℱ.≡[]⟨ F'.F-∘' ⟩
-          F'.₁' (ff'⁻¹ ftx') ℱ.∘' F'.₁' (ff'⁻¹ ffx')  ℱ.≡[]⟨ ff'.ε[] _ ℱ.⟩∘'⟨ ff'.ε[] _ ⟩
+          F'.₁' (ff'⁻¹ ftx') ℱ.∘' F'.₁' (ff'⁻¹ ffx')  ℱ.≡[]⟨ ε[] _ ℱ.⟩∘'⟨ ε[] _ ⟩
           ftx' ℱ.∘' ffx'                              ℱ.≡[]⟨ f*x'-iso.invl' ⟩
           ℱ.id'                                       ℱ.≡[]˘⟨ F'.F-id' ⟩
           F'.₁' ℰ.id' ℱ.∎[]
@@ -408,25 +417,28 @@ are all given by straightforward (if tedious) adaptions of those for
     counit'-iso x' = record { f*x'-iso } where
       open Σ (eso' x') renaming (fst to f*x' ; snd to f*x'-iso)
       module f*x'-iso = ℱ._≅[_]_ f*x'-iso
-
-  open ff[]+split-eso[]is-equivalence[]
 ```
 </details>
 
-<!--
-```agda
-  ff[_]+split-eso[_]→inverse] = F'⁻¹
-  ff[_]+split-eso[_]→unit' = F'⊣F'⁻¹.unit'
-  ff[_]+split-eso[_]→counit' = F'⊣F'⁻¹.counit'
-  ff[_]+split-eso[_]→F'⊣inverse' = F'⊣F'⁻¹
-  ff[_]+split-eso[_]→unit'-iso = unit'-iso
-  ff[_]+split-eso[_]→counit'-iso = counit'-iso
-```
--->
+To summarise, from the data of `ff'`{.Agda}, and `eso'`{.Agda} we are
+able to construct the following
 
 ```agda
-  ff[_]+split-eso[_]→is-equivalence[] : is-equivalence[ F-is-equiv ] F'
-  ff[_]+split-eso[_]→is-equivalence[] = record { ff[]+split-eso[]is-equivalence[] }
+  open ff[ff]+split-eso[]→is-equivalence[]
+
+  ff[ff]+split-eso[]→inverse = F'⁻¹
+  ff[ff]+split-eso[]→unit' = F'⊣F'⁻¹.unit'
+  ff[ff]+split-eso[]→counit' = F'⊣F'⁻¹.counit'
+  ff[ff]+split-eso[]→F'⊣inverse' = F'⊣F'⁻¹
+  ff[ff]+split-eso[]→unit'-iso = unit'-iso
+  ff[ff]+split-eso[]→counit'-iso = counit'-iso
+```
+
+and thus a displayed equivalence of categories:
+
+```agda
+  ff[ff]+split-eso[]→is-equivalence[] : is-equivalence[ F-is-equiv ] F'
+  ff[ff]+split-eso[]→is-equivalence[] = record { ff[ff]+split-eso[]→is-equivalence[] }
 ```
 
 ## Isomorphism
@@ -436,93 +448,98 @@ property than being an equivalence of displayed categories is being an
 **isomomorphism of displayed categories**:
 
 ```agda
-module _
+record is-precat-iso[_]
+```
+
+<!--
+```agda
   {oa ℓa ob ℓb oe ℓe of ℓf}
   {A : Precategory oa ℓa} {B : Precategory ob ℓb}
   {ℰ : Displayed A oe ℓe} {ℱ : Displayed B of ℓf}
-  {F : Functor A B} (F-iso : is-precat-iso F) (F' : Displayed-functor F ℰ ℱ)
-  where
+  {F : Functor A B}
+```
+-->
+
+```agda
+  (F-iso : is-precat-iso F) (F' : Displayed-functor F ℰ ℱ)
+  : Type (adj-level' ℰ ℱ) where
+  no-eta-equality
+  constructor iso[]
 ```
 
 <!--
 ```agda
   private
-    module ℰ where
-      open Dr ℰ public
+    module ℰ = Dr ℰ
     module F = Functor F
     module F' = Displayed-functor F'
 ```
 -->
 
 ```agda
-  record is-precat-iso[_] : Type (adj-level' ℰ ℱ) where
-      no-eta-equality
-      constructor iso[]
-      field
-        has-is-ff' : is-ff[] F'
-        has-is-iso' : ∀ x → is-equiv {A = ℰ.Ob[ x ]} F'.₀'
+  field
+    has-is-ff' : is-ff[] F'
+    has-is-iso' : ∀ x → is-equiv {A = ℰ.Ob[ x ]} F'.₀'
 ```
 
-Such a displayed functor is split surjective by `has-is-iso'`{.Agda} by
-the same token as for ordinary functors
+Apart from being fully faithfully displayed, such a functor is split
+surjective on objects by `has-is-iso'`{.Agda} and therefore essentially
+surjective:
+
+```agda
+module _
+```
 
 <!--
 ```agda
-module _
   {oa ℓa ob ℓb oe ℓe of ℓf}
   {A : Precategory oa ℓa} {B : Precategory ob ℓb}
   {ℰ : Displayed A oe ℓe} {ℱ : Displayed B of ℓf}
   {F : Functor A B} {F' : Displayed-functor F ℰ ℱ}
-  where
-
-  private
-    module A where
-      open Cr A public
-      open _≅_ public
-    module B where
-      open Cr B public
-      open _≅_ public
-    module ℰ where
-      open Dr ℰ public
-      open Dm ℰ public
-    module ℱ where
-      open Dr ℱ public
-      open Dm ℱ public
-    module F = Functor F
-    module F' = Displayed-functor F'
 ```
 -->
 
-TODO: More prose here
+```agda
+  (F-iso : is-precat-iso F) (F'-iso : is-precat-iso[ F-iso ] F') where
+```
+
+<!--
+```agda
+  private
+    module A = Cr A
+    module B = Cr B
+    module ℰ = Dr ℰ
+    module ℱ = Dr ℱ
+    module F = Functor F
+    module F' = Displayed-functor F'
+
+  open is-precat-iso F-iso
+  open is-precat-iso[_] F'-iso
+  eso = is-precat-iso→is-split-eso F-iso
+  F₀≃ : A.Ob ≃ B.Ob
+  F₀≃ = (F.₀ , has-is-iso)
+  module F₀ = Equiv F₀≃
+```
+-->
 
 ```agda
-  module _ (F-iso : is-precat-iso F) (F'-iso : is-precat-iso[ F-iso ] F') where
-    open is-precat-iso F-iso
-    open is-precat-iso[_] F'-iso
+  is-precat-iso[_]→is-split-eso[] : is-split-eso[ is-precat-iso→is-split-eso F-iso ] F'
+  is-precat-iso[_]→is-split-eso[] {x} x' = (f*x' , f*x'-iso) where
+    open Σ (eso x) renaming (fst to f*x ; snd to f*x-iso)
 
-    private
-      eso = is-precat-iso→is-split-eso F-iso
-      F₀≃ : A.Ob ≃ B.Ob
-      F₀≃ = (F.₀ , has-is-iso)
-      module F₀ = Equiv F₀≃
+    f*x' = equiv→inverse (has-is-iso' (F₀.from x)) (subst ℱ.Ob[_] (sym (F₀.ε x)) x')
 
-    is-precat-iso[_]→is-split-eso[] : is-split-eso[ is-precat-iso→is-split-eso F-iso ] F'
-    is-precat-iso[_]→is-split-eso[] {x} x' = (f*x' , f*x'-iso) where
-      open Σ (eso x) renaming (fst to f*x ; snd to f*x-iso)
+    p : F'.₀' f*x' ≡ subst ℱ.Ob[_] (sym (F₀.ε x)) x'
+    p = equiv→counit (has-is-iso' f*x) (subst ℱ.Ob[_] (sym (F₀.ε x)) x')
 
-      f*x' = equiv→inverse (has-is-iso' (F₀.from x)) (subst ℱ.Ob[_] (sym (F₀.ε x)) x')
-
-      p : F'.₀' f*x' ≡ subst ℱ.Ob[_] (sym (F₀.ε x)) x'
-      p = equiv→counit (has-is-iso' f*x) (subst ℱ.Ob[_] (sym (F₀.ε x)) x')
-
-      f*x'-iso = ℱ.path[ F₀.ε x ]→iso[] (to-pathp⁻ p)
+    f*x'-iso = ℱ.path[ F₀.ε x ]→iso[] (to-pathp⁻ p)
 ```
 
 Thus, $F$ is a displayed equivalence of displayed categories.
 
 ```agda
-    is-precat-iso[_]→is-equivalence[] : is-equivalence[ is-precat-iso→is-equivalence F-iso ] F'
-    is-precat-iso[_]→is-equivalence[] =
-      ff[ has-is-ff ]+split-eso[ is-precat-iso→is-split-eso F-iso ]→is-equivalence[]
-      has-is-ff' is-precat-iso[_]→is-split-eso[]
+  is-precat-iso[_]→is-equivalence[] : is-equivalence[ is-precat-iso→is-equivalence F-iso ] F'
+  is-precat-iso[_]→is-equivalence[] =
+    ff[ff]+split-eso[]→is-equivalence[]
+    has-is-ff has-is-ff' is-precat-iso[_]→is-split-eso[]
 ```
