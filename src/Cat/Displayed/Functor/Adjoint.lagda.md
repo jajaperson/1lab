@@ -47,10 +47,10 @@ identities.
 
 <!--
 ```agda
-adj-level' 
+adj-level'
   : ∀ {oa ℓa ob ℓb oe ℓe of ℓf}
     {A : Precategory oa ℓa} {B : Precategory ob ℓb}
-    (ℰ : Displayed A oe ℓe) (ℱ : Displayed B of ℓf) 
+    (ℰ : Displayed A oe ℓe) (ℱ : Displayed B of ℓf)
   → Level
 adj-level' {oa} {ℓa} {ob} {ℓb} {oe} {ℓe} {of} {ℓf} _ _ =
   oa ⊔ ℓa ⊔ ob ⊔ ℓb ⊔ oe ⊔ ℓe ⊔ of ⊔ ℓf
@@ -99,7 +99,7 @@ module _
 
 Let $\cE$ and $\cF$ be categories displayed over some $\cB$.  We say
 that a pair of vertical [[fibred functors]] $L : \cE \to \cF$, $R : \cF
-\to cF$ are **fibred adjoint functors** if they are displayed adjoint
+\to \cF$ are **fibred adjoint functors** if they are displayed adjoint
 functors, and the unit and counit are vertical natural transformations.
 
 Unlike vertical functors and vertical natural transformations, we have to
