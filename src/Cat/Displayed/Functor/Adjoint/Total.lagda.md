@@ -1,4 +1,4 @@
-<!-- 
+<!--
 ```agda
 open import Cat.Displayed.Functor.Adjoint
 open import Cat.Displayed.Functor.Total
@@ -10,7 +10,8 @@ open import Cat.Functor.Base
 open import Cat.Reasoning renaming (_≅_ to Iso)
 open import Cat.Prelude
 
-import Cat.Displayed.Reasoning
+import Cat.Displayed.Reasoning as Dr
+import Cat.Reasoning as Cr
 
 open Displayed-functor
 open Functor
@@ -30,10 +31,10 @@ module Cat.Displayed.Functor.Adjoint.Total
   where
 ```
 
-# Total adjunction
+# Total adjunction {defines="total-adjunction"}
 
-Suppose $\cE \liesover \cA$ and $\cF \liesover \cB$ are 
-[[displayed categories|displayed category]], $L \dashv R : \cB \to \cA$ 
+Suppose $\cE \liesover \cA$ and $\cF \liesover \cB$ are
+[[displayed categories|displayed category]], $L \dashv R : \cB \to \cA$
 are [[adjoint functors]]. A [[displayed adjunction]] $L' \dashv R : \cF \to \cE$
 induces an ordinary adjunction of the corresponding [[total functors|total functor]]
 $\int L' \dashv \int R' : \int \cF \to \int \cE$.
@@ -42,25 +43,25 @@ $\int L' \dashv \int R' : \int \cF \to \int \cE$.
 ```agda
 private
   module L⊣R = _⊣_ L⊣R
-  module L'⊣R' = _⊣[_]_ L'⊣R' 
-  module A = Cat.Reasoning A
-  module B = Cat.Reasoning B
-  module ℱ = Cat.Displayed.Reasoning ℱ
-  module ℰ = Cat.Displayed.Reasoning ℰ
+  module L'⊣R' = _⊣[_]_ L'⊣R'
+  module A = Cr A
+  module B = Cr B
+  module ℱ = Dr ℱ
+  module ℰ = Dr ℰ
   ∫ℱ = ∫ ℱ
-  module ∫ℱ = Cat.Reasoning ∫ℱ
+  module ∫ℱ = Cr ∫ℱ
   ∫ℰ = ∫ ℰ
-  module ∫ℰ = Cat.Reasoning ∫ℰ
+  module ∫ℰ = Cr ∫ℰ
   ∫ℰF = Cat[ ∫ ℰ , ∫ ℰ ]
-  module ∫ℰF = Cat.Reasoning ∫ℰF
+  module ∫ℰF = Cr ∫ℰF
   ∫ℱF = Cat[ ∫ ℱ , ∫ ℱ ]
-  module ∫ℱF = Cat.Reasoning ∫ℱF
+  module ∫ℱF = Cr ∫ℱF
 ```
 -->
 
-In both the case of the unit and counit, we take the [[total natural transformation]]
-and compose with the natural isomorphisms `∫ᶠ∘`{.Agda} and `∫ᶠId'≅Id` to
-adjust the domain and codomain.
+In both the case of the unit and counit, we take the [[total natural
+transformation]] and compose with the natural isomorphisms `∫ᶠ∘`{.Agda}
+and `∫ᶠId'≅Id`{.Agda} to adjust the domain and codomain.
 
 ```agda
 ∫⊣ : (∫ᶠ L') ⊣ (∫ᶠ R')
@@ -69,28 +70,28 @@ adjust the domain and codomain.
 ```
 
 The zig-zag identities follow from their displayed counterparts after
-taking care of the extra identity morphisms due to `∫ᶠ∘`{.Agda} and 
+taking care of the extra identity morphisms due to `∫ᶠ∘`{.Agda} and
 `∫ᶠId'≅Id`{.Agda}.
 
 ```agda
-∫⊣ .zig {(x , x')} = ∫Hom-path ℱ 
+∫⊣ .zig {(x , x')} = ∫Hom-path ℱ
   ( (B.id B.∘ L⊣R.ε (₀ L x) B.∘ B.id) B.∘ ₁ L (A.id A.∘ L⊣R.η x A.∘ A.id) ≡⟨ ap (B._∘ ₁ L (A.id A.∘ L⊣R.η x A.∘ A.id)) (B.idlr (L⊣R.ε (₀ L x))) ⟩
     L⊣R .ε (₀ L x) B.∘ ₁ L (A.id A.∘ L⊣R.η x A.∘ A.id)                    ≡⟨ ap (λ f → L⊣R.ε (F₀ L x) B.∘ ₁ L f) (A.idlr (L⊣R.η x)) ⟩
     L⊣R .ε (₀ L x) B.∘ ₁ L (L⊣R .η x)                                     ≡⟨ L⊣R.zig ⟩
     B.id                                                                  ∎)
   $ ℱ.begin[]
-    (ℱ.id' ℱ.∘' L'⊣R'.counit'.ε' (₀' L' x') ℱ.∘' ℱ.id') 
-      ℱ.∘' ₁' L' (ℰ.id' ℰ.∘' L'⊣R'.unit'.η' x' ℰ.∘' ℰ.id')                            ℱ.≡[]⟨ apd (λ i → ℱ._∘' ₁' L' (ℰ.id' ℰ.∘' L'⊣R'.unit'.η' x' ℰ.∘' ℰ.id')) (ℱ.idlr' (L'⊣R'.counit'.ε' (₀' L' x'))) ⟩ 
+    (ℱ.id' ℱ.∘' L'⊣R'.counit'.ε' (₀' L' x') ℱ.∘' ℱ.id')
+      ℱ.∘' ₁' L' (ℰ.id' ℰ.∘' L'⊣R'.unit'.η' x' ℰ.∘' ℰ.id')                            ℱ.≡[]⟨ apd (λ i → ℱ._∘' ₁' L' (ℰ.id' ℰ.∘' L'⊣R'.unit'.η' x' ℰ.∘' ℰ.id')) (ℱ.idlr' (L'⊣R'.counit'.ε' (₀' L' x'))) ⟩
     L'⊣R'.counit'.ε' (₀' L' x') ℱ.∘' ₁' L' (ℰ.id' ℰ.∘' L'⊣R'.unit'.η' x' ℰ.∘' ℰ.id')  ℱ.≡[]⟨ apd (λ i f' → L'⊣R'.counit'.ε' (₀' L' x') ℱ.∘' ₁' L' f') (ℰ.idlr' (L'⊣R'.unit'.η' x')) ⟩
-    L'⊣R'.counit'.ε' (₀' L' x') ℱ.∘' ₁' L' (L'⊣R'.unit'.η' x')                        ℱ.≡[]⟨ L'⊣R'.zig' ⟩ 
+    L'⊣R'.counit'.ε' (₀' L' x') ℱ.∘' ₁' L' (L'⊣R'.unit'.η' x')                        ℱ.≡[]⟨ L'⊣R'.zig' ⟩
     ℱ.id'                                                                             ℱ.∎[]
-∫⊣ .zag {(x , x')} = ∫Hom-path ℰ 
+∫⊣ .zag {(x , x')} = ∫Hom-path ℰ
   ( ₁ R (B.id B.∘ L⊣R.ε x B.∘ B.id) A.∘ A.id A.∘ L⊣R.η (₀ R x) A.∘ A.id   ≡⟨ ap (₁ R (B.id B.∘ L⊣R.ε x B.∘ B.id) A.∘_) (A.idlr (L⊣R.η (₀ R x))) ⟩
     ₁ R (B.id B.∘ L⊣R.ε x B.∘ B.id) A.∘ L⊣R.η (₀ R x)                     ≡⟨ ap (λ f → ₁ R f A.∘ L⊣R.η (F₀ R x)) (B.idlr (L⊣R.ε x)) ⟩
     ₁ R (L⊣R.ε x) A.∘ L⊣R.η (₀ R x)                                       ≡⟨ L⊣R.zag ⟩
     A.id ∎)
   $ ℰ.begin[]
-    ₁' R' (ℱ.id' ℱ.∘' L'⊣R'.counit'.ε' x' ℱ.∘' ℱ.id') 
+    ₁' R' (ℱ.id' ℱ.∘' L'⊣R'.counit'.ε' x' ℱ.∘' ℱ.id')
       ℰ.∘' ℰ.id' ℰ.∘' L'⊣R'.unit'.η' (₀' R' x') ℰ.∘' ℰ.id'                            ℰ.≡[]⟨ apd (λ i → ₁' R' (ℱ.id' ℱ.∘' L'⊣R'.counit'.ε' x' ℱ.∘' ℱ.id') ℰ.∘'_) (ℰ.idlr' (L'⊣R'.unit'.η' (₀' R' x'))) ⟩
     ₁' R' (ℱ.id' ℱ.∘' L'⊣R'.counit'.ε' x' ℱ.∘' ℱ.id') ℰ.∘' L'⊣R'.unit'.η' (₀' R' x')  ℰ.≡[]⟨ apd (λ i f → ₁' R' f ℰ.∘' L'⊣R'.unit'.η' (₀' R' x')) (ℱ.idlr' (L'⊣R'.counit'.ε' x')) ⟩
     ₁' R' (L'⊣R'.counit'.ε' x') ℰ.∘' L'⊣R'.unit'.η' (₀' R' x')                        ℰ.≡[]⟨ L'⊣R'.zag' ⟩
