@@ -198,57 +198,12 @@ module _
 ```
 -->
 
-Since $F$ is fully faithfully displayed, we can pull back any displayed
-morphism $f'$ over $f$ in $\cF$ to a unique displayed morphism in
-$F'^{-1} f'$ in $\cE$ such  that $F F'^{-1} f'$. However, we must take
-care to transport so that the base of $F'^{-1} f'$ agrees with $F^{-1} f$
+We can use the inverse action `ff'⁻¹`{.Agda} together with essential
+surjectivity to define `F'⁻¹`{.Agda}:
 
 ```agda
-    ff'⁻¹
-      : ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]}
-      → ℱ.Hom[ f ] (F'.₀' x') (F'.₀' y')
-      → ℰ.Hom[ equiv→inverse ff f ] x' y'
-    ff'⁻¹ {f = f} f' = equiv→inverse ff' $ ℱ.hom[ sym (ff.ε f) ] f'
-```
+    open ff[ff] F' ff ff'
 
-On account of this transport, we need displayed variants of the usual
-`η` and `ε` equalities for the equivalence given by `ff'`{.Agda}.
-
-```agda
-    ε[]
-      : ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]}
-        (f' : ℱ.Hom[ f ] (F'.₀' x') (F'.₀' y'))
-      → F'.₁' (ff'⁻¹ f') ℱ.≡[ ff.ε f ] f'
-
-    η[]
-      : ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]} (f' : ℰ.Hom[ f ] x' y')
-      → ff'⁻¹ (F'.₁' f') ℰ.≡[ ff.η f ] f'
-```
-
-<details>
-<summary>The derivations of these equalities are a little hairy.</summary>
-```agda
-    ε[] {f = f} f' = ℱ.begin[]
-      F'.₁' (equiv→inverse ff' (ℱ.hom[ sym (ff.ε f) ] f'))  ℱ.≡[]⟨ ε (ℱ.hom[ sym (ff.ε f) ] f') ⟩
-      ℱ.hom[ sym (ff.ε f) ] f'                              ℱ.≡[]˘⟨ ℱ.coh[ sym (ff.ε f) ] f' ⟩
-      f'                                                    ℱ.∎[]
-      where
-        open Equiv (F'.₁' , ff') using (ε)
-
-    η[] {f = f} f' = ℰ.begin[]
-      equiv→inverse (ff' {f = ff .is-eqv (F.₁ f) .centre .fst}) (ℱ.hom[ sym (ff.ε (F.₁ f)) ] (F'.₁' f'))  ℰ.≡[]⟨ apd (λ _ → equiv→inverse ff') (ℱ.coh[ ap (F.₁) (ff.η f) ] (ℱ.hom[ sym (ff.ε (F.₁ f)) ] (F'.₁' f'))) ⟩
-      equiv→inverse (ff' {f = f}) (ℱ.hom[ ap (F.₁) (ff.η f) ] (ℱ.hom[ sym (ff.ε (F.₁ f)) ] (F'.₁' f')))   ℰ.≡[]⟨ apd (λ _ → equiv→inverse (ff' {f = f})) (ℱ.hom[]-∙ (sym (ff.ε (F.₁ f))) (ap (F.₁) (ff.η f))) ⟩
-      equiv→inverse (ff' {f = f}) (ℱ.hom[ sym (ff.ε (F.₁ f)) ∙ ap (F.₁) (ff.η f) ] (F'.₁' f'))            ℰ.≡[]˘⟨ apd (λ _ → equiv→inverse (ff' {f = f})) (ℱ.cast[] $ ℱ.coh[ sym (ff.ε (F.₁ f)) ∙ ap (F.₁) (ff.η f) ]  (F'.₁' f')) ⟩
-      equiv→inverse (ff' {f = f}) (F'.₁' f')                                                              ℰ.≡[]⟨ η f' ⟩
-      f'                                                                                                  ℰ.∎[]
-      where
-        open Equiv (F'.₁' , ff') using (η)
-```
-</details>
-
-We can use this together with essential surjectivity to define `F'⁻¹`{.Agda}
-
-```agda
     F'⁻¹ : Displayed-functor F⁻¹ ℱ ℰ
     F'⁻¹ .F₀' b' = eso' b' .fst
 
@@ -441,7 +396,7 @@ and thus a displayed equivalence of categories:
   ff[ff]+split-eso[]→is-equivalence[] = record { ff[ff]+split-eso[]→is-equivalence[] }
 ```
 
-## Isomorphism
+## Isomorphism {defines="isomorphism-of-displayed-precategories"}
 
 When the base functor is an [[isomorphism of precategories]], a stronger
 property than being an equivalence of displayed categories is being an
@@ -465,6 +420,8 @@ record is-precat-iso[_]
   : Type (adj-level' ℰ ℱ) where
   no-eta-equality
   constructor iso[]
+
+  open is-precat-iso F-iso public
 ```
 
 <!--
@@ -513,7 +470,6 @@ module _
     module F = Functor F
     module F' = Displayed-functor F'
 
-  open is-precat-iso F-iso
   open is-precat-iso[_] F'-iso
   eso = is-precat-iso→is-split-eso F-iso
   F₀≃ : A.Ob ≃ B.Ob
