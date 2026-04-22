@@ -122,7 +122,7 @@ module Monᵒᵖ→Comon = Displayed-functor Monᵒᵖ→Comon
 -->
 
 Finally we show that `Monᵒᵖ→Comon`{.Agda} is an [[isomorphism of
-displayed precategories]]:
+displayed precategories]].
 
 ```agda
 open is-precat-iso[_]
@@ -136,3 +136,6 @@ Monᵒᵖ→Comon-is-iso[] .has-is-ff' = biimp-is-equiv
     ; pres-μ = fᶜ .is-comonoid-hom.pres-Δ ∙ (C.-⊗-.lrmap _ _ C.⟩∘⟨refl)
     }
 ```
+
+Thus we also have a [[total isomorphism of precategories]] between the
+corresponding [[total categories|total category]].

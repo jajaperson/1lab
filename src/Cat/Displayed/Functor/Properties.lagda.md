@@ -147,7 +147,8 @@ so that the base of $F'^{-1} f'$ agrees with $F^{-1} f$
   private
     module F = Functor F
     module F' = Displayed-functor F'
-    module ff {x} {y} = Equiv (F.₁ , ff {x} {y})
+    module F₁ {x} {y} = Equiv (F.₁ , ff {x} {y})
+    module F₁' {x} {y} {f} {x'} {y'} = Equiv (F'.₁' , ff' {x} {y} {f} {x'} {y'})
 ```
 -->
 
@@ -155,8 +156,8 @@ so that the base of $F'^{-1} f'$ agrees with $F^{-1} f$
   ff'⁻¹
     : ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]}
     → ℱ.Hom[ f ] (F'.₀' x') (F'.₀' y')
-    → ℰ.Hom[ equiv→inverse ff f ] x' y'
-  ff'⁻¹ {f = f} f' = equiv→inverse ff' $ ℱ.hom[ sym (ff.ε f) ] f'
+    → ℰ.Hom[ F₁.from f ] x' y'
+  ff'⁻¹ {f = f} f' = F₁'.from $ ℱ.hom[ sym (F₁.ε f) ] f'
 ```
 
 On account of this transport, we need displayed variants of the usual
@@ -166,25 +167,18 @@ On account of this transport, we need displayed variants of the usual
   ε[]
     : ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]}
       (f' : ℱ.Hom[ f ] (F'.₀' x') (F'.₀' y'))
-    → F'.₁' (ff'⁻¹ f') ℱ.≡[ ff.ε f ] f'
-  ε[] {f = f} f' = ℱ.to-pathp[]⁻ (equiv→counit ff' (ℱ.hom[ ff.ε f ]⁻ f'))
+    → F'.₁' (ff'⁻¹ f') ℱ.≡[ F₁.ε f ] f'
+  ε[] {f = f} f' = ℱ.to-pathp[]⁻ $ F₁'.ε (ℱ.hom[ F₁.ε f ]⁻ f')
 
   η[]
     : ∀ {x y f} {x' : ℰ.Ob[ x ]} {y' : ℰ.Ob[ y ]} (f' : ℰ.Hom[ f ] x' y')
-    → ff'⁻¹ (F'.₁' f') ℰ.≡[ ff.η f ] f'
+    → ff'⁻¹ (F'.₁' f') ℰ.≡[ F₁.η f ] f'
+  η[] {f = f} f' = ℰ.to-pathp[]⁻ $
+    F₁'.from (ℱ.hom[ ⌜ F₁.ε (F.₁ f) ⌝ ]⁻ (F'.₁' f'))  ≡˘⟨ ap¡ (F₁.zig f) ⟩
+    F₁'.from (ℱ.hom[ ap F.₁ (F₁.η f) ]⁻ (F'.₁' f'))   ≡˘⟨ ℰ.hom[]-is-subst _ _ ∙∙ (subst-fibrewise (λ g → F₁'.from {f = g}) (sym (F₁.η f)) (F'.₁' f')) ∙∙ sym (ap F₁'.from (ℱ.hom[]-is-subst _ _)) ⟩
+    ℰ.hom[ F₁.η f ]⁻ ⌜ F₁'.from (F'.₁' f') ⌝          ≡⟨ ap! (F₁'.η f') ⟩
+    ℰ.hom[ F₁.η f ]⁻ f'                               ∎
 ```
-
-<details>
-<summary>The derivations of `η[]`{.Agda} is a little hairy.</summary>
-```agda
-  η[] {f = f} f' = ℰ.begin[]
-    equiv→inverse (ff' {f = ff.from (F.₁ f)}) (ℱ.hom[ sym (ff.ε (F.₁ f)) ] (F'.₁' f'))                  ℰ.≡[]⟨ apd (λ _ → equiv→inverse ff') (ℱ.coh[ ap (F.₁) (ff.η f) ] (ℱ.hom[ sym (ff.ε (F.₁ f)) ] (F'.₁' f'))) ⟩
-    equiv→inverse (ff' {f = f}) (ℱ.hom[ ap (F.₁) (ff.η f) ] (ℱ.hom[ sym (ff.ε (F.₁ f)) ] (F'.₁' f')))   ℰ.≡[]⟨ apd (λ _ → equiv→inverse (ff' {f = f})) (ℱ.hom[]-∙ (sym (ff.ε (F.₁ f))) (ap (F.₁) (ff.η f))) ⟩
-    equiv→inverse (ff' {f = f}) (ℱ.hom[ sym (ff.ε (F.₁ f)) ∙ ap (F.₁) (ff.η f) ] (F'.₁' f'))            ℰ.≡[]˘⟨ apd (λ _ → equiv→inverse (ff' {f = f})) (ℱ.cast[] $ ℱ.coh[ sym (ff.ε (F.₁ f)) ∙ ap (F.₁) (ff.η f) ]  (F'.₁' f')) ⟩
-    equiv→inverse (ff' {f = f}) (F'.₁' f')                                                              ℰ.≡[]⟨ equiv→unit ff' f' ⟩
-    f'                                                                                                  ℰ.∎[]
-```
-</details>
 
 ## Essential fibres {defines="essentially-split-surjective-over"}
 
