@@ -1,22 +1,20 @@
 <!--
 ```agda
-open import Cat.Functor.Bifunctor.Duality
+open import Cat.Displayed.Functor.Equivalence
 open import Cat.Monoidal.Diagram.Comonoid
 open import Cat.Monoidal.Diagram.Monoid
 open import Cat.Functor.Equivalence
 open import Cat.Displayed.Total.Op
-open import Cat.Functor.Naturality
 open import Cat.Functor.Properties
 open import Cat.Displayed.Functor
 open import Cat.Monoidal.Opposite
-open import Cat.Displayed.Total
 open import Cat.Displayed.Base
 open import Cat.Monoidal.Base
 open import Cat.Functor.Base
 open import Cat.Duality
 open import Cat.Prelude
 
-import Cat.Reasoning
+import Cat.Reasoning as Cr
 ```
 -->
 
@@ -30,12 +28,11 @@ module Cat.Monoidal.Diagram.Monoid.Duality {o ℓ}
 ```agda
 private module C where
   open Monoidal-category Cᵐ public
-  open Cat.Reasoning C public
+  open Cr C public
 
 open Functor
 open Monoid-on
 open Comonoid-on
-open Thinly-displayed
 
 private unquoteDecl Comonoid-on-path = declare-record-path Comonoid-on-path (quote Comonoid-on)
 private unquoteDecl Monoid-on-path = declare-record-path Monoid-on-path (quote Monoid-on)
@@ -45,7 +42,7 @@ private unquoteDecl Monoid-on-path = declare-record-path Monoid-on-path (quote M
 # Duality of monoids and comonoids
 
 The duality of [monoids] and [comonoids] in a [[monoidal category]]
-$\cC$ is manifested by an [[isomorphism of precategories]]
+$\cC$ is manifested by an [[isomorphism of displayed precategories]]
 $\rm{Comon}(\cC\op) \cong \rm{Mon}(\cC\op)\op$.
 
 [monoids]: Cat.Monoidal.Diagram.Monoid.html
@@ -98,6 +95,10 @@ private
 ```
 -->
 
+Next we extend this correspondence to morphisms, giving a [[displayed
+functor]] `Monᵒᵖ→Comon`{.Agda} between `Monᵒᵖ`{.Agda} and `Comon`{.Agda}
+over the [[isomorphism of precategories]] `^op^op→`{.Agda}:
+
 ```agda
 Comon : Displayed C ℓ ℓ
 Comon = Comon[ Cᵐ ]
@@ -107,25 +108,31 @@ Monᵒᵖ = Mon[ Cᵐ ^mop ] ^total-op
 Monᵒᵖ→Comon : Displayed-functor ^op^op→ Monᵒᵖ Comon
 Monᵒᵖ→Comon = record where
   F₀' = On.Monᵒᵖ→Comon
-  F₁' fᵐ = record where
-    pres-ε = fᵐ .is-monoid-hom.pres-η
-    pres-Δ = fᵐ .is-monoid-hom.pres-μ ∙ (C.-⊗-.rlmap _ _ C.⟩∘⟨refl)
+  F₁' fᵐ = record
+    { pres-ε = fᵐ .is-monoid-hom.pres-η
+    ; pres-Δ = fᵐ .is-monoid-hom.pres-μ ∙ (C.-⊗-.rlmap _ _ C.⟩∘⟨refl) }
   F-id' = prop!
   F-∘' = prop!
 ```
 
+<!--
 ```agda
-Comon[C] : Precategory (o ⊔ ℓ) ℓ
-Comon[C] = ∫ Comon[ Cᵐ ]
+module Monᵒᵖ→Comon = Displayed-functor Monᵒᵖ→Comon
+```
+-->
 
-Mon[Cᵒᵖ]ᵒᵖ : Precategory (o ⊔ ℓ) ℓ
-Mon[Cᵒᵖ]ᵒᵖ = (∫ Mon[ Cᵐ ^mop ]) ^op
+Finally we show that `Monᵒᵖ→Comon`{.Agda} is an [[isomorphism of
+displayed precategories]]:
 
-F-Monᵒᵖ→Comon : Functor Mon[Cᵒᵖ]ᵒᵖ Comon[C]
-F-Monᵒᵖ→Comon .F₀ (x , xᵐ) = x , On.Monᵒᵖ→Comon xᵐ
-F-Monᵒᵖ→Comon .F₁ f = ∫hom (f .∫Hom.fst) record where
-   pres-ε = f .∫Hom.snd .is-monoid-hom.pres-η
-   pres-Δ = f .∫Hom.snd .is-monoid-hom.pres-μ ∙ (C.-⊗-.rlmap _ _ C.⟩∘⟨refl)
-F-Monᵒᵖ→Comon .F-id = ∫Hom-path Comon[ Cᵐ ] refl prop!
-F-Monᵒᵖ→Comon .F-∘ f g = ∫Hom-path Comon[ Cᵐ ] refl prop!
+```agda
+open is-precat-iso[_]
+Monᵒᵖ→Comon-is-iso[] : is-precat-iso[ ^op^op-is-iso ] Monᵒᵖ→Comon
+Monᵒᵖ→Comon-is-iso[] .has-is-iso' x = On.Monᵒᵖ≃Comon .snd
+Monᵒᵖ→Comon-is-iso[] .has-is-ff' = biimp-is-equiv
+  (hlevel 1) (hlevel 1)
+  (Monᵒᵖ→Comon.₁')
+  λ fᶜ → record
+    { pres-η = fᶜ .is-comonoid-hom.pres-ε
+    ; pres-μ = fᶜ .is-comonoid-hom.pres-Δ ∙ (C.-⊗-.lrmap _ _ C.⟩∘⟨refl)
+    }
 ```
