@@ -700,5 +700,17 @@ module _
           {q = extendl id-comm-sym}))
       ∙∙ sym (duplicate (ap (_ ∘_) (idl id)) _ _) ∙∙ unwhisker-r _ _)
     where open DR ℰ
+
+instance
+  Funlike-Displayed-functor
+    : ∀ {oa ℓa ob ℓb oe ℓe of ℓf}
+    →  {A : Precategory oa ℓa}
+       {B : Precategory ob ℓb}
+       {F : Functor A B}
+       {ℰ : Displayed A oe ℓe}
+       {ℱ : Displayed B of ℓf}
+       {x : ⌞ A ⌟}
+    → Funlike (Displayed-functor F ℰ ℱ) (ℰ · x) (λ x' → ℱ · (F · x))
+  Funlike-Displayed-functor = record { _·_ = λ F' x' → F' .Displayed-functor.F₀' x' }
 ```
 -->
