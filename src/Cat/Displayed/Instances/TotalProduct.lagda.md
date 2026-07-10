@@ -21,11 +21,12 @@ module Cat.Displayed.Instances.TotalProduct
 <!--
 ```agda
   {o₁ ℓ₁ o₂ ℓ₂ o₃ ℓ₃ o₄ ℓ₄}
-  (C : Precategory o₁ ℓ₁)
-  (D : Precategory o₂ ℓ₂)
+  {C : Precategory o₁ ℓ₁}
+  {D : Precategory o₂ ℓ₂}
   (EC : Displayed C o₃ ℓ₃) (ED : Displayed D o₄ ℓ₄) where
-  private module EC = Displayed EC
-  private module ED = Displayed ED
+
+private module EC = Displayed EC
+private module ED = Displayed ED
 ```
 -->
 
@@ -37,19 +38,19 @@ $\cE\times \cD\to \cB\times \cC$,
 which is again a displayed category.
 
 ```agda
-  _×ᵀᴰ_ : Displayed (C ×ᶜ D) (o₃ ⊔ o₄) (ℓ₃ ⊔ ℓ₄)
+_×ᵀᴰ_ : Displayed (C ×ᶜ D) (o₃ ⊔ o₄) (ℓ₃ ⊔ ℓ₄)
 ```
 
 If displayed categories are regarded as functors, then the product of
 displayed categories can be regarded as the usual product of functors.
 
 ```agda
-  _×ᵀᴰ_ .Displayed.Ob[_] (p₁ , p₂) =
-   EC.Ob[ p₁ ]  × ED.Ob[ p₂ ]
-  _×ᵀᴰ_ .Displayed.Hom[_] (f₁ , f₂) (c₁ , c₂) (d₁ , d₂) =
-    EC.Hom[ f₁ ] c₁ d₁ ×
-    ED.Hom[ f₂ ] c₂ d₂
-  _×ᵀᴰ_ .Displayed.id' = (EC.id' , ED.id')
+_×ᵀᴰ_ .Displayed.Ob[_] (p₁ , p₂) =
+  EC.Ob[ p₁ ]  × ED.Ob[ p₂ ]
+_×ᵀᴰ_ .Displayed.Hom[_] (f₁ , f₂) (c₁ , c₂) (d₁ , d₂) =
+  EC.Hom[ f₁ ] c₁ d₁ ×
+  ED.Hom[ f₂ ] c₂ d₂
+_×ᵀᴰ_ .Displayed.id' = (EC.id' , ED.id')
 ```
 
 We establish that the hom sets of the product fibration are actually
@@ -60,27 +61,33 @@ y_D)$) and $f : x \to y$ (so $f$ is $(f_C, f_D)$) then for any two
 morphisms $f_1,f_2$ lying over $f$, and any $p, q : f_1 = f_2$, $p=q$.
 
 ```agda
-  _×ᵀᴰ_ .Displayed.Hom[_]-set _ _ _ = hlevel 2
+_×ᵀᴰ_ .Displayed.Hom[_]-set _ _ _ = hlevel 2
 ```
 
 Composition is pairwise.
 
 ```agda
-  _×ᵀᴰ_ .Displayed._∘'_ (f₁ , f₂) (g₁ , g₂) =
-    EC._∘'_ f₁ g₁ , ED._∘'_ f₂ g₂
+_×ᵀᴰ_ .Displayed._∘'_ (f₁ , f₂) (g₁ , g₂) =
+  EC._∘'_ f₁ g₁ , ED._∘'_ f₂ g₂
 ```
 
 Associativity and left/right identity laws hold because
 they hold for the components of the ordered pairs.
 
 ```agda
-  _×ᵀᴰ_ .Displayed.idr' (f₁ , f₂) = EC.idr' f₁ ,ₚ ED.idr' f₂
-  _×ᵀᴰ_ .Displayed.idl' (f₁ , f₂) = EC.idl' f₁ ,ₚ ED.idl' f₂
-  _×ᵀᴰ_ .Displayed.assoc' (f₁ , f₂) (g₁ , g₂) (h₁ , h₂) =
-    EC.assoc' f₁ g₁ h₁ ,ₚ ED.assoc' f₂ g₂ h₂
+_×ᵀᴰ_ .Displayed.idr' (f₁ , f₂) = EC.idr' f₁ ,ₚ ED.idr' f₂
+_×ᵀᴰ_ .Displayed.idl' (f₁ , f₂) = EC.idl' f₁ ,ₚ ED.idl' f₂
+_×ᵀᴰ_ .Displayed.assoc' (f₁ , f₂) (g₁ , g₂) (h₁ , h₂) =
+  EC.assoc' f₁ g₁ h₁ ,ₚ ED.assoc' f₂ g₂ h₂
 ```
 
 ```agda
-  _×ᵀᴰ_ .Displayed.hom[_] p f = EC.hom[ ap fst p ] (f .fst) ,  ED.hom[ ap snd p ] (f .snd)
-  _×ᵀᴰ_ .Displayed.coh[_] p f = EC.coh[ ap fst p ] (f .fst) ,ₚ ED.coh[ ap snd p ] (f .snd)
+_×ᵀᴰ_ .Displayed.hom[_] p f = EC.hom[ ap fst p ] (f .fst) ,  ED.hom[ ap snd p ] (f .snd)
+_×ᵀᴰ_ .Displayed.coh[_] p f = EC.coh[ ap fst p ] (f .fst) ,ₚ ED.coh[ ap snd p ] (f .snd)
 ```
+
+<!--
+```agda
+infixr 20 _×ᵀᴰ_
+```
+-->
