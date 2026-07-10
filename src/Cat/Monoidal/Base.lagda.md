@@ -56,6 +56,15 @@ respectively.
 ```agda
   module -⊗- = Bifunctor -⊗- hiding (_◀_ ; _▶_ ; F₀)
   open Bifunctor -⊗- public using (_◀_ ; _▶_) renaming (F₀ to infixr 25 _⊗_ ; _◆_ to infix 25 _⊗₁_)
+
+  [C,C] = Cat[ C , C ]
+  module [C,C] = Cr [C,C]
+
+  [C³,C] = Cat[ C ×ᶜ C ×ᶜ C , C ]
+  module [C³,C] = Cr [C³,C]
+
+  ⊗-assocˡ = (compose-assocˡ {O = ⊤} (λ _ _ → C) -⊗-)
+  ⊗-assocʳ = (compose-assocʳ {O = ⊤} (λ _ _ → C) -⊗-)
 ```
 -->
 
@@ -76,12 +85,10 @@ $\lambda$) are the **right unitor** (resp. **left unitor**).
 
 ```agda
   field
-    unitor-l : Cr._≅_ Cat[ C , C ] Id (-⊗-.Right Unit)
-    unitor-r : Cr._≅_ Cat[ C , C ] Id (-⊗-.Left Unit)
+    unitor-l : Id [C,C].≅ (-⊗-.Right Unit)
+    unitor-r : Id [C,C].≅ (-⊗-.Left Unit)
 
-    associator : Cr._≅_ Cat[ C ×ᶜ C ×ᶜ C , C ]
-      (compose-assocˡ {O = ⊤} (λ _ _ → C) -⊗-)
-      (compose-assocʳ {O = ⊤} (λ _ _ → C) -⊗-)
+    associator : ⊗-assocˡ [C³,C].≅ ⊗-assocʳ
 ```
 
 <!--
