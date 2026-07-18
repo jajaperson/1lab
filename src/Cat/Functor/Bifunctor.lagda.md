@@ -37,14 +37,18 @@ on morphisms.
 
 For technical reasons, we instead prefer to define bifunctors with a
 [[functor category]] in their **codomain**, so that $F : \cC \to [\cD,
-\cE]$. In these terms, we can evaluate $F$ at an object $a : \cC$ to get
-a functor $F(a) : \cC \to \cE$, and evaluating *this* at $b : \cD$ gives
-the action of $F$ on a pair of objects. The action of $F(a)$ on a
-morphism $x \to y : \cD$ behaves as a "whiskering" operator, being a map
-$F(a)(f) : F\ a\ x \to F\ a\ y$ which varies the second parameter, leaving $a$
-fixed. The action of $F$ on a morphism $a \to b : \cD$ is a [[natural
-transformation]] whose components, having type $F(f)(x) : F\ a\ x \to F\
-b\ x$, generate the complementary whiskering operation.
+\cE]$.[^notation] In these terms, we can evaluate $F$ at an object $a :
+\cC$ to get a functor $F(a) : \cC \to \cE$, and evaluating *this* at
+$b : \cD$ gives the action of $F$ on a pair of objects. The action of
+$F(a)$ on a morphism $x \to y : \cD$ behaves as a "whiskering" operator,
+being a map $F(a)(f) : F\ a\ x \to F\ a\ y$ which varies the second
+parameter, leaving $a$ fixed. The action of $F$ on a morphism $a \to b :
+\cD$ is a [[natural transformation]] whose components, having type
+$F(f)(x) : F\ a\ x \to F\ b\ x$, generate the complementary whiskering
+operation.
+
+[^notation]: Despite this technicality, we typically still describe such
+a functor as being $F : \cC \times \cD \to \cE$ in prose.
 
 ```agda
 Bifunctor : Precategory o h → Precategory o₁ h₁ → Precategory o₂ h₂ → Type _
@@ -233,12 +237,55 @@ and $\cC$ to $\cE$.
 
 <!--
 ```agda
+module _ (F : Bifunctor C D E) where
+  private open module F = Bifunctor F
+  open Functor
+
+  -- Defining Flip in components instead of using make-bifunctor avoids
+  -- introducing a new "Flip.Right" which is distinct from Left.
+  --
+  -- This is basically the only avoidable case of generativity.
+```
+-->
+
+```agda
+  Flip : Bifunctor D C E
+  Flip .F₀ = Left
+
+  Flip .F₁ f .η A              = A ▶ f
+  Flip .F₁ f .is-natural x y g = rlmap _ _
+
+  Flip .F-id    = ext λ _ → rmap-id
+  Flip .F-∘ f g = ext λ _ → rmap-∘ _ _
+```
+
+Finally, we can `Uncurry`{.Agda} $F$ into a functor $\cC \times \cD \to
+\cE$, using the horizontal composition defined above.
+
+```agda
+  Uncurry : Functor (C ×ᶜ D) E
+  Uncurry .F₀      = uncurry F.F₀
+  Uncurry .F₁      = uncurry _◆_
+  Uncurry .F-id    = ◆-id
+  Uncurry .F-∘ _ _ = ◆-∘
+```
+
+## Making bifunctors
+
+<!--
+```agda
 module _ {C : Precategory o h} {D : Precategory o₁ h₁} {E : Precategory o₂ h₂} where
   private
     module C = Precategory C
     module D = Precategory D
     module E = Precategory E
+```
+-->
 
+We provide a helper for defining bifunctors directly from the actions
+`lmap`{.Agda} and `rmap`{.Agda}.
+
+```agda
   record Make-bifunctor : Type (o ⊔ o₁ ⊔ o₂ ⊔ h ⊔ h₁ ⊔ h₂) where
     field
       F₀   : ⌞ C ⌟ → ⌞ D ⌟ → ⌞ E ⌟
@@ -278,38 +325,6 @@ module _ {C : Precategory o h} {D : Precategory o₁ h₁} {E : Precategory o₂
       ; F-∘  = λ f g → ext λ _ → mm.lmap-∘ _ _
       }
     where module mm = Make-bifunctor mm
-
-module _ (F : Bifunctor C D E) where
-  private open module F = Bifunctor F
-  open Functor
-
-  -- Defining Flip in components instead of using make-bifunctor avoids
-  -- introducing a new "Flip.Right" which is distinct from Left.
-  --
-  -- This is basically the only avoidable case of generativity.
-```
--->
-
-```agda
-  Flip : Bifunctor D C E
-  Flip .F₀ = Left
-
-  Flip .F₁ f .η A              = A ▶ f
-  Flip .F₁ f .is-natural x y g = rlmap _ _
-
-  Flip .F-id    = ext λ _ → rmap-id
-  Flip .F-∘ f g = ext λ _ → rmap-∘ _ _
-```
-
-Finally, we can `Uncurry`{.Agda} $F$ into a functor $\cC \times \cD \to
-\cE$, using the horizontal composition defined above.
-
-```agda
-  Uncurry : Functor (C ×ᶜ D) E
-  Uncurry .F₀      = uncurry F.F₀
-  Uncurry .F₁      = uncurry _◆_
-  Uncurry .F-id    = ◆-id
-  Uncurry .F-∘ _ _ = ◆-∘
 ```
 
 <!--
@@ -368,7 +383,13 @@ module
   biiso→isoⁿ i n1 n2 = iso→isoⁿ
     (λ x → iso→isoⁿ (i x) λ {x y} f → n2 f)
     λ {x y} f → ext (λ z → n1 f)
+```
+-->
 
+Similarly, we define a helper for defining natural transformations
+between bifunctors.
+
+```agda
   record Make-binatural : Type (o₁ ⊔ o₂ ⊔ h₁ ⊔ h₂ ⊔ h₃) where
     field
       η : (c : C.Ob) → (d : D.Ob) → E.Hom (F.F₀ c d) (G.F₀ c d)
