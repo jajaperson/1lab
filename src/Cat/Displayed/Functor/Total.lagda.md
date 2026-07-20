@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Functor.Naturality.Reflection
+open import Cat.Displayed.Instances.Functor
 open import Cat.Functor.Naturality
 open import Cat.Displayed.Functor
 open import Cat.Displayed.Total
@@ -87,8 +88,8 @@ module _
   ∫ᶠId'≅Id = trivial-isoⁿ!
 ```
 
-Similarly, the composite of two total functors is the total of the
-composite.
+Similarly, the total of the composite of two displayed functors is the
+composite of the total functors.
 
 <!--
 ```agda
@@ -148,4 +149,72 @@ $\int\eta'$ gives back $\eta$ in the following sense:
     (ηⁿ ◂ πᶠ ℰ) (πᶠ ℱ ▸ ∫ⁿ)
   ∫ⁿ-preserves-base = Nat-pathp
     (∫ᶠ-preserves-base F') (∫ᶠ-preserves-base G') λ x → refl
+```
+
+The total natural transformation of the displayed identity natural
+transformation is, of course, the identity natural transformation of
+the total functor.
+
+<!--
+```agda
+module _
+  {oa ℓa ob ℓb oe ℓe of ℓf}
+  {A : Precategory oa ℓa} {B : Precategory ob ℓb}
+  {ℰ : Displayed A oe ℓe} {ℱ : Displayed B of ℓf}
+  {F : Functor A B} {F' : Displayed-functor F ℰ ℱ}
+  where
+```
+-->
+
+```agda
+  ∫ⁿidnt'≡idnt : Path (∫ᶠ F' => ∫ᶠ F') (∫ⁿ idnt') idnt
+  ∫ⁿidnt'≡idnt = trivial!
+```
+
+Similarly, the total of the composite of two natural transformations is
+the composite of the total natural transformations.
+
+<!--
+```agda
+module _
+  {oa ℓa ob ℓb oe ℓe of ℓf}
+  {A : Precategory oa ℓa} {B : Precategory ob ℓb}
+  {ℰ : Displayed A oe ℓe} {ℱ : Displayed B of ℓf}
+  {F : Functor A B} {F' : Displayed-functor F ℰ ℱ}
+  {G : Functor A B} {G' : Displayed-functor G ℰ ℱ}
+  {H : Functor A B} {H' : Displayed-functor H ℰ ℱ}
+  where
+```
+-->
+
+```agda
+  ∫ⁿ∘
+    : ∀ {β α} (β' : G' =[ β ]=> H') (α' : F' =[ α ]=> G')
+    → ∫ⁿ (β' ∘nt' α') ≡ ∫ⁿ β' ∘nt ∫ⁿ α'
+  ∫ⁿ∘ β' α' = trivial!
+```
+
+## Functoriality
+
+<!--
+```agda
+module _
+  {oa ℓa ob ℓb oe ℓe of ℓf}
+  {A : Precategory oa ℓa} {B : Precategory ob ℓb}
+  {ℰ : Displayed A oe ℓe} {ℱ : Displayed B of ℓf}
+  where
+```
+-->
+
+We can combine the operations of taking total functors and total
+natural transformations into a _functor_ from the [[total category]] of
+the [[displayed functor category]] $[\cE , \cF]$ to the ordinary
+[[functor category]] $[\int \cE , \int \cF]$.
+
+```agda
+  ∫ᶠⁿ : Functor (∫ DisCat[ ℰ , ℱ ]) Cat[ ∫ ℰ , ∫ ℱ ]
+  ∫ᶠⁿ .F₀ (_ , F') = ∫ᶠ F'
+  ∫ᶠⁿ .F₁ (∫hom _ α') = ∫ⁿ α'
+  ∫ᶠⁿ .F-id = ∫ⁿidnt'≡idnt
+  ∫ᶠⁿ .F-∘ (∫hom _ β') (∫hom _ α') = ∫ⁿ∘ β' α'
 ```
