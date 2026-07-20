@@ -1,11 +1,16 @@
 <!--
 ```agda
+open import Cat.Functor.Naturality.Reflection
 open import Cat.Displayed.Functor.Bifunctor
+open import Cat.Displayed.Functor.Total
+open import Cat.Functor.Naturality
 open import Cat.Displayed.Functor
 open import Cat.Functor.Bifunctor
 open import Cat.Displayed.Total
 open import Cat.Displayed.Base
 open import Cat.Prelude
+
+open Functor
 ```
 -->
 
@@ -25,6 +30,8 @@ module _
   where
 
   private
+    module ℰ = Displayed ℰ
+    module ℱ = Displayed ℱ
     module F = Bifunctor F
     module F' = Displayed-bifunctor F'
 ```
@@ -41,4 +48,12 @@ module _
     lmap-∘ (∫hom f f') (∫hom g g') = ∫Hom-path 𝒢 (F.lmap-∘ f g) F'.lmap-∘'
     rmap-∘ (∫hom f f') (∫hom g g') = ∫Hom-path 𝒢 (F.rmap-∘ f g) F'.rmap-∘'
     lrmap (∫hom f f') (∫hom g g') = ∫Hom-path 𝒢 (F.lrmap f g) (F'.lrmap' f' g')
+
+  module ∫ᵇᶠ = Bifunctor ∫ᵇᶠ
+
+  ∫ᶠRight'≅Right : ∀ {x} {x' : ℰ.Ob[ x ]} → ∫ᶠ (F'.Right' x') ≅ⁿ ∫ᵇᶠ.Right (x , x')
+  ∫ᶠRight'≅Right {x} {x'} = trivial-isoⁿ!
+
+  ∫ᶠLeft'≅Left : ∀ {x} {x' : ℱ.Ob[ x ]} → ∫ᶠ (F'.Left' x') ≅ⁿ ∫ᵇᶠ.Left (x , x')
+  ∫ᶠLeft'≅Left {x} {x'} = trivial-isoⁿ!
 ```
