@@ -1,11 +1,10 @@
 <!--
 ```agda
 open import Cat.Displayed.Functor.Bifunctor
--- open import Cat.Displayed.Functor.Total
 open import Cat.Displayed.Functor
+open import Cat.Functor.Bifunctor
 open import Cat.Displayed.Total
 open import Cat.Displayed.Base
-open import Cat.Functor.Bifunctor
 open import Cat.Prelude
 ```
 -->
@@ -31,8 +30,8 @@ module _
 -->
 
 ```agda
-  ∬ᶠ : Bifunctor (∫ ℰ) (∫ ℱ) (∫ 𝒢)
-  ∬ᶠ = make-bifunctor record where
+  ∫ᵇᶠ : Bifunctor (∫ ℰ) (∫ ℱ) (∫ 𝒢)
+  ∫ᵇᶠ = make-bifunctor record where
     F₀ (a , a') (b , b') = F · a · b , F' · a' · b'
     lmap (∫hom f f') = ∫hom (F.lmap f) (F'.lmap' f')
     rmap (∫hom f f') = ∫hom (F.rmap f) (F'.rmap' f')
