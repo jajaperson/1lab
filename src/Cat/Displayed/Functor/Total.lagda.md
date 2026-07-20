@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Naturality.Reflection
 open import Cat.Functor.Naturality
 open import Cat.Displayed.Functor
 open import Cat.Displayed.Total
@@ -78,24 +79,12 @@ module _
   {oa ℓa oe ℓe}
   {A : Precategory oa ℓa} {ℰ : Displayed A oe ℓe}
   where
-  private
-    module A = Precategory A
-    module ℰ = Displayed ℰ
-    module ∫ℰ = Precategory (∫ ℰ)
 ```
 -->
 
 ```agda
   ∫ᶠId'≅Id : ∫ᶠ (Id' {ℰ = ℰ}) ≅ⁿ Id
-  ∫ᶠId'≅Id = to-natural-iso record where
-    eta x = ∫ℰ.id
-    inv x = ∫ℰ.id
-    eta∘inv x = ∫ℰ.idl ∫ℰ.id
-    inv∘eta x = ∫ℰ.idl ∫ℰ.id
-    natural x y f =
-      f ∫ℰ.∘ ∫ℰ.id  ≡⟨ ∫ℰ.idr f ⟩
-      f             ≡˘⟨ ∫ℰ.idl f ⟩
-      ∫ℰ.id ∫ℰ.∘ f  ∎
+  ∫ᶠId'≅Id = trivial-isoⁿ!
 ```
 
 Similarly, the composite of two total functors is the total of the
@@ -110,30 +99,12 @@ module _
   {F : Functor B C} {G : Functor A B}
   {F' : Displayed-functor F ℱ 𝒢} {G' : Displayed-functor G ℰ ℱ}
   where
-  private
-    module A = Precategory A
-    module ℰ = Displayed ℰ
-    module ∫ℰ = Precategory (∫ ℰ)
-    module B = Precategory B
-    module ℱ = Displayed ℱ
-    module ∫ℱ = Precategory (∫ ℱ)
-    module C = Precategory A
-    module 𝒢 = Displayed 𝒢
-    module ∫𝒢 = Precategory (∫ 𝒢)
 ```
 -->
 
 ```agda
   ∫ᶠ∘ : ∫ᶠ (F' F∘' G') ≅ⁿ ∫ᶠ F' F∘ ∫ᶠ G'
-  ∫ᶠ∘ = to-natural-iso record where
-    eta x = ∫𝒢.id
-    inv x = ∫𝒢.id
-    eta∘inv x = ∫𝒢.idl ∫𝒢.id
-    inv∘eta x = ∫𝒢.idl ∫𝒢.id
-    natural x y f =
-      ₁ (∫ᶠ F' F∘ ∫ᶠ G') f ∫𝒢.∘ ∫𝒢.id ≡⟨ ∫𝒢.idr (₁ (∫ᶠ F' F∘ ∫ᶠ G') f) ⟩
-      ₁ (∫ᶠ (F' F∘' G')) f            ≡˘⟨ ∫𝒢.idl (₁ (∫ᶠ F' F∘ ∫ᶠ G') f) ⟩
-      ∫𝒢.id ∫𝒢.∘ ₁ (∫ᶠ (F' F∘' G')) f ∎
+  ∫ᶠ∘ = trivial-isoⁿ!
 ```
 
 ## Total natural transformations {defines="total-natural-transformation"}
