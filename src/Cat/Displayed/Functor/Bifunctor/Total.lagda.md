@@ -24,8 +24,9 @@ module _
   {F : Bifunctor A B C} (F' : Displayed-bifunctor F ℰ ℱ 𝒢)
   where
 
-  module F = Bifunctor F
-  module F' = Displayed-bifunctor F'
+  private
+    module F = Bifunctor F
+    module F' = Displayed-bifunctor F'
 ```
 -->
 
