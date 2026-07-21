@@ -65,12 +65,8 @@ _^rev .triangle = C.triangle-α→
 _^rev .pentagon = C.pentagon-α→
 ```
 
-<!--
-```agda
-_ = Deloop
-```
--->
-
 Thinking of monoidal categories as one-object [[bicategories]] (via the
-`Deloop`{.Agda}ing construction), the $-^\rm{rev}$ operation corresponds to
+[delooping] construction), the $-^\rm{rev}$ operation corresponds to
 flipping the 1-cells of a bicategory, leaving the 2-cells unchanged.
+
+[delooping]: Cat.Bi.Instances.Delooping.html

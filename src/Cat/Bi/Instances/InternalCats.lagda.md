@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Instances.InternalFunctor.Compose
 open import Cat.Instances.InternalFunctor
+open import Cat.Functor.Bifunctor.Assoc
 open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
@@ -96,8 +97,8 @@ the identity internal natural isomorphism as-is.
   α : {A B C D : Internal-cat}
     → _≅ⁿ_
        {C = Internal-functors _ C D ×ᶜ Internal-functors _ B C ×ᶜ Internal-functors _ A B}
-       (compose-assocˡ (Internal-functors _) λ {A} {B} {C} → Fi∘-functor A B C)
-       (compose-assocʳ (Internal-functors _) λ {A} {B} {C} → Fi∘-functor A B C)
+       (assocˡ (Internal-functors _) λ {A} {B} {C} → Fi∘-functor A B C)
+       (assocʳ (Internal-functors _) λ {A} {B} {C} → Fi∘-functor A B C)
   α {C = C} {D = D} = to-natural-iso ni where
     open Cat.Internal.Reasoning D
     module C = Cat.Internal.Reasoning C

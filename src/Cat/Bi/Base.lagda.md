@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Bifunctor.Assoc
 open import Cat.Functor.Naturality
 open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
@@ -22,28 +23,6 @@ module Cat.Bi.Base where
 <!--
 ```agda
 open _=>_
-
-module _ {o ℓ ℓ'} {O : Type o} (H : O → O → Precategory ℓ ℓ') (C : ∀ {A B C} → Bifunctor (H B C) (H A B) (H A C)) where
-  private module C {a b c} = Bifunctor (C {a} {b} {c})
-  open Functor
-
-  compose-assocˡ : ∀ {A B C D} → Functor (H C D ×ᶜ H B C ×ᶜ H A B) (H A D)
-  compose-assocˡ .F₀ (F , G , H) = C · (C · F · G) · H
-  compose-assocˡ .F₁ (f , g , h) = (f C.◆ g) C.◆ h
-  compose-assocˡ .F-id = ap₂ C._◆_ C.◆-id refl ∙ C.◆-id
-  compose-assocˡ .F-∘ f g = ap₂ C._◆_ C.◆-∘ refl ∙ C.◆-∘
-
-  compose-assocʳ
-    : ∀ {A B C D} → Functor (H C D ×ᶜ H B C ×ᶜ H A B) (H A D)
-  compose-assocʳ .F₀ (F , G , H) = C · F · (C · G · H)
-  compose-assocʳ .F₁ (f , g , h) = f C.◆ (g C.◆ h)
-  compose-assocʳ .F-id = ap₂ C._◆_ refl C.◆-id ∙ C.◆-id
-  compose-assocʳ .F-∘ f g = ap₂ C._◆_ refl C.◆-∘ ∙ C.◆-∘
-
-  Associator-for : Type _
-  Associator-for = ∀ {A B C D} →
-    Cr._≅_ Cat[ H C D ×ᶜ H B C ×ᶜ H A B , H A D ]
-      compose-assocˡ compose-assocʳ
 
 private variable o ℓ ℓ' o₁ ℓ₁ ℓ₁' : Level
 ```
@@ -162,12 +141,7 @@ naturally isomorphic to the identity functor.
   field
     unitor-l : ∀ {A B} → Cr._≅_ Cat[ Hom A B , Hom A B ] Id (Bifunctor.Right compose id)
     unitor-r : ∀ {A B} → Cr._≅_ Cat[ Hom A B , Hom A B ] Id (Bifunctor.Left compose id)
-
-    associator
-      : ∀ {A B C D}
-      → Cr._≅_ Cat[ Hom C D ×ᶜ Hom B C ×ᶜ Hom A B , Hom A D ]
-        (compose-assocˡ Hom compose)
-        (compose-assocʳ Hom compose)
+    associator : Associator-for Hom compose
 
   module unitor-l {a b} = Cr._≅_ _ (unitor-l {a} {b})
   module unitor-r {a b} = Cr._≅_ _ (unitor-r {a} {b})

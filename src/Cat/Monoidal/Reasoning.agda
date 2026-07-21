@@ -1,3 +1,4 @@
+open import Cat.Bi.Instances.Delooping
 open import Cat.Functor.Naturality
 open import Cat.Functor.Bifunctor
 open import Cat.Monoidal.Base

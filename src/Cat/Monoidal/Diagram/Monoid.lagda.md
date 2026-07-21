@@ -5,6 +5,7 @@ open import Algebra.Monoid using (is-monoid)
 open import Cat.Displayed.Functor.Equivalence
 open import Cat.Monoidal.Instances.Cartesian
 open import Cat.Displayed.Univalence.Thin
+open import Cat.Bi.Instances.Delooping
 open import Cat.Displayed.Functor
 open import Cat.Bi.Diagram.Monad
 open import Cat.Monoidal.Functor
@@ -41,13 +42,12 @@ module _ {o ℓ} {C : Precategory o ℓ} (M : Monoidal-category C) where
 # Monoids in a monoidal category {defines="monoid-object"}
 
 Let $(\cC, \otimes, 1)$ be a [monoidal category] you want to study.
-It can be, for instance, one of the [endomorphism categories] in a
+It can be, for instance, one of the [[endomorphism categories]] in a
 [[bicategory]] that you like. A **monoid object in $\cC$**, generally
 just called a "monoid in $\cC$", is really a collection of diagrams
 in $\cC$ centered around an object $M$, the monoid itself.
 
 [monoidal category]: Cat.Monoidal.Base.html#monoidal-categories
-[endomorphism categories]: Cat.Monoidal.Base.html#endomorphism-categories
 
 In addition to the object, we also require a "unit" map $\eta : 1 \to M$
 and "multiplication" map $\mu : M \otimes M \to M$. Moreover, these maps

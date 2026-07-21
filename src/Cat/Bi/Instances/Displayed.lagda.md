@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Functor.Bifunctor.Assoc
 open import Cat.Functor.Naturality
 open import Cat.Displayed.Functor
 open import Cat.Functor.Bifunctor

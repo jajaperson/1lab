@@ -1,9 +1,9 @@
 <!--
 ```agda
+open import Cat.Functor.Bifunctor.Assoc
 open import Cat.Functor.Bifunctor
 open import Cat.Instances.Functor
 open import Cat.Instances.Product
-open import Cat.Bi.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning as Fr
@@ -63,8 +63,8 @@ respectively.
   [C³,C] = Cat[ C ×ᶜ C ×ᶜ C , C ]
   module [C³,C] = Cr [C³,C]
 
-  ⊗-assocˡ = (compose-assocˡ {O = ⊤} (λ _ _ → C) -⊗-)
-  ⊗-assocʳ = (compose-assocʳ {O = ⊤} (λ _ _ → C) -⊗-)
+  ⊗-assocˡ = assocˡ {O = ⊤} (λ _ _ → C) -⊗-
+  ⊗-assocʳ = assocʳ {O = ⊤} (λ _ _ → C) -⊗-
 ```
 -->
 
@@ -87,7 +87,6 @@ $\lambda$) are the **right unitor** (resp. **left unitor**).
   field
     unitor-l : Id [C,C].≅ (-⊗-.Right Unit)
     unitor-r : Id [C,C].≅ (-⊗-.Left Unit)
-
     associator : ⊗-assocˡ [C³,C].≅ ⊗-assocʳ
 ```
 
@@ -170,72 +169,6 @@ children's drawing of a house, so that it fits on the page horizontally.
     (sym (assoc _ _ _) ∙ pentagon)
 ```
 -->
-
-## Deloopings
-
-Just as a monoid can be [promoted] to a 1-object category, with the
-underlying set of the monoid becoming the single $\hom$-set, we can
-deloop a monoidal category into a [[bicategory]] with a single object,
-where the sole $\hom$-_category_ is given by the monoidal category.
-
-[promoted]: Cat.Instances.Delooping.html
-
-```agda
-Deloop
-  : ∀ {o ℓ} {C : Precategory o ℓ} → Monoidal-category C → Prebicategory lzero o ℓ
-Deloop {C = C} mon = bi where
-  open Prebicategory
-  module M = Monoidal-category mon
-  bi : Prebicategory _ _ _
-  bi .Ob = ⊤
-  bi .Hom _ _ = C
-  bi .id = M.Unit
-  bi .compose = M.-⊗-
-  bi .unitor-l = M.unitor-l
-  bi .unitor-r = M.unitor-r
-  bi .associator = M.associator
-  bi .triangle _ _ = M.triangle
-  bi .pentagon _ _ _ _ = M.pentagon
-```
-
-This makes the idea that a monoidal category is "just" the categorified
-version of a monoid precisely, and it's generally called the _delooping
-hypothesis_: A monoidal $n$-category is the same as an $(n+1)$-category
-with a single object.
-
-## Endomorphism categories
-
-In the same way that, if you have a category $\cC$, making a choice
-of object $a : \cC$ canonically gives you a monoid
-$\rm{Endo}_\cC(a)$ of _endomorphisms_ $a \to a$, having a bicategory
-$\bicat{B}$ and choosing an object $a : \bicat{B}$ canonically gives you
-a choice of _monoidal category_, $\rm{Endo}_\bicat{B}(a)$.
-
-```agda
-Endomorphisms
-  : ∀ {o ℓ ℓ'} (B : Prebicategory o ℓ ℓ')
-  → (a : Prebicategory.Ob B)
-  → Monoidal-category (Prebicategory.Hom B a a)
-Endomorphisms B a = mon where
-  open Monoidal-category
-  module B = Prebicategory B
-  mon : Monoidal-category (B.Hom a a)
-  mon .-⊗- = B.compose
-  mon .Unit = B.id
-  mon .unitor-l = B.unitor-l
-  mon .unitor-r = B.unitor-r
-  mon .associator = to-natural-iso $ ni where
-    open make-natural-iso
-    open Cr
-    ni : make-natural-iso _ _
-    ni .eta _ = B.α→ _
-    ni .inv _ = B.α← _
-    ni .eta∘inv _ = Cr.invl _ B.associator ηₚ _
-    ni .inv∘eta _ = Cr.invr _ B.associator ηₚ _
-    ni .natural x y f = sym $ Cr.to B.associator .is-natural _ _ _
-  mon .triangle = B.triangle _ _
-  mon .pentagon = B.pentagon _ _ _ _
-```
 
 ## Properties
 

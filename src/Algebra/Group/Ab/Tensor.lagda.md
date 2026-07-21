@@ -7,6 +7,7 @@ open import Algebra.Group.Ab
 open import Algebra.Group
 
 open import Cat.Displayed.Univalence.Thin
+open import Cat.Functor.Bifunctor.Assoc
 open import Cat.Functor.Adjoint.Hom
 open import Cat.Functor.Naturality
 open import Cat.Functor.Bifunctor

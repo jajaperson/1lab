@@ -3,6 +3,7 @@
 open import Cat.Displayed.Instances.Factorisations
 open import Cat.Morphism.Factorisation.Algebraic
 open import Cat.Instances.Shape.Interval
+open import Cat.Functor.Bifunctor.Assoc
 open import Cat.Monoidal.Diagram.Monoid
 open import Cat.Functor.Naturality
 open import Cat.Displayed.Section
@@ -169,7 +170,7 @@ around.
 private
   assc : Associator-for {O = ⊤} (λ _ _ → Ff) Ff-tensor-functor
   assc = to-natural-iso mk where
-    mk : make-natural-iso (compose-assocˡ (λ _ _ → Ff) Ff-tensor-functor) _
+    mk : make-natural-iso (assocˡ (λ _ _ → Ff) Ff-tensor-functor) _
     mk .eta X .map x = record
       { map = id
       ; sq₀ = elimr refl ∙∙ pullr refl ∙∙ introl refl

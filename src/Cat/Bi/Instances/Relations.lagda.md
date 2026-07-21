@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Diagram.Pullback.Properties
+open import Cat.Functor.Bifunctor.Assoc
 open import Cat.Morphism.Factorisation
 open import Cat.Morphism.Strong.Epi
 open import Cat.Functor.Bifunctor
@@ -571,8 +572,8 @@ Rel[_] .unitor-r = to-natural-iso mk where
   mk .natural x y f = hlevel 1 _ _
 Rel[_] .associator {a} {b} {c} {d} = to-natural-iso mk where
   mk : make-natural-iso
-    (compose-assocˡ (λ a b → Sub (a ⊗₀ b)) ∘-rel-fun)
-    (compose-assocʳ (λ a b → Sub (a ⊗₀ b)) ∘-rel-fun {A = a} {b} {c} {d})
+    (assocˡ (λ a b → Sub (a ⊗₀ b)) ∘-rel-fun)
+    (assocʳ (λ a b → Sub (a ⊗₀ b)) ∘-rel-fun {A = a} {b} {c} {d})
   mk .eta (x , y , z) = ∘-rel-assoc x y z .Sub.from
   mk .inv (x , y , z) = ∘-rel-assoc x y z .Sub.to
   mk .eta∘inv (x , y , z) = Sub.invr (∘-rel-assoc x y z)
