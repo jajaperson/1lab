@@ -20,7 +20,7 @@ module _ {o ℓ} (C : Precategory o ℓ) where
 
 # Products
 
-:::{.definition #product}
+:::{.definition #product alias="product-diagram"}
 The **product** $P$ of two objects $A$ and $B$, if it exists, is the
 smallest object equipped with "projection" maps $P \to A$ and $P \to B$.
 This situation can be visualised by putting the data of a product into a
