@@ -1,5 +1,8 @@
 <!--
 ```agda
+open import Cat.Functor.Naturality
+open import Cat.Displayed.Functor.Bifunctor.Total
+open import Cat.Displayed.Functor.Total
 open import Cat.Displayed.Instances.TotalProduct
 open import Cat.Displayed.Functor.Bifunctor
 open import Cat.Displayed.Instances.Functor
@@ -10,6 +13,10 @@ open import Cat.Prelude
 
 import Cat.Functor.Bifunctor.Assoc as Assoc
 import Cat.Displayed.Morphism as Dm
+
+--remove me
+open import Cat.Displayed.Total
+open import Cat.Instances.Product
 
 open Displayed-functor
 open Displayed
@@ -33,10 +40,10 @@ module Cat.Displayed.Functor.Bifunctor.Assoc
 
 <!--
 ```agda
-open Assoc H F
-
 private
-  module F {A B C} = Bifunctor (F {A} {B} {C})
+  module F where
+    module _ {A B C} where open Bifunctor (F {A} {B} {C}) public
+    open Assoc H F public
   module F' {A B C} {A' : O[ A ]} {B' : O[ B ]} {C' : O[ C ]} =
     Displayed-bifunctor (F' {A' = A'} {B'} {C'})
   module H' {A B} {A' : O[ A ]} {B' : O[ B ]} = Displayed (H' A' B')
@@ -69,7 +76,7 @@ module _
 -->
 
 ```agda
-  assocˡ' : Displayed-functor assocˡ (H' C' D' ×ᵀᴰ H' B' C' ×ᵀᴰ H' A' B') (H' A' D')
+  assocˡ' : Displayed-functor F.assocˡ (H' C' D' ×ᵀᴰ H' B' C' ×ᵀᴰ H' A' B') (H' A' D')
   assocˡ' .F₀' (x' , y' , z') = F' · (F' · x' · y') · z'
   assocˡ' .F₁' (f' , g' , h') = (f' F'.◆' g') F'.◆' h'
   assocˡ' .F-id' {x} {x'} = H'.begin[]
@@ -81,7 +88,7 @@ module _
     ((f₁' F'.◆' f₂') B'D'.∘' (g₁' F'.◆' g₂')) F'.◆' (f₃' A'B'.∘' g₃')   H'.≡[]⟨ F'.◆-∘' ⟩
     ((f₁' F'.◆' f₂') F'.◆' f₃') A'D'.∘' ((g₁' F'.◆' g₂') F'.◆' g₃')     H'.∎[]
 
-  assocʳ' : Displayed-functor assocʳ (H' C' D' ×ᵀᴰ H' B' C' ×ᵀᴰ H' A' B') (H' A' D')
+  assocʳ' : Displayed-functor F.assocʳ (H' C' D' ×ᵀᴰ H' B' C' ×ᵀᴰ H' A' B') (H' A' D')
   assocʳ' .F₀' (x' , y' , z') = F' · x' · (F' · y' · z')
   assocʳ' .F₁' (f' , g' , h') = f' F'.◆' (g' F'.◆' h')
   assocʳ' .F-id' {x} {x'} = H'.begin[]
@@ -94,12 +101,19 @@ module _
     (f₁' F'.◆' (f₂' F'.◆' f₃')) A'D'.∘' (g₁' F'.◆' (g₂' F'.◆' g₃'))     H'.∎[]
 ```
 
+The [[total functor]] of `assocˡ'`{.Agda} is isomorphic to `assocˡ‵{.Agda}
+of the [[total bifunctor]].
+
+```agda
+  -- ∫ᶠassocˡ'≅assocˡ : ∫ᶠ assocˡ' ≅ⁿ {! F.assocˡ !}
+```
+
 A witness of associativity of the displayed bifunctor is a natural
 transformation displayed over the `Associator-for`{.Agda} the underlying
 bifunctor.
 
 ```agda
-Associator-for[_] : Associator-for → Type _
+Associator-for[_] : F.Associator-for → Type _
 Associator-for[ α ] = ∀ {A B C D}
   → {A' : O[ A ]} {B' : O[ B ]} {C' : O[ C ]} {D' : O[ D ]}
   → let open Dm DisCat[ H' C' D' ×ᵀᴰ H' B' C' ×ᵀᴰ H' A' B' , H' A' D' ]
