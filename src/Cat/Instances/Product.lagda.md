@@ -100,7 +100,7 @@ Snd .F-id = refl
 Snd .F-∘ _ _ = refl
 
 Cat⟨_,_⟩ : Functor E C → Functor E D → Functor E (C ×ᶜ D)
-Cat⟨ F , G ⟩ = f where
+Cat⟨ F , G ⟩ = f module Cat⟨,⟩ where
   f : Functor _ _
   f .F₀ x = F .F₀ x , G .F₀ x
   f .F₁ f = F .F₁ f , G .F₁ f
@@ -111,14 +111,12 @@ Swap : Functor (C ×ᶜ D) (D ×ᶜ C)
 Swap = Cat⟨ Snd , Fst ⟩
 
 _F×_ : Functor B D → Functor C E → Functor (B ×ᶜ C) (D ×ᶜ E)
-_F×_ {B = B} {D = D} {C = C} {E = E} G H = func
-  module F× where
-
-  func : Functor (B ×ᶜ C) (D ×ᶜ E)
-  func .F₀ (x , y) = G .F₀ x , H .F₀ y
-  func .F₁ (f , g) = G .F₁ f , H .F₁ g
-  func .F-id = G .F-id ,ₚ H .F-id
-  func .F-∘ (f , g) (f' , g') = G .F-∘ f f' ,ₚ H .F-∘ g g'
+G F× H = f module F× where
+  f : Functor _ _
+  f .F₀ (x , y) = G .F₀ x , H .F₀ y
+  f .F₁ (f , g) = G .F₁ f , H .F₁ g
+  f .F-id = G .F-id ,ₚ H .F-id
+  f .F-∘ (f , g) (f' , g') = G .F-∘ f f' ,ₚ H .F-∘ g g'
 
 _nt,_
   : {F G : Functor B C} {H K : Functor B D}
@@ -137,7 +135,8 @@ _nt×_ α β .is-natural (c , d) (c' , d') (f , g) = Σ-pathp
 
 <!--
 ```agda
-{-# DISPLAY F×.func F G = F F× G #-}
+{-# DISPLAY F×.f F G = F F× G #-}
+{-# DISPLAY Cat⟨,⟩.f F G = Cat⟨ F , G ⟩ #-}
 ```
 -->
 
