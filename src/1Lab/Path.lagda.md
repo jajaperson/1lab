@@ -2437,6 +2437,16 @@ J₂
   → ∀ {ya yb} p q → P ya yb p q
 J₂ P prr p q = transport (λ i → P (p i) (q i) (λ j → p (i ∧ j)) (λ j → q (i ∧ j))) prr
 
+J₃
+  : ∀ {ℓa ℓb ℓc ℓp}
+    {A : Type ℓa} {B : Type ℓb} {C : Type ℓc} {xa : A} {xb : B} {xc : C}
+  → (P : ∀ ya yb yc → xa ≡ ya → xb ≡ yb → xc ≡ yc → Type ℓp)
+  → P xa xb xc refl refl refl
+  → ∀ {ya yb yc} p q r → P ya yb yc p q r
+J₃ P prrr p q r = transport
+  (λ i → P (p i) (q i) (r i) (λ j → p ( i ∧ j)) (λ j → q ( i ∧ j)) λ j → r ( i ∧ j))
+  prrr
+
 invert-sides : ∀ {ℓ} {A : Type ℓ} {x y z : A} (p : x ≡ y) (q : x ≡ z)
              → Square q p (sym q) (sym p)
 invert-sides {x = x} p q i j = hcomp (∂ i ∨ ∂ j) λ where

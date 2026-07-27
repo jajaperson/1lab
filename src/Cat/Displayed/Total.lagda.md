@@ -347,3 +347,52 @@ module _ {o ℓ o' ℓ'} {B : Precategory o ℓ} {E : Displayed B o' ℓ'} where
   infix 1 ∫Hom-path[]_
 ```
 -->
+
+## Displayed categories are equivalent to functors
+
+```agda
+module _ {o ℓ} (B : Precategory o ℓ) where
+  private module B = Precategory B
+
+  Displayed→Functor
+    : ∀ {o' ℓ'} → Displayed B o' ℓ'
+    → Σ (Precategory (o ⊔ o') (ℓ ⊔ ℓ')) λ ∫ℰ → Functor ∫ℰ B
+  Displayed→Functor ℰ = ∫ ℰ , πᶠ ℰ
+
+  Functor→Displayed
+    : ∀ {o' ℓ'}
+    → (∫ℰ : Precategory (o') (ℓ')) → Functor ∫ℰ B
+    → Displayed B (o ⊔ o') (ℓ ⊔ ℓ')
+  Functor→Displayed ∫ℰ F = ℰ where
+    module ∫ℰ = Precategory ∫ℰ
+    open Functor F
+    open Displayed
+    ℰ : Displayed B _ _
+    ℰ .Ob[_] = fibre F₀
+    ℰ .Hom[_] f (x' , Fx'=x) (y' , Fy'=y) =
+      Σ (∫ℰ.Hom x' y') λ f' → PathP (λ i → B.Hom (Fx'=x i) (Fy'=y i)) (F₁ f') f
+    ℰ .Hom[_]-set _ _ _ = hlevel 2
+
+    ℰ .id' {x} {x' , Fx'=x} = ∫ℰ.id , J
+      (λ x Fx'=x → PathP (λ i → B.Hom (Fx'=x i) (Fx'=x i)) (F₁ ∫ℰ.id) B.id)
+      F-id Fx'=x
+
+    ℰ ._∘'_ {x = _ , Fx'=x} {_ , Fy'=y} {_ , Fz'=z} {f} {g} (f' , Ff'=f) (g' , Fg'=g) =
+      f' ∫ℰ.∘ g' , J₃
+        (λ x y z Fx'=x Fy'=y Fz'=z →
+          ∀ f g
+            → PathP (λ i → B.Hom (Fy'=y i) (Fz'=z i)) (F₁ f') f
+            → PathP (λ i → B.Hom (Fx'=x i) (Fy'=y i)) (F₁ g') g
+            → PathP (λ i → B.Hom (Fx'=x i) (Fz'=z i)) (F₁ (f' ∫ℰ.∘ g')) (f B.∘ g))
+        (λ f g Ff'=f Fg'=g → J₂
+          (λ f g Ff'=f Fg'=g → F₁ (f' ∫ℰ.∘ g') ≡ f B.∘ g)
+          (F-∘ f' g') Ff'=f Fg'=g)
+        Fx'=x Fy'=y Fz'=z f g Ff'=f Fg'=g
+
+    ℰ .idr' (f' , _) = Σ-prop-pathp! (∫ℰ.idr f')
+    ℰ .idl' (f' , _) = Σ-prop-pathp! (∫ℰ.idl f')
+    ℰ .assoc' (f' , _) (g' , _) (h' , _) = Σ-prop-pathp! (∫ℰ.assoc f' g' h')
+
+    ℰ .hom[_] p (f' , Ff'=f) = f' , Ff'=f ▷ p
+    ℰ .coh[_] p (f' , Ff'=f) = Σ-prop-pathp! refl
+```

@@ -96,6 +96,13 @@ module _ (a≡id : a ≡ id) where abstract
 
   intro-inner : f ∘ h ≡ f ∘ a ∘ h
   intro-inner {f = f} = ap (f ∘_) introl
+
+module _(a≡id : a ≡ id) (b≡id : b ≡ id) where abstract
+  elimlr : a ∘ f ∘ b ≡ f
+  elimlr {f = f} = (λ i → a≡id i ∘ f ∘ b≡id i) ∙ idlr f
+
+  introlr : f ≡ a ∘ f ∘ b
+  introlr = sym elimlr
 ```
 
 ## Reassocations
