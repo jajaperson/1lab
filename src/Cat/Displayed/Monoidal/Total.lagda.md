@@ -1,6 +1,7 @@
 <!--
 ```agda
 open import Cat.Displayed.Functor.Bifunctor.Total
+open import Cat.Displayed.Functor
 open import Cat.Displayed.Instances.TotalProduct
 open import Cat.Displayed.Instances.Functor
 open import Cat.Displayed.Functor.Total
@@ -13,8 +14,6 @@ open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Morphism.Reasoning as Dr
-
-open Monoidal-category
 ```
 -->
 
@@ -34,25 +33,23 @@ category]].
 <!--
 ```agda
 private
-  module Cᵐ = Monoidal-category Cᵐ
-  module ℳᵐ = Displayed-monoidal[_] ℳᵐ
-
-  [ℳ,ℳ] = DisCat[ ℳ , ℳ ]
-  module [ℳ,ℳ] = Dr [ℳ,ℳ]
-
-  [ℳ³,ℳ] = DisCat[ ℳ ×ᵀᴰ ℳ ×ᵀᴰ ℳ , ℳ ]
-  module [ℳ³,ℳ] = Dr [ℳ³,ℳ]
+  open Precategory C
+  open Dr ℳ
+  open module ℳᵐ = Displayed-monoidal[_] ℳᵐ
 ```
 -->
 
 ```agda
+open _=[_]=>_
 ∫ᵐ : Monoidal-category (∫ ℳ)
-∫ᵐ .-⊗- = ∫ᵇᶠ ℳᵐ.-⊗'-
-∫ᵐ .Unit = ℳᵐ.Unit , ℳᵐ.Unit'
-∫ᵐ .unitor-l = ∫ᶠRight'≅Right ℳᵐ.-⊗'-
-  ∘ni F-map-iso ∫ᶠⁿ (iso[]→total-iso [ℳ,ℳ] ℳᵐ.unitor-l')
-  ∘ni ∫ᶠId'≅Id ni⁻¹
-∫ᵐ .unitor-r = ∫ᶠLeft'≅Left ℳᵐ.-⊗'-
-  ∘ni F-map-iso ∫ᶠⁿ (iso[]→total-iso [ℳ,ℳ] ℳᵐ.unitor-r')
-  ∘ni ∫ᶠId'≅Id ni⁻¹
+∫ᵐ .Monoidal-category.-⊗- = ∫ᵇᶠ -⊗'-
+∫ᵐ .Monoidal-category.Unit = ℳᵐ.Unit , Unit'
+∫ᵐ .Monoidal-category.unitor-l = iso→isoⁿ  (λ x → iso[]→total-iso ℳ λ≅')
+  λ _ →  ∫Hom-path _ _ $ symP $ unitor-l'.to' .is-natural' _ _ _
+∫ᵐ .Monoidal-category.unitor-r = iso→isoⁿ  (λ x → iso[]→total-iso ℳ ρ≅')
+  λ _ →  ∫Hom-path _ _ $ symP $ unitor-r'.to' .is-natural' _ _ _
+∫ᵐ .Monoidal-category.associator = iso→isoⁿ (λ x → iso[]→total-iso ℳ α≅')
+  λ _ → ∫Hom-path _ _ $ symP $ associator'.to' .is-natural' _ _ _
+∫ᵐ .Monoidal-category.triangle =  ∫Hom-path _ _ triangle'
+∫ᵐ .Monoidal-category.pentagon = ∫Hom-path _ _ pentagon'
 ```

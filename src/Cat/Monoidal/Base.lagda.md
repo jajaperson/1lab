@@ -115,6 +115,8 @@ $\lambda$) are the **right unitor** (resp. **left unitor**).
   α≅ : ∀ {A B C} → (A ⊗ B) ⊗ C ≅ A ⊗ (B ⊗ C)
   α≅ = isoⁿ→iso associator _
 
+  module α≅ {A B C} = _≅_ (α≅ {A} {B} {C})
+
   module ⊗ = Fr (Uncurry -⊗-)
   module ▶ {A} = Fr (-⊗-.Right A) hiding (F₀ ; F₁)
   module ◀ {A} = Fr (-⊗-.Left A)  hiding (F₀ ; F₁)

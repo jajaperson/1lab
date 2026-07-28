@@ -113,6 +113,11 @@ isomorphisms]] over the corresponding witnesses for $\cC$.
 
   ρ≅' : ∀ {x x'} → x' ≅[ ρ≅ {x} ] x' ⊗' Unit'
   ρ≅' = isoⁿ[]→iso[] unitor-r' _
+
+  α≅' : ∀ {x y z x' y' z'} → (x' ⊗' y') ⊗' z' ≅[ α≅ {x} {y} {z} ] x' ⊗' (y' ⊗' z')
+  α≅' = isoⁿ[]→iso[] associator' _
+
+  module α≅' {x y z x' y' z'} =  _≅[_]_ (α≅' {x} {y} {z} {x'} {y'} {z'})
 ```
 -->
 
