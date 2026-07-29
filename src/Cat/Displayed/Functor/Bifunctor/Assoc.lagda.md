@@ -1,22 +1,21 @@
 <!--
 ```agda
-open import Cat.Functor.Naturality
+--remove me
 open import Cat.Displayed.Functor.Bifunctor.Total
-open import Cat.Displayed.Functor.Total
 open import Cat.Displayed.Instances.TotalProduct
 open import Cat.Displayed.Functor.Bifunctor
 open import Cat.Displayed.Instances.Functor
+open import Cat.Displayed.Functor.Total
+open import Cat.Functor.Naturality
 open import Cat.Displayed.Functor
 open import Cat.Functor.Bifunctor
+open import Cat.Instances.Product
+open import Cat.Displayed.Total
 open import Cat.Displayed.Base
 open import Cat.Prelude
 
 import Cat.Functor.Bifunctor.Assoc as Assoc
 import Cat.Displayed.Morphism as Dm
-
---remove me
-open import Cat.Displayed.Total
-open import Cat.Instances.Product
 
 open Displayed-functor
 open Displayed

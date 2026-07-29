@@ -1,14 +1,14 @@
 <!--
 ```agda
-open import 1Lab.Equiv
 open import 1Lab.Type.Sigma
+open import 1Lab.Equiv
 
-open import Cat.Functor.Equivalence
 open import Cat.Functor.Naturality.Reflection
+open import Cat.Displayed.Functor.Total
+open import Cat.Functor.Equivalence
 open import Cat.Functor.Naturality
 open import Cat.Displayed.Functor
 open import Cat.Instances.Product
-open import Cat.Displayed.Functor.Total
 open import Cat.Displayed.Total
 open import Cat.Displayed.Base
 open import Cat.Prelude
