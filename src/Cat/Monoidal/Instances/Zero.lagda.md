@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Cat.Monoidal.Functor
 open import Cat.Functor.Naturality.Reflection
 open import Cat.Functor.Naturality
 open import Cat.Monoidal.Base
@@ -12,10 +13,10 @@ open Monoidal-category
 -->
 
 ```agda
-module Cat.Monoidal.Instances.Terminal where
+module Cat.Monoidal.Instances.Zero where
 ```
 
-## Monoidal structure on the terminal category
+## Zero monoidal category
 
 There is a unique [[monoidal category]] structure on the [[terminal
 category]] `⊤Cat`{.Agda}
