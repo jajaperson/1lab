@@ -411,5 +411,30 @@ between bifunctors.
     ; is-natural = λ x y f → ext λ z → mk.is-natural-◀ f z
     }
     where module mk = Make-binatural mk
+
+  record Make-binatural-iso : Type (o₁ ⊔ o₂ ⊔ h₁ ⊔ h₂ ⊔ h₃) where
+    field
+      eta : (c : C.Ob) → (d : D.Ob) → E.Hom (F.F₀ c d) (G.F₀ c d)
+      inv : (c : C.Ob) → (d : D.Ob) → E.Hom (G.F₀ c d) (F.F₀ c d)
+      eta∘inv : (c : C.Ob) → (d : D.Ob) → eta c d E.∘ inv c d ≡ E.id
+      inv∘eta : (c : C.Ob) → (d : D.Ob) → inv c d E.∘ eta c d ≡ E.id
+      is-natural-◀
+        : ∀ {c1 c2 : C.Ob} (f : C.Hom c1 c2) (d : D.Ob)
+        → eta c2 d E.∘ (f F.◀ d) ≡ (f G.◀ d) E.∘ eta c1 d
+      is-natural-▶
+        : ∀ (c : C.Ob) {d1 d2 : D.Ob} (f : D.Hom d1 d2)
+        → eta c d2 E.∘ (c F.▶ f) ≡ (c G.▶ f) E.∘ eta c d1
+
+    private
+      α : F => G
+      α = make-binatural $ record
+        { η = eta ; is-natural-◀ = is-natural-◀ ; is-natural-▶ = is-natural-▶ }
+
+    make-binatural-iso : F ≅ⁿ G
+    make-binatural-iso = is-invertibleⁿ→isoⁿ $
+      invertible→invertibleⁿ α λ x → invertible→invertibleⁿ _ λ y →
+        Cat.make-invertible _ (inv x y) (eta∘inv x y) (inv∘eta x y)
+
+open Make-binatural-iso using (make-binatural-iso) public
 ```
 -->
