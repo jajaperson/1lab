@@ -7,6 +7,8 @@ open import Cat.Displayed.Functor.Total
 open import Cat.Displayed.Monoidal.Base
 open import Cat.Functor.Naturality
 open import Cat.Displayed.Functor
+open import Cat.Functor.Bifunctor
+open import Cat.Monoidal.Functor
 open import Cat.Displayed.Total
 open import Cat.Displayed.Base
 open import Cat.Monoidal.Base
@@ -14,6 +16,7 @@ open import Cat.Functor.Base
 open import Cat.Prelude
 
 import Cat.Displayed.Morphism.Reasoning as Dr
+import Cat.Reasoning as Cr
 
 open Monoidal-category
 open _=[_]=>_
@@ -36,9 +39,11 @@ category]].
 <!--
 ```agda
 private
-  open Precategory C
+  open Cr C
+  module C = Monoidal-category Cᵐ
   open Dr ℳ
   open module ℳᵐ = Displayed-monoidal[_] ℳᵐ
+
 ```
 -->
 
@@ -54,4 +59,26 @@ private
   λ _ → ∫Hom-path _ _ $ symP $ associator'.to' .is-natural' _ _ _
 ∫ᵐ .triangle =  ∫Hom-path _ _ triangle'
 ∫ᵐ .pentagon = ∫Hom-path _ _ pentagon'
+```
+
+The projection `πᶠ`{.Agda} of such a total category carries the
+structure of a [[monoidal functor]].
+
+```agda
+open Make-monoidal-functor
+open Make-binatural-iso
+
+πᶠᵐ : Monoidal-functor-on ∫ᵐ Cᵐ (πᶠ ℳ)
+πᶠᵐ = make-monoidal-functor-on $ λ where
+  .ε → id-iso
+  .F-mult → make-binatural-iso $ λ where
+    .eta _ _ → id
+    .inv _ _ → id
+    .eta∘inv _ _ → id2
+    .inv∘eta _ _ → id2
+    .is-natural-◀ _ _ → sym id-comm
+    .is-natural-▶ _ _ → sym id-comm
+  .F-α→ → elimr (idl _ ∙ C.◀.F-id) ∙∙ introl C.▶.F-id ∙∙ sym (idl _)
+  .F-λ← → elimr $ idl _ ∙ C.◀.F-id
+  .F-ρ← → elimr $ idl _ ∙ C.▶.F-id
 ```
