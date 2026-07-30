@@ -2,6 +2,7 @@
 ```agda
 open import Cat.Bi.Functor.Transformation
 open import Cat.Bi.Functor.Modification
+open import Cat.Functor.Bifunctor.Assoc
 open import Cat.Functor.Naturality
 open import Cat.Functor.Bifunctor
 open import Cat.Instances.Product
