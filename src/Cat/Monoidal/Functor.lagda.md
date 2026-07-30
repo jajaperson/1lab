@@ -10,7 +10,7 @@ open import Cat.Monoidal.Base
 open import Cat.Prelude
 
 import Cat.Functor.Reasoning
-import Cat.Reasoning
+import Cat.Reasoning as Cr
 ```
 -->
 
@@ -25,7 +25,7 @@ module Cat.Monoidal.Functor {oc ℓc od ℓd}
 
 <!--
 ```agda
-open Cat.Reasoning D
+open Cr D
 
 private
   module C = Monoidal-category Cᵐ
@@ -67,20 +67,20 @@ record Lax-monoidal-functor-on (F : Functor C D) : Type (oc ⊔ ℓc ⊔ od ⊔ 
 
   module φ = Binatural F-mult
 
-  φ : ∀ {A B} → Hom (F.₀ A D.⊗ F.₀ B) (F.₀ (A C.⊗ B))
-  φ = φ.η _ _
+  open φ using () renaming (η to φ) public
 
   field
     F-α→ : ∀ {A B C}
-      → F.₁ (C.α→ (A , B , C)) ∘ φ ∘ (φ D.◀ _) ≡ φ ∘ (_ D.▶ φ) ∘ D.α→ _
-    F-λ← : ∀ {A} → F.₁ (C.λ← A) ∘ φ ∘ (ε D.◀ _) ≡ D.λ← _
-    F-ρ← : ∀ {A} → F.₁ (C.ρ← A) ∘ φ ∘ (_ D.▶ ε) ≡ D.ρ← _
+      → F.₁ (C.α→ (A , B , C)) ∘ φ _ _ ∘ (φ _ _ D.◀ _) ≡
+        φ _ _ ∘ (_ D.▶ φ _ _) ∘ D.α→ _
+    F-λ← : ∀ {A} → F.₁ (C.λ← A) ∘ φ _ _ ∘ (ε D.◀ _) ≡ D.λ← _
+    F-ρ← : ∀ {A} → F.₁ (C.ρ← A) ∘ φ _ _ ∘ (_ D.▶ ε) ≡ D.ρ← _
 ```
 
 <!--
 ```agda
   F-α← : ∀ {A B C}
-    → F.₁ (C.α← (A , B , C)) ∘ φ ∘ (_ D.▶ φ) ≡ φ ∘ (φ D.◀ _) ∘ D.α← _
+    → F.₁ (C.α← (A , B , C)) ∘ φ _ _ ∘ (_ D.▶ φ _ _) ≡ φ _ _ ∘ (φ _ _ D.◀ _) ∘ D.α← _
   F-α← = swizzle (sym (F-α→ ∙ assoc _ _ _)) (D.α≅ .invl) (F.F-map-iso C.α≅ .invr)
        ∙ sym (assoc _ _ _)
 
@@ -112,14 +112,70 @@ record Monoidal-functor-on (F : Functor C D) : Type (oc ⊔ ℓc ⊔ od ⊔ ℓd
   field
     lax : Lax-monoidal-functor-on F
 
-  open Lax-monoidal-functor-on lax public
+  module lax = Lax-monoidal-functor-on lax
+  open lax using (F-α→ ; F-α← ; F-λ← ; F-ρ←) renaming (ε to ε→) public
 
   field
-    ε-inv : is-invertible ε
-    F-mult-inv : is-invertibleⁿ F-mult
+    ε-inv : is-invertible ε→
+    F-mult-inv : is-invertibleⁿ lax.F-mult
+
+  ε≅ = invertible→iso ε→ ε-inv
+
+  module ε≅ = _≅_ ε≅
+  module φ = Isoⁿ (is-invertibleⁿ→isoⁿ F-mult-inv)
+  open ε≅ using () renaming (from to ε←)
+
+  private
+    open module φ→ = Binatural φ.to using () renaming (η to φ→) public
+    open module φ← = Binatural φ.from using () renaming (η to φ←) public
 
 Monoidal-functor : Type (oc ⊔ ℓc ⊔ od ⊔ ℓd)
 Monoidal-functor = Σ (Functor C D) Monoidal-functor-on
+```
+
+We can give $F$ the structure of a monoidal functor with the following
+data
+
+```agda
+record Make-monoidal-functor {F : Functor C D} : Type (oc ⊔ ℓc ⊔ od ⊔ ℓd) where
+  private module F = Functor F
+
+  field
+    ε : D.Unit ≅ F.₀ C.Unit
+    F-mult : precompose₂ D.-⊗- F F ≅ⁿ postcompose₂ F C.-⊗-
+```
+
+<!--
+```agda
+  module φ = Isoⁿ F-mult
+
+  private
+    open module ε = _≅_ ε public using () renaming (to to ε→)
+    open module φ→ = Binatural φ.to public using () renaming (η to φ→)
+
+  field
+```
+-->
+
+```agda
+    F-α→ : ∀ {A B C}
+      → F.₁ (C.α→ (A , B , C)) ∘ φ→ _ _ ∘ (φ→ _ _ D.◀ _) ≡
+        φ→ _ _ ∘ (_ D.▶ φ→ _ _) ∘ D.α→ _
+    F-λ← : ∀ {A} → F.₁ (C.λ← A) ∘ φ→ _ _ ∘ (ε→ D.◀ _) ≡ D.λ← _
+    F-ρ← : ∀ {A} → F.₁ (C.ρ← A) ∘ φ→ _ _ ∘ (_ D.▶ ε→) ≡ D.ρ← _
+
+  make-monoidal-functor-on : Monoidal-functor-on F
+  make-monoidal-functor-on = record where
+    lax = record where
+      ε = ε→
+      F-mult = φ.to
+      F-α→ = F-α→
+      F-λ← = F-λ←
+      F-ρ← = F-ρ←
+    ε-inv = iso→invertible ε
+    F-mult-inv = Cr.iso→invertible _ F-mult
+
+open Make-monoidal-functor using (make-monoidal-functor-on) public
 ```
 
 ## Braided and symmetric monoidal functors {defines="braided-monoidal-functor symmetric-monoidal-functor"}
@@ -152,7 +208,7 @@ module _
 
 ```agda
   is-braided-functor : Lax-monoidal-functor → Type (oc ⊔ ℓd)
-  is-braided-functor (F , lax) = ∀ {A B} → φ ∘ Dᵇ.β→ ≡ F.₁ Cᵇ.β→ ∘ φ {A} {B} where
+  is-braided-functor (F , lax) = ∀ {A B} → φ _ _ ∘ Dᵇ.β→ ≡ F.₁ Cᵇ.β→ ∘ φ A B where
     module F = Functor F
     open Lax-monoidal-functor-on lax
 ```
@@ -207,7 +263,7 @@ module _
 
 ```agda
   is-diagonal-functor : Lax-monoidal-functor → Type (oc ⊔ ℓd)
-  is-diagonal-functor (F , lax) = ∀ {A} → φ ∘ Dᵈ.δ _ ≡ F.₁ (Cᵈ.δ A)
+  is-diagonal-functor (F , lax) = ∀ {A} → φ _ _ ∘ Dᵈ.δ _ ≡ F.₁ (Cᵈ.δ A)
     where
       module F = Functor F
       open Lax-monoidal-functor-on lax
@@ -266,7 +322,7 @@ module _ ((F , F-monoidal) (G , G-monoidal) : Lax-monoidal-functor) where
   record is-monoidal-transformation (α : F => G) : Type (oc ⊔ ℓc ⊔ ℓd) where
     field
       nat-ε : α .η C.Unit ∘ FM.ε ≡ GM.ε
-      nat-φ : ∀ {A B} → α .η _ ∘ FM.φ {A} {B} ≡ GM.φ ∘ (α .η _ D.⊗₁ α .η _)
+      nat-φ : ∀ {A B} → α .η _ ∘ FM.φ A B ≡ GM.φ A B ∘ (α .η _ D.⊗₁ α .η _)
 ```
 
 Note that, since monoidal categories can be thought of as one-object

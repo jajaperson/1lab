@@ -330,7 +330,7 @@ We can phrase this nicely as a [[displayed functor]] $\rm{Mon}_1(F) :
 ```agda
   Mon₁[_] : Displayed-functor F Mon[ MC ] Mon[ MD ]
   Mon₁[_] .F₀' m .η = F₁ (m .η) ∘ ε
-  Mon₁[_] .F₀' m .μ = F₁ (m .μ) ∘ φ
+  Mon₁[_] .F₀' m .μ = F₁ (m .μ) ∘ φ _ _
 ```
 
 The unit laws are witnessed by the commutativity of this diagram:
@@ -359,17 +359,17 @@ The unit laws are witnessed by the commutativity of this diagram:
 
 ```agda
   Mon₁[_] .F₀' m .μ-unitl =
-    (F₁ (m .μ) ∘ φ) ∘ ((F₁ (m .η) ∘ ε) ◀ _)    ≡⟨ pullr (refl⟩∘⟨ ◀.expand refl) ⟩
-    F₁ (m .μ) ∘ φ ∘ (F₁ (m .η) ◀ _) ∘ (ε ◀ _)  ≡⟨ refl⟩∘⟨ extendl φ.natural-◀ ⟩
-    F₁ (m .μ) ∘ F₁ (m .η C.◀ _) ∘ φ ∘ (ε ◀ _)  ≡⟨ F.pulll (m .μ-unitl) ⟩
-    F₁ (C.λ← _) ∘ φ ∘ (ε ◀ _)                  ≡⟨ F-λ← ⟩
-    λ← _                                       ∎
+    (F₁ (m .μ) ∘ φ _ _) ∘ ((F₁ (m .η) ∘ ε) ◀ _)   ≡⟨ pullr (refl⟩∘⟨ ◀.expand refl) ⟩
+    F₁ (m .μ) ∘ φ _ _ ∘ (F₁ (m .η) ◀ _) ∘ (ε ◀ _) ≡⟨ refl⟩∘⟨ extendl φ.natural-◀ ⟩
+    F₁ (m .μ) ∘ F₁ (m .η C.◀ _) ∘ φ _ _ ∘ (ε ◀ _) ≡⟨ F.pulll (m .μ-unitl) ⟩
+    F₁ (C.λ← _) ∘ φ _ _ ∘ (ε ◀ _)                 ≡⟨ F-λ← ⟩
+    λ← _                                          ∎
   Mon₁[_] .F₀' m .μ-unitr =
-    (F₁ (m .μ) ∘ φ) ∘ (_ ▶ (F₁ (m .η) ∘ ε))   ≡⟨ pullr (refl⟩∘⟨ ▶.expand refl) ⟩
-    F₁ (m .μ) ∘ φ ∘ (_ ▶ F₁ (m .η)) ∘ (_ ▶ ε) ≡⟨ refl⟩∘⟨ extendl φ.natural-▶ ⟩
-    F₁ (m .μ) ∘ F₁ (_ C.▶ m .η) ∘ φ ∘ (_ ▶ ε) ≡⟨ F.pulll (m .μ-unitr) ⟩
-    F₁ (C.ρ← _) ∘ φ ∘ (_ ▶ ε)                 ≡⟨ F-ρ← ⟩
-    ρ← _                                      ∎
+    (F₁ (m .μ) ∘ φ _ _) ∘ (_ ▶ (F₁ (m .η) ∘ ε))   ≡⟨ pullr (refl⟩∘⟨ ▶.expand refl) ⟩
+    F₁ (m .μ) ∘ φ _ _ ∘ (_ ▶ F₁ (m .η)) ∘ (_ ▶ ε) ≡⟨ refl⟩∘⟨ extendl φ.natural-▶ ⟩
+    F₁ (m .μ) ∘ F₁ (_ C.▶ m .η) ∘ φ _ _ ∘ (_ ▶ ε) ≡⟨ F.pulll (m .μ-unitr) ⟩
+    F₁ (C.ρ← _) ∘ φ _ _ ∘ (_ ▶ ε)                 ≡⟨ F-ρ← ⟩
+    ρ← _                                          ∎
 ```
 
 ... and the associativity by this one.
@@ -400,13 +400,13 @@ The unit laws are witnessed by the commutativity of this diagram:
 
 ```agda
   Mon₁[_] .F₀' m .μ-assoc =
-    (F₁ (m .μ) ∘ φ) ∘ (_ ▶ F₁ (m .μ) ∘ φ)                ≡⟨ pullr (refl⟩∘⟨ ▶.expand refl) ⟩
-    F₁ (m .μ) ∘ φ ∘ (_ ▶ F₁ (m .μ)) ∘ (_ ▶ φ)            ≡⟨ extend-inner φ.natural-▶ ⟩
-    F₁ (m .μ) ∘ F₁ (_ C.▶ μ m) ∘ φ ∘ (_ ▶ φ)             ≡⟨ F.pulll (m .μ-assoc) ⟩
-    F₁ (μ m C.∘ (μ m C.◀ _) C.∘ C.α← _) ∘ φ ∘ (_ ▶ φ)    ≡⟨ F.popr (F.popr F-α←) ⟩
-    (F.F₁ (μ m) ∘ F.F₁ (μ m C.◀ _) ∘ φ ∘ (φ ◀ _) ∘ α← _) ≡˘⟨ pullr (extendl φ.natural-◀) ⟩
-    (F.F₁ (μ m) ∘ φ) ∘ (F₁ (μ m) ◀ _) ∘ (φ ◀ _) ∘ α← _   ≡⟨ refl⟩∘⟨ ◀.pulll refl ⟩
-    (F₁ (m .μ) ∘ φ) ∘ ((F₁ (m .μ) ∘ φ) ◀ _) ∘ α← _       ∎
+    (F₁ (m .μ) ∘ φ _ _) ∘ (_ ▶ F₁ (m .μ) ∘ φ _ _)                 ≡⟨ pullr (refl⟩∘⟨ ▶.expand refl) ⟩
+    F₁ (m .μ) ∘ φ _ _ ∘ (_ ▶ F₁ (m .μ)) ∘ (_ ▶ φ _ _)             ≡⟨ extend-inner φ.natural-▶ ⟩
+    F₁ (m .μ) ∘ F₁ (_ C.▶ μ m) ∘ φ _ _ ∘ (_ ▶ φ _ _)              ≡⟨ F.pulll (m .μ-assoc) ⟩
+    F₁ (μ m C.∘ (μ m C.◀ _) C.∘ C.α← _) ∘ φ _ _ ∘ (_ ▶ φ _ _)     ≡⟨ F.popr (F.popr F-α←) ⟩
+    (F.F₁ (μ m) ∘ F.F₁ (μ m C.◀ _) ∘ φ _ _ ∘ (φ _ _ ◀ _) ∘ α← _)  ≡˘⟨ pullr (extendl φ.natural-◀) ⟩
+    (F.F₁ (μ m) ∘ φ _ _) ∘ (F₁ (μ m) ◀ _) ∘ (φ _ _ ◀ _) ∘ α← _    ≡⟨ refl⟩∘⟨ ◀.pulll refl ⟩
+    (F₁ (m .μ) ∘ φ _ _) ∘ ((F₁ (m .μ) ∘ φ _ _) ◀ _) ∘ α← _        ∎
 ```
 
 Functoriality for $\rm{Mon}_1(-)$ means that, given a monoid homomorphism
