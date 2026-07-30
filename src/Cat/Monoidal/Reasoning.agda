@@ -21,7 +21,7 @@ open Cat.Bi.Reasoning (Deloop Cᵐ)
     ( ▶-assoc ; ◀-assoc ; ◀-▶-comm
     ; module λ≅ ; λ←nat ; λ→nat
     ; module ρ≅ ; ρ←nat ; ρ→nat
-    ; module α≅ ; α←nat ; α→nat
+    ; α←nat ; α→nat
     ; α→◀
     )
   public
