@@ -311,9 +311,9 @@ diagrams commute.
 
 <!--
 ```agda
-module _ ((F , F-monoidal) (G , G-monoidal) : Lax-monoidal-functor) where
-  module FM = Lax-monoidal-functor-on F-monoidal
-  module GM = Lax-monoidal-functor-on G-monoidal
+module _ {F} {G} (Fᵐ : Lax-monoidal-functor-on F) (Gᵐ : Lax-monoidal-functor-on G) where
+  module FM = Lax-monoidal-functor-on Fᵐ
+  module GM = Lax-monoidal-functor-on Gᵐ
   open _=>_
 ```
 -->
