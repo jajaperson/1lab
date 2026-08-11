@@ -16,7 +16,7 @@ import Algebra.Ring.Reasoning as Kit
 -->
 
 ```agda
-module Algebra.Ring.Quotient {ℓ} (R : Ring ℓ) where
+module Algebra.Ring.Instances.Quotient {ℓ} (R : Ring ℓ) where
 ```
 
 <!--
