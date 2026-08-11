@@ -1,5 +1,6 @@
 <!--
 ```agda
+open import Algebra.Ring.Instances.Lift
 open import Algebra.Group.Ab
 open import Algebra.Group
 open import Algebra.Ring
@@ -29,34 +30,12 @@ theorem to formalise, so we have decided to do so in this module. For
 starters, note that the ring $\ZZ$ is an object of the category of
 "rings in the zeroth universe", whereas we would like any category of
 $\kappa$-compact rings to have its own initial object. So, the first
-thing we must do is define a lifting of $\ZZ$ to larger universes:
+thing to do is lift $\ZZ$ to the larger universe:
 
 ```agda
 Liftℤ : Ring ℓ
-Liftℤ = to-ring mr where
-  open make-ring
-  mr : make-ring (Lift ℓ Int)
-  mr .ring-is-set = hlevel 2
-  mr .1R = lift 1
-  mr .0R = lift 0
-  mr .-_  (lift x)          = lift (negℤ x)
-  mr ._+_ (lift x) (lift y) = lift (x +ℤ y)
-  mr ._*_ (lift x) (lift y) = lift (x *ℤ y)
+Liftℤ = Lift-ring ℓ ℤ
 ```
-
-<!--
-```agda
-  mr .*-idl      (lift x)                   = ap lift $ *ℤ-onel x
-  mr .*-idr      (lift x)                   = ap lift $ *ℤ-oner x
-  mr .+-idl      (lift x)                   = ap lift $ +ℤ-zerol x
-  mr .+-invr     (lift x)                   = ap lift $ +ℤ-invr x
-  mr .+-comm     (lift x) (lift y)          = ap lift $ +ℤ-commutative x y
-  mr .+-assoc    (lift x) (lift y) (lift z) = ap lift $ +ℤ-assoc x y z
-  mr .*-assoc    (lift x) (lift y) (lift z) = ap lift $ *ℤ-associative x y z
-  mr .*-distribl (lift x) (lift y) (lift z) = ap lift $ *ℤ-distribl x y z
-  mr .*-distribr (lift x) (lift y) (lift z) = ap lift $ *ℤ-distribr x y z
-```
--->
 
 With that set up out of the way, we can now proceed to the _actual_
 theorem we're interested in: For a ring $R$, there is a contractible
