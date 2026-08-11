@@ -12,7 +12,7 @@ open import Data.Nat.Base using (_≤_)
 -->
 
 ```agda
-module Algebra.Ring.Localisation where
+module Algebra.Ring.Instances.Localisation where
 ```
 
 # Localisations of commutative rings {defines="localisation-of-a-ring"}

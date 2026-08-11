@@ -4,7 +4,7 @@
 open import 1Lab.Extensionality
 open import 1Lab.Prelude
 
-open import Algebra.Ring.Localisation hiding (_/_ ; Fraction)
+open import Algebra.Ring.Instances.Localisation hiding (_/_ ; Fraction)
 open import Algebra.Ring.Commutative
 open import Algebra.Ring.Solver
 open import Algebra.Monoid
@@ -51,16 +51,16 @@ private
 ```agda
   module ℤ = CRing ℤ-comm hiding (has-is-set ; magma-hlevel)
 
-open Algebra.Ring.Localisation using (module Fraction) public
+open Algebra.Ring.Instances.Localisation using (module Fraction) public
 
 Fraction : Type
-Fraction = Algebra.Ring.Localisation.Fraction Positive
+Fraction = Algebra.Ring.Instances.Localisation.Fraction Positive
 
 open Frac ℤ-comm using (Inductive-≈)
 open Explicit ℤ-comm
 open Fraction renaming (num to ↑ ; denom to ↓) public
 open L using (_≈_) renaming (module Fr to ≈) public
-open Algebra.Ring.Localisation using (_/_[_]) public
+open Algebra.Ring.Instances.Localisation using (_/_[_]) public
 ```
 -->
 
