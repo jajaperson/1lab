@@ -64,11 +64,11 @@ Factors f g = Σ[ h ∈ Hom _ _ ] (f ≡ g ∘ h)
 ```
 -->
 
+## Epis {defines="epimorphism epic"}
+
 Conversely, a morphism is said to be **epic** when it is
 right-cancellable.  An **epimorphism** from $A$ to $B$, written $A \epi
 B$, is an epic morphism.
-
-## Epis {defines="epimorphism epic"}
 
 ```agda
 is-epic : Hom a b → Type _
