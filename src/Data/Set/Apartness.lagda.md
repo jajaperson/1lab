@@ -26,7 +26,7 @@ private variable
 
 # Apartness relations {defines="apartness-relation"}
 
-An **apartness relation** on a type $A$ is a (mere) relation $\apt$ on
+An **apartness relation** on a type $A$ is a (mere) relation $#$ on
 $A$ satisfying properties that are in some sense complementary to a
 [[congruence]]: it is _irreflexive_, _cotransitive_, and _symmetric_.
 
