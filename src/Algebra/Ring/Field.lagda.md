@@ -42,7 +42,7 @@ _apart_ from zero are invertible.
 
 We begin with the weaker notion of a **local ring**. These are
 nontrivial rings with the property that $x + y = 1$ implies $x$ is
-invertible and $y$ is invertible.
+invertible or $y$ is invertible.
 
 ```agda
 record is-local : Type ℓ where
