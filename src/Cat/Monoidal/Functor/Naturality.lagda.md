@@ -42,7 +42,10 @@ module Isoⁿᵐ
   {F} {G} {Fᵐ : Lax-monoidal-functor-on Cᵐ Dᵐ F} {Gᵐ : Lax-monoidal-functor-on Cᵐ Dᵐ G}
   (mni : Fᵐ ≅ⁿᵐ Gᵐ)
   where
+```
 
+<!--
+```agda
   private
     module F where
       open Functor F public
@@ -56,7 +59,10 @@ module Isoⁿᵐ
   module toᵐ = is-monoidal-transformation toᵐ
 
   open is-monoidal-transformation
+```
+-->
 
+```agda
   fromᵐ : is-monoidal-transformation Cᵐ Dᵐ Gᵐ Fᵐ from
   fromᵐ .nat-ε =
     from · C.Unit D.∘ G.ε                   ≡˘⟨ D.refl⟩∘⟨ toᵐ.nat-ε ⟩
