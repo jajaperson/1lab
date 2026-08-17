@@ -14,8 +14,9 @@ module Cat.Bi.Instances.Delooping where
 
 Just as a monoid can be [promoted] to a 1-object category, with the
 underlying set of the monoid becoming the single $\hom$-set, we can
-deloop a [[monoidal category]] into a [[bicategory]] with a single object,
-where the sole $\hom$-_category_ is given by the monoidal category.
+deloop a [[monoidal category]] $\cC$ into a [[bicategory]] $\fB \cC$
+with a single object, where the sole $\hom$-_category_ is given by
+$\cC$.
 
 [promoted]: Cat.Instances.Delooping.html
 
