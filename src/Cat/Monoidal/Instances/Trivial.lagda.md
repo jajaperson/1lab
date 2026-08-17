@@ -6,6 +6,7 @@ open import Cat.Functor.Naturality
 open import Cat.Functor.Bifunctor
 open import Cat.Monoidal.Functor
 open import Cat.Monoidal.Base
+open import Cat.Univalent
 open import Cat.Prelude
 
 import Cat.Reasoning as Cr
@@ -56,15 +57,17 @@ module _ {o ℓ} {C : Precategory o ℓ} {Cᵐ : Monoidal-category C} where
 
 ```agda
   !Fᵐ : Monoidal-functor-on Cᵐ ⊤ᵐ !F
-  !Fᵐ = make-monoidal-functor-on $ record
+  !Fᵐ = make-monoidal-functor-on record
     { ε = ⊤C.id-iso
-    ; F-mult = make-binatural-iso $ record
+    ; F-mult = make-binatural-iso record
       { eta = λ _ _ → tt ; inv = λ _ _ → tt
       ; eta∘inv = λ _ _ → refl ; inv∘eta = λ _ _ → refl
       ; is-natural-◀ = λ _ _ → refl ; is-natural-▶ = λ _ _ → refl
       }
     ; F-α→ = refl ; F-λ← = refl ; F-ρ← = refl
     }
+
+  !Fˡ = Monoidal-functor-on.lax !Fᵐ
 ```
 
 On the other hand, the `constant functor`{.Agda ident="!Const"} at the
@@ -72,9 +75,9 @@ unit of $\cC$ is also monoidal.
 
 ```agda
   ¡Fᵐ : Monoidal-functor-on ⊤ᵐ Cᵐ (!Const C.Unit)
-  ¡Fᵐ = make-monoidal-functor-on $ record
+  ¡Fᵐ = make-monoidal-functor-on record
     { ε = C.id-iso
-    ; F-mult =  make-binatural-iso $ record
+    ; F-mult =  make-binatural-iso record
       { eta = λ _ _ → C.λ← C.Unit
       ; inv = λ _ _ → C.λ→ C.Unit
       ; eta∘inv = λ _ _ → C.λ≅ .C.invr
@@ -90,8 +93,40 @@ unit of $\cC$ is also monoidal.
     ; F-λ← = C.idl _ ∙ C.elimr C.◀.F-id
     ; F-ρ← = C.idl _ ∙∙ C.elimr C.▶.F-id ∙∙ C.λ≡ρ
     }
+
+  ¡Fˡ = Monoidal-functor-on.lax ¡Fᵐ
 ```
 
 In fact, the trivial monoidal category is characterized by a universal
-property analogous to that of a [[zero object]]. The monoidal functor
-`!Fᵐ`{.Agda} is unique up to monoidal natural isomorphism.
+property analogous to that of a [[zero object]]. Stating this in full
+would require a detour into bicategory theory, for now we just
+construct the monoidal natural transformations involved.
+
+```agda
+  !Fˡ<=ᵐ
+    : ∀ {F} (Fˡ : Lax-monoidal-functor-on Cᵐ ⊤ᵐ F)
+    → is-monoidal-transformation Fˡ !Fˡ (path→iso !F-unique .Isoⁿ.to)
+  !Fˡ<=ᵐ _ = record { nat-ε = refl ; nat-φ = refl }
+
+  ¡Fˡ=>ᵐ
+    : ∀ {F} (Fˡ : Lax-monoidal-functor-on ⊤ᵐ Cᵐ F)
+    → let module Fˡ = Lax-monoidal-functor-on Fˡ
+      in is-monoidal-transformation ¡Fˡ Fˡ (!constⁿ Fˡ.ε)
+  ¡Fˡ=>ᵐ {F} Fˡ = record where
+    open Lax-monoidal-functor-on Fˡ
+    open Functor F
+    nat-ε = C.idr _
+    nat-φ =
+      ε C.∘ C.λ← C.Unit                                            ≡˘⟨ C.unitor-l.from ._=>_.is-natural _ _ _ ⟩
+      C.λ← (F₀ tt) C.∘ (C.Unit C.▶ ε)                              ≡˘⟨ F-λ← C.⟩∘⟨refl ⟩
+      (⌜ F₁ tt ⌝ C.∘ φ tt tt C.∘ (ε C.◀ F₀ tt)) C.∘ (C.Unit C.▶ ε) ≡⟨ ap! F-id ⟩
+      (C.id C.∘ φ tt tt C.∘ (ε C.◀ F₀ tt)) C.∘ (C.Unit C.▶ ε)      ≡⟨ cat! C ⟩
+      φ tt tt C.∘ ((ε C.◀ F₀ tt) C.∘ (C.Unit C.▶ ε))               ≡⟨⟩
+      φ tt tt C.∘ (ε C.⊗₁ ε)                                       ∎
+```
+
+Note that `!Fˡ<=ᵐ`{.Agda} gives a [[monoidal natural isomorphism]] even
+when the monoidal functor being compared is lax. On the other hand,
+`¡F=>ᵐ`{.Agda}, being the constant natural transformation arising from
+$\epsilon : 1 \to F \rm{tt}$, is only an isomorphism if $\epsilon$ is
+invertible.

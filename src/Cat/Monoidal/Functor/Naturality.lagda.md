@@ -1,8 +1,8 @@
 <!--
 ```agda
+open import Cat.Functor.Naturality
 open import Cat.Monoidal.Functor
 open import Cat.Monoidal.Base
-open import Cat.Functor.Naturality
 open import Cat.Prelude
 
 import Cat.Reasoning as Cr
@@ -28,7 +28,7 @@ private
 ```
 -->
 
-# Naturality of monoidal functors
+# Naturality of monoidal functors {defines="monoidal natural isomorphism"}
 
 If $\alpha : F \iso G$ is a [[natural isomorphism]] which is [[monoidal|
 monoidal natural transformation]] in one direction, it is automatically
@@ -36,7 +36,7 @@ monoidal in the other.
 
 ```agda
 _≅ⁿᵐ_ : ∀ {F} {G} → Lax-monoidal-functor-on Cᵐ Dᵐ F → Lax-monoidal-functor-on Cᵐ Dᵐ G → Type (oc ⊔ ℓc ⊔ ℓd)
-_≅ⁿᵐ_ {F} {G} Fᵐ Gᵐ = Σ (F ≅ⁿ G) λ α → is-monoidal-transformation Cᵐ Dᵐ Fᵐ Gᵐ (α .Isoⁿ.to)
+_≅ⁿᵐ_ {F} {G} Fᵐ Gᵐ = Σ (F ≅ⁿ G) λ α → is-monoidal-transformation Fᵐ Gᵐ (α .Isoⁿ.to)
 
 module Isoⁿᵐ
   {F} {G} {Fᵐ : Lax-monoidal-functor-on Cᵐ Dᵐ F} {Gᵐ : Lax-monoidal-functor-on Cᵐ Dᵐ G}
@@ -63,7 +63,7 @@ module Isoⁿᵐ
 -->
 
 ```agda
-  fromᵐ : is-monoidal-transformation Cᵐ Dᵐ Gᵐ Fᵐ from
+  fromᵐ : is-monoidal-transformation Gᵐ Fᵐ from
   fromᵐ .nat-ε =
     from · C.Unit D.∘ G.ε                   ≡˘⟨ D.refl⟩∘⟨ toᵐ.nat-ε ⟩
     from · C.Unit D.∘ to · C.Unit D.∘ F.ε   ≡⟨ D.assoc _ _ _ ⟩
