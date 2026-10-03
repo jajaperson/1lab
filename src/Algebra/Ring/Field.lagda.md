@@ -3,6 +3,7 @@
 open import Algebra.Group.Solver
 open import Algebra.Group
 open import Algebra.Monoid
+open import Algebra.Ring.Commutative
 open import Algebra.Ring
 
 open import Homotopy.Join
@@ -34,7 +35,7 @@ variable
 
 # Local rings and fields
 
-In classical mathematics, a ring is called a skew field if all its
+In classical mathematics, a ring is called a skewfield if all its
 nonzero elements are invertible. Constructively this doesn't get us very
 far, as denial inequality just isn't that useful. We would like our
 fields to be equipped with tight apartness relations so that elements
@@ -46,6 +47,7 @@ invertible or $y$ is invertible.
 
 ```agda
 record is-local : Type ℓ where
+  no-eta-equality
   field
     0≠1 : 0r ≠ 1r
     locality : ∀ {x y} → x + y ≡ 1r → (is-invertible x) ∗ (is-invertible y)
@@ -111,12 +113,13 @@ property that $x-y$ is invertible.
   apartness = to-apartness #-is-apartness
 ```
 
-A local ring is called a (Heyting) **skew field** iff the canonical
+A local ring is called a (Heyting) **skewfield** iff the canonical
 apartness relation `_#_`{.Agda} is `tight`{.Agda ident="#-is-tight"}.
 Equivalently, every noninvertible element is equal to zero.
 
 ```agda
-record is-skew-field : Type ℓ where
+record is-skewfield : Type ℓ where
+  no-eta-equality
   field
     has-is-local : is-local
     ¬invertible→0 : ∀ {x} → ¬(is-invertible x) → x ≡ 0r
@@ -130,13 +133,14 @@ record is-skew-field : Type ℓ where
   tight-apartness = to-tight-apartness #-is-apartness #-is-tight
 ```
 
-A **discrete skew field** is a skew field for which this apartness
+A **discrete skewfield** is a skewfield for which this apartness
 relation is `decidable`{.Agda ident="#-is-decidable"}. Equivalently,
-a discrete skew field is a nontrivial ring for which every element is
+a discrete skewfield is a nontrivial ring for which every element is
 either zero or invertible.
 
 ```agda
-record is-discrete-skew-field : Type ℓ where
+record is-discrete-skewfield : Type ℓ where
+  no-eta-equality
   field
     0≠1 : 0r ≠ 1r
     invertible? : ∀ x → is-invertible x ⊎ x ≡ 0r
@@ -156,15 +160,23 @@ record is-discrete-skew-field : Type ℓ where
   ...                       | inl inv = absurd (¬inv inv)
   ...                       | inr x≡0 = x≡0
 
-  has-is-skew-field : is-skew-field
+  has-is-skew-field : is-skewfield
   has-is-skew-field = record
     { has-is-local = record { 0≠1 = 0≠1 ; locality = locality }
     ; ¬invertible→0 = ¬invertible→0 }
 
-  open is-skew-field has-is-skew-field hiding (locality ; ¬invertible→0) public
+  open is-skewfield has-is-skew-field hiding (locality ; ¬invertible→0) public
 
   #-is-decidable : Tight-apartness.is-decidable tight-apartness
   #-is-decidable x y = ⊎-map id
     (λ p → monoid-inverse-unique a.has-is-monoid _ _ _ p a.inversel)
     $ invertible? (x - y)
+```
+
+A **field** (resp. **discrete field**) is simply a commutative skewfield
+(discrete skewfield).
+
+```agda
+is-field = is-commutative-ring R × is-skewfield
+is-discrete-field = is-commutative-ring R × is-discrete-skewfield
 ```
