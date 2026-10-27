@@ -67,7 +67,7 @@ module CRing {ℓ} (R : CRing ℓ) where
   ring .fst = R .fst
   ring .snd = record { CRing-on (R .snd) }
 
-  open CRing-on (R .snd) using (*-commutes ; _+_ ; _*_ ; -_ ; _-_ ; 1r ; 0r) public
+  open CRing-on (R .snd) using (*-commutes ; _+_ ; _*_ ; -_ ; _-_ ; 1r ; 0r ; has-ring-on) public
   open Kit ring hiding (_+_ ; _*_ ; -_ ; _-_ ; 1r ; 0r) public
 
 is-commutative-ring : ∀ {ℓ} (R : Ring ℓ) → Type _
