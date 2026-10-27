@@ -94,6 +94,9 @@ give the unit, both on the left and on the right:
     { identity = unit ; _⋆_ = _*_ ; has-is-monoid = has-is-monoid }
 
   open Mon underlying-monoid public
+  
+  inv-is-equiv : is-equiv inverse
+  inv-is-equiv = is-iso→is-equiv $ iso inverse (λ x → inv-inv) λ x → inv-inv
 ```
 -->
 
