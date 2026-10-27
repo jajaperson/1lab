@@ -335,28 +335,23 @@ homomorphism $\Sigma G \mono G$. All we need to figure out is whether
 there exists a group $H$ and a map $f : G \to H$, such that $\Sigma G
 \cong \ker f$ as subgroups of $G$.
 
-We begin by assuming that we have a kernel and investigating some
-properties that the fibres of its inclusion have. Of course, the fibre
-over $0$ is inhabited, and they are closed under multiplication and
-inverses, though we shall not make note of that here.
-
 ```agda
-module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where private
-  module Ker[f] = Kernel (Ker f)
+private module ker-rep {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where
   module f = is-group-hom (f .snd)
-  module A = Group-on (A .snd)
+  open Group-on (A .snd)
   module B = Group-on (B .snd)
 
-  kerf : ⌞ Ker[f].ker ⌟ → ⌞ A ⌟
-  kerf = Ker[f].kernel .fst
+  kerℙ : ℙ ⌞ A ⌟
+  kerℙ x = elΩ (f · x ≡ B.unit)
 
-  has-zero : fibre kerf A.unit
-  has-zero = (A.unit , f.pres-id) , refl
+  open represents-subgroup
 
-  has-⋆ : ∀ {x y} → fibre kerf x → fibre kerf y → fibre kerf (x A.⋆ y)
-  has-⋆ ((a , p) , q) ((b , r) , s) =
-    (a A.⋆ b , f.pres-⋆ _ _ ∙∙ ap₂ B._⋆_ p r ∙∙ B.idl) ,
-    ap₂ A._⋆_ q s
+  has-rep : represents-subgroup A kerℙ
+  has-rep .has-unit = inc f.pres-id
+  has-rep .has-⋆ {x} {y} = elim! λ fx≡1 fy≡1 →
+    inc ((f.pres-⋆ x y) ∙∙ ap₂ B._⋆_ fx≡1 fy≡1 ∙∙ B.idl)
+  has-rep .has-inv {x} = elim! λ fx≡1 →
+    inc (f.pres-inv ∙∙ (ap B._⁻¹ fx≡1) ∙∙ B.inv-unit)
 ```
 
 It turns out that $\ker f$ is also closed under _conjugation_ by
@@ -366,16 +361,16 @@ must be $1$ as well: for we have $$f(y)f(x)f(y\inv) = f(y)1f(y\inv) =
 f(yy\inv) = f(1) = 1$$.
 
 ```agda
-  has-conjugate : ∀ {x y} → fibre kerf x → fibre kerf (y A.⋆ x A.⋆ y A.⁻¹)
-  has-conjugate {x} {y} ((a , p) , q) = (_ , path) , refl where
-    path =
-      f · (y A.⋆ (x A.— y))         ≡⟨ ap· f A.associative ⟩
-      f · ((y A.⋆ x) A.— y)         ≡⟨ f.pres-diff ⟩
-      ⌜ f · (y A.⋆ x) ⌝ B.— f · y   ≡⟨ ap₂ B._—_ (f.pres-⋆ y x) refl ⟩
-      ⌜ f · y B.⋆ f · x ⌝ B.— f · y ≡⟨ ap₂ B._—_ (ap (_ B.⋆_) (ap· f (sym q) ∙ p) ∙ B.idr) refl ⟩
-      f · y B.— f · y               ≡˘⟨ f.pres-diff ⟩
-      f · (y A.— y)                 ≡⟨ ap· f A.inverser ∙ f.pres-id ⟩
-      B.unit                        ∎
+  has-conjugate : ∀ {x y} → x ∈ kerℙ → (y ⋆ x ⋆ y ⁻¹) ∈ kerℙ
+  has-conjugate {x} {y} = elim! λ fx≡1 → inc (
+    f · (y ⋆ x ⋆ y ⁻¹)                      ≡⟨ f.pres-⋆ _ _ ∙ ap (_ B.⋆_) (f.pres-⋆ _ _) ⟩
+    (f · y) B.⋆ ⌜ f · x ⌝ B.⋆ (f · (y ⁻¹))  ≡⟨ ap! fx≡1 ⟩
+    (f · y) B.⋆ ⌜ B.unit B.⋆ (f · (y ⁻¹)) ⌝ ≡⟨ ap! B.idl ⟩
+    (f · y) B.⋆ (f · (y ⁻¹))                ≡˘⟨ f.pres-⋆ _ _ ⟩
+    f · (y ⋆ y ⁻¹)                          ≡⟨ ap· f inverser ⟩
+    f · unit                                ≡⟨ f.pres-id ⟩
+    B.unit                                  ∎
+    )
 ```
 
 :::{.definition #normal-subgroup}
@@ -409,6 +404,19 @@ record normal-subgroup (G : Group ℓ) (H : ℙ ⌞ G ⌟) : Type ℓ where
 
   open represents-subgroup has-rep public
 ```
+
+<!--
+```
+module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where
+  open ker-rep f using (kerℙ) public
+
+  ker-normal : normal-subgroup A kerℙ
+  ker-normal = let open ker-rep f in record
+    { has-rep = has-rep ; has-conjugate = has-conjugate }
+```
+-->
+
+## Quotient groups
 
 So, suppose we have a normal subgroup $H \unlhd G$. We define the
 underlying type of the quotient $G/H$ to be the quotient of the relation
