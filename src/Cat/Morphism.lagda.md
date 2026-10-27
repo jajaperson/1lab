@@ -1220,3 +1220,31 @@ invertible-postcomp-equiv {f = f} f-inv = is-iso→is-equiv $
     (λ h → assoc _ _ _ ∙∙ ap (_∘ h) f-inv.invr ∙∙ idl h)
   where module f-inv = is-invertible f-inv
 ```
+
+## Cancellables
+
+A weaker property than being an isomorphism is being **cancellable**:
+both monic and epic.
+
+```agda
+is-cancellable : Hom a b → Type _
+is-cancellable f = is-monic f × is-epic f
+
+is-cancellable-is-prop : ∀ (f : Hom a b) → is-prop (is-cancellable f)
+is-cancellable-is-prop f = ×-is-hlevel 1 (is-monic-is-prop f) (is-epic-is-prop f)
+
+id-cancellable : is-cancellable (id {a})
+id-cancellable = id-monic , id-epic
+
+∘-cancellable : ∀ {f : Hom b c} {g : Hom a b}
+              → is-cancellable f → is-cancellable g → is-cancellable (f ∘ g)
+∘-cancellable (f-monic , f-epic) (g-monic , g-epic) =
+  (∘-is-monic f-monic g-monic) , ∘-is-epic f-epic g-epic
+
+invertible→cancellable : is-invertible f → is-cancellable f
+invertible→cancellable inv = invertible→monic inv , invertible→epic inv
+
+iso→cancellable : (f : a ≅ b) → is-cancellable (f .to)
+iso→cancellable f = invertible→cancellable (iso→invertible f)
+```
+
