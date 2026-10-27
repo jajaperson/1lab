@@ -232,9 +232,8 @@ two endpoints $x/s$ and $z/u$.
   module Fr = Congruence Fraction-congruence
   open Fraction
 
-  private
-    /-ap : ∀ {x y : Fraction (_∈ S)} → x .num ≡ y .num → x .denom ≡ y .denom → Path Fr.quotient (inc x) (inc y)
-    /-ap p q = ap Coeq.inc (Fraction-path p q)
+  /-ap : ∀ {x y : Fraction (_∈ S)} → x .num ≡ y .num → x .denom ≡ y .denom → Path Fr.quotient (inc x) (inc y)
+  /-ap p q = ap Coeq.inc (Fraction-path p q)
 ```
 -->
 
@@ -329,6 +328,9 @@ long, so we'll leave them in this `<details>`{.html} block.</summary>
           s * x * (w * v * y)   ≡⟨ cring! R ⟩
           w * (x * v) * (s * y) ∎
       in inc w w∈S prf
+
+  _-ₗ_ : Fr.quotient → Fr.quotient → Fr.quotient
+  _-ₗ_ x y = x +ₗ (-ₗ y)
 ```
 </details>
 
@@ -399,10 +401,10 @@ The equations for each of the ring laws are similarly boring:
       in quot (inc 1r has-1 prf)
 ```
 
-Finally, these fit together to make a commutative ring.
+These fit together to make a commutative ring.
 
 ```agda
-  private
+  private module _ where
     module mr = make-ring
     open make-ring
 
@@ -429,3 +431,15 @@ Finally, these fit together to make a commutative ring.
   S⁻¹R .snd .CRing-on.has-ring-on = to-ring-on mk-loc
   S⁻¹R .snd .CRing-on.*-commutes {x} {y} = *ₗ-comm x y
 ```
+
+Moreover, `_/1`{.Agda} is a ring homomorphism.
+
+```agda
+  open is-ring-hom
+  
+  /1-hom : is-ring-hom has-ring-on (S⁻¹R .CRing.has-ring-on) _/1
+  /1-hom .pres-id = refl
+  /1-hom .pres-+ x y = /-ap (ap₂ _+_ (sym *-idr) (sym *-idr)) (sym *-idl)
+  /1-hom .pres-* x y = /-ap refl (sym *-idl)
+```
+
