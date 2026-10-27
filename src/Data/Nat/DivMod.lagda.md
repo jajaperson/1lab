@@ -251,3 +251,50 @@ instance
     in <-≤-asym β (m∣sn→m≤sn (q' - q , n∣r))
   {-# INCOHERENT Dec-∣ #-}
 ```
+
+<!--
+```agda
+x<y→x%y≡x : ∀ x y → (x<y : x < y) → (x % y) ⦃ ≤-trans (s≤s 0≤x) x<y ⦄ ≡ x
+x<y→x%y≡x x y x<y = ap DivMod.rem p≡q where
+  instance
+    y-Pos : Positive y
+    y-Pos = ≤-trans (s≤s 0≤x) x<y
+
+  p q : DivMod x y
+  p = divide-pos x y
+  q = divmod 0 x (forget refl) x<y
+
+  p≡q : p ≡ q
+  p≡q = prop!
+
+abstract
+  %-clear : ∀ n ⦃ _ : Positive n ⦄ x y → (x * n + y) % n ≡ y % n
+  %-clear n x y = ap DivMod.rem p≡q where
+    p q : DivMod (x * n + y) n
+    p = divide-pos (x * n + y) n
+    q = divmod (x + y /ₙ n) (y % n)
+      (forget (
+        x * n + ⌜ y ⌝                ≡⟨ ap! (is-divmod y n) ⟩
+        x * n + (y /ₙ n * n + y % n) ≡⟨ nat! ⟩
+        (x + y /ₙ n) * n + y % n     ∎
+        ))
+      (x%y<y y n)
+
+    p≡q : p ≡ q
+    p≡q = prop!
+
+%-pres-+ : ∀ n ⦃ _ : Positive n ⦄ x y → (x + y) % n ≡ (x % n + y % n) % n
+%-pres-+ n x y =
+  (x + y) % n                                     ≡⟨ ap (_% n) $ ap₂ _+_ (is-divmod x n) (is-divmod y n) ⟩
+  (x /ₙ n * n + x % n + (y /ₙ n * n + y % n)) % n ≡⟨ ap (_% n) $ nat! ⟩
+  ((x /ₙ n + y /ₙ n) * n + (x % n + y % n)) % n   ≡⟨ %-clear n (x /ₙ n + y /ₙ n) (x % n + y % n) ⟩
+  (x % n + y % n) % n                             ∎
+
+%-pres-* : ∀ n ⦃ _ : Positive n ⦄ x y → (x * y) % n ≡ x % n * (y % n) % n
+%-pres-* n x y =
+  x * y % n                                                                                       ≡⟨ ap (_% n) $ ap₂ _*_ (is-divmod x n) (is-divmod y n) ⟩
+  ((x /ₙ n * n + x % n) * (y /ₙ n * n + y % n)) % n                                               ≡⟨ ap (_% n) $ nat! ⟩
+  (((x /ₙ n) * (y /ₙ n) * n + (x /ₙ n) * (y % n) + (x % n) * (y /ₙ n)) * n + x % n * (y % n)) % n ≡⟨ %-clear n ((x /ₙ n) * (y /ₙ n) * n + (x /ₙ n) * (y % n) + (x % n) * (y /ₙ n)) (x % n * (y % n)) ⟩
+  x % n * (y % n) % n ∎
+```
+-->
