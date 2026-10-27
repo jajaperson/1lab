@@ -18,15 +18,15 @@ module Data.Set.Apartness where
 <!--
 ```agda
 private variable
-  ℓ ℓ# : Level
-  A : Type ℓ
+  ℓ ℓ# ℓ#' : Level
+  A B : Type ℓ
   R : A → A → Type ℓ#
 ```
 -->
 
 # Apartness relations {defines="apartness-relation"}
 
-An **apartness relation** on a type $A$ is a (mere) relation $#$ on
+An **apartness relation** on a type $A$ is a (mere) relation $\apt$ on
 $A$ satisfying properties that are in some sense complementary to a
 [[congruence]]: it is _irreflexive_, _cotransitive_, and _symmetric_.
 
@@ -206,3 +206,41 @@ to-tight-apartness {_#_ = _#_} apt tight = record
   }
 ```
 -->
+
+## Strongly extensional functions {defines="strongly-extensional-function"}
+
+<!--
+```agda
+module _ (Aᵃ : Tight-apartness A ℓ#) (Bᵃ : Tight-apartness B ℓ#') where
+  private
+    module A = Tight-apartness Aᵃ
+    module B = Tight-apartness Bᵃ
+```
+-->
+
+Let $A$ and $B$ be asets. A function $f : A \to B$ is said to be
+**strongly extensional** iff it reflects apartness in the following
+sense:
+
+```agda
+  is-strongly-ext : (A → B) → Type (ℓ# ⊔ ℓ#' ⊔ level-of A)
+  is-strongly-ext f = ∀ {x y} → (f x) B.# (f y) → x A.# y
+```
+
+
+:::{.definition #strong-injection alias="strongly-injective"}
+Similarly, a function is said to be **strongly injective** iff it
+preserves apartness.
+
+```agda
+  is-strongly-inj : (A → B) → Type (ℓ# ⊔ ℓ#' ⊔ level-of A)
+  is-strongly-inj f = ∀ {x y} → x A.# y → (f x) B.# (f y)
+```
+:::
+
+As the name suggests, being strongly injective implies being injective.
+
+```agda
+  strongly-inj→inj : ∀ f → is-strongly-inj f → injective f
+  strongly-inj→inj f ap#-f fx≡fy = A.tight λ x#y → B.irrefl' fx≡fy (ap#-f x#y)
+```
