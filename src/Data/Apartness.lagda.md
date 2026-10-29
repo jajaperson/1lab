@@ -12,7 +12,7 @@ open import Homotopy.Join
 -->
 
 ```agda
-module Data.Set.Apartness where
+module Data.Apartness where
 ```
 
 <!--
@@ -55,9 +55,21 @@ record Apartness {ℓ} (A : Type ℓ) ℓ# : Type (ℓ ⊔ lsuc ℓ#) where
 to-apartness : ∀ {_#_ : A → A → Type ℓ#} → is-apartness _#_ → Apartness A ℓ#
 to-apartness {_#_ = _#_} apt = record { _#_ = _#_ ; has-is-apartness = apt }
 
-private unquoteDecl apt-eqv = declare-record-iso apt-eqv (quote is-apartness)
+open hlevel-projection
+
+private
+  unquoteDecl is-apt-eqv = declare-record-iso is-apt-eqv (quote is-apartness)
+  --unquoteDecl apt-eqv = declare-record-iso apt-eqv (quote Apartness)
+  
+  #-prop : ∀ (R : Apartness A ℓ#) {x y} → is-prop (R .Apartness._#_ x y)
+  #-prop R = R .Apartness.has-is-prop
 
 instance
+  hlevel-proj-apt : hlevel-projection (quote Apartness._#_)
+  hlevel-proj-apt .has-level = quote #-prop
+  hlevel-proj-apt .get-level _ = pure (quoteTerm (suc zero))
+  hlevel-proj-apt .get-argument = first-visible
+  
   H-Level-is-apartness
     : ∀ {_#_ : A → A → Type ℓ#} {n}
     → H-Level (is-apartness _#_) (suc n)
@@ -69,7 +81,20 @@ instance
         ha = prop-instance has-is-prop
         hj : ∀ {k x y z} → H-Level ((x # y) ∗ (y # z)) (suc k)
         hj = prop-instance (join-is-prop has-is-prop has-is-prop)
-    in Iso→is-hlevel! 1 apt-eqv x
+    in Iso→is-hlevel! 1 is-apt-eqv x
+
+module _ (R R' : Apartness A ℓ#) where
+  private
+    module R = Apartness R
+    module R' = Apartness R'
+
+  open Apartness
+
+  Apartness-path : (∀ x y → (x R.# y) ≃ (x R'.# y)) → R ≡ R'
+  Apartness-path p i ._#_ x y = ua (p x y) i
+  Apartness-path p i .has-is-apartness = is-prop→pathp
+    {B = λ j → is-apartness (Apartness-path p j ._#_)}
+    (λ _ → hlevel 1) R.has-is-apartness R'.has-is-apartness i
 ```
 -->
 
@@ -204,10 +229,27 @@ to-tight-apartness {_#_ = _#_} apt tight = record
   { apartness = record { _#_ = _#_ ; has-is-apartness = apt }
   ; tight = tight
   }
+
+module _ (R R' : Tight-apartness A ℓ#) where
+  private
+    module R = Tight-apartness R
+    module R' = Tight-apartness R'
+
+    instance
+      H-Level-A : ∀ {n} → H-Level A (2 + n)
+      H-Level-A = basic-instance 2 R.has-is-set
+
+  open Tight-apartness
+
+  Tight-apartness-path : (∀ x y → (x R.# y) ≃ (x R'.# y)) → R ≡ R'
+  Tight-apartness-path p i .apartness = Apartness-path R.apartness R'.apartness p i
+  Tight-apartness-path p i .tight = is-prop→pathp
+    {B = λ j → is-tight (Tight-apartness-path p j ._#_)}
+    (λ _ → hlevel 1) R.tight R'.tight i
 ```
 -->
 
-## Strongly extensional functions {defines="strongly-extensional-function"}
+## Strongly extensional functions {defines="strongly-extensional-function strongly-extensional-map"}
 
 <!--
 ```agda

@@ -8,7 +8,7 @@ open import Algebra.Ring
 
 open import Homotopy.Join
 
-open import Data.Set.Apartness
+open import Data.Apartness
 open import Data.Sum
 
 open import 1Lab.Prelude hiding (_-_ ; _+_ ; _*_)
