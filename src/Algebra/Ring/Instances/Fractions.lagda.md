@@ -3,10 +3,10 @@
 open import 1Lab.Prelude hiding (_*_ ; _+_ ; _-_)
 
 open import Algebra.Ring.Instances.Localisation
-open import Algebra.Ring.Field
-open import Algebra.Ring.Commutative
 open import Algebra.Ring.Cancellative
+open import Algebra.Ring.Commutative
 open import Algebra.Ring.Solver
+open import Algebra.Ring.Field
 open import Algebra.Ring
 
 open import Data.Set.Coequaliser hiding (_/_)
@@ -15,8 +15,8 @@ open import Data.Sum.Base
 
 open import Homotopy.Join
 
-import Algebra.Ring.Commutative.Element as Re
 import Algebra.Ring.Instances.Localisation.Element as Le
+import Algebra.Ring.Commutative.Element as Re
 ```
 -->
 

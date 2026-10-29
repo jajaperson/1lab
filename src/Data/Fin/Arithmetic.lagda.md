@@ -1,11 +1,11 @@
 <!--
 ```agda
+open import 1Lab.Prelude
+
 open import Data.Nat.Properties
 open import Data.Nat.DivMod
-open import Data.Nat.Base
 open import Data.Fin.Base
-
-open import 1Lab.Prelude
+open import Data.Nat.Base
 ```
 -->
 

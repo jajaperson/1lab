@@ -1,10 +1,10 @@
 <!--
 ```agda
 open import Algebra.Ring.Module.Action
+open import Algebra.Group.Cat.Base
 open import Algebra.Group.Subgroup
 open import Algebra.Ring.Module
 open import Algebra.Group.Ab
-open import Algebra.Group.Cat.Base
 open import Algebra.Group
 open import Algebra.Ring
 

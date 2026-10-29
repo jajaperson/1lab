@@ -59,8 +59,7 @@ open hlevel-projection
 
 private
   unquoteDecl is-apt-eqv = declare-record-iso is-apt-eqv (quote is-apartness)
-  --unquoteDecl apt-eqv = declare-record-iso apt-eqv (quote Apartness)
-  
+
   #-prop : ∀ (R : Apartness A ℓ#) {x y} → is-prop (R .Apartness._#_ x y)
   #-prop R = R .Apartness.has-is-prop
 
@@ -69,7 +68,7 @@ instance
   hlevel-proj-apt .has-level = quote #-prop
   hlevel-proj-apt .get-level _ = pure (quoteTerm (suc zero))
   hlevel-proj-apt .get-argument = first-visible
-  
+
   H-Level-is-apartness
     : ∀ {_#_ : A → A → Type ℓ#} {n}
     → H-Level (is-apartness _#_) (suc n)
@@ -268,7 +267,6 @@ sense:
   is-strongly-ext : (A → B) → Type (ℓ# ⊔ ℓ#' ⊔ level-of A)
   is-strongly-ext f = ∀ {x y} → (f x) B.# (f y) → x A.# y
 ```
-
 
 :::{.definition #strong-injection alias="strongly-injective"}
 Similarly, a function is said to be **strongly injective** iff it

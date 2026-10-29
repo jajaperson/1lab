@@ -1,20 +1,20 @@
 <!--
 ```agda
-open import Algebra.Group.Solver
-open import Algebra.Group
-open import Algebra.Monoid
-open import Algebra.Ring.Commutative
-open import Algebra.Ring
+open import 1Lab.Prelude hiding (_-_ ; _+_ ; _*_)
 
-open import Homotopy.Join
+open import Algebra.Ring.Commutative
+open import Algebra.Group.Solver
+open import Algebra.Monoid
+open import Algebra.Group
+open import Algebra.Ring
 
 open import Data.Apartness
 open import Data.Sum
 
-open import 1Lab.Prelude hiding (_-_ ; _+_ ; _*_)
+open import Homotopy.Join
 
-import Algebra.Ring.Element as Re
 import Algebra.Group.Reasoning as Gr
+import Algebra.Ring.Element as Re
 
 open is-apartness
 ```

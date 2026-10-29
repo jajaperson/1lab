@@ -1,15 +1,15 @@
 <!--
 ```agda
+open import 1Lab.Prelude
+
+open import Algebra.Ring.Commutative.Element ℤ
 open import Algebra.Ring.Cancellative
 open import Algebra.Ring.Commutative renaming (ℤ-comm to ℤ)
-open import Algebra.Ring.Commutative.Element ℤ
 
-open import Data.Int
-open import Data.Nat.Base
 open import Data.Dec.Base
+open import Data.Nat.Base
+open import Data.Int
 open import Data.Sum
-
-open import 1Lab.Prelude
 ```
 -->
 
