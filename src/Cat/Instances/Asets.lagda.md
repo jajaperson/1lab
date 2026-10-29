@@ -1,8 +1,8 @@
 <!--
 ```agda
-open import Data.Apartness
-
 open import Cat.Prelude
+
+open import Data.Apartness
 
 import Cat.Reasoning as Cr
 ```
@@ -86,4 +86,17 @@ Asets-is-category .to-path {A} {B} h = Σ-pathp S R where
     A.tight B.tight i
 Asets-is-category .to-path-over {A} {B} h = ≅-pathp _ _ $
   Σ-prop-pathp (λ _ _ → hlevel 1) (funextP λ a → path→ua-pathp _ refl)
+```
+
+Since an aset is automatically a set, there is a forgetful functor into
+`Sets`{.Agda}
+
+```agda
+open Functor
+
+πᶠ : Functor Asets (Sets ℓ)
+πᶠ .F₀ A = el ⌞ A ⌟ (Tight-apartness.has-is-set (A .snd))
+πᶠ .F₁ = fst
+πᶠ .F-id = refl
+πᶠ .F-∘ _ _ = refl
 ```
