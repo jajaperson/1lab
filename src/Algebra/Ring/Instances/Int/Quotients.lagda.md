@@ -1,17 +1,17 @@
 <!--
 ```agda
-open import Algebra.Ring
-import Algebra.Ring.Reasoning as Rr
-
 --
-open import Algebra.Group
+open import 1Lab.Prelude
 
-open import Data.Int.Base hiding (Positive)
+open import Algebra.Group
+open import Algebra.Ring
+
 open import Data.Fin.Arithmetic
 open import Data.Fin.Base
+open import Data.Int.Base hiding (Positive)
 open import Data.Nat.Base
 
-open import 1Lab.Prelude
+import Algebra.Ring.Reasoning as Rr
 ```
 -->
 

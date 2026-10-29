@@ -1,13 +1,13 @@
 <!--
 ```agda
+open import 1Lab.Prelude hiding (_*_)
+
 open import Algebra.Ring.Instances.Localisation
 open import Algebra.Ring.Commutative
 open import Algebra.Ring.Solver
 open import Algebra.Ring
 
 open import Data.Set.Coequaliser hiding (_/_)
-
-open import 1Lab.Prelude hiding (_*_)
 
 import Algebra.Ring.Element as Re
 ```

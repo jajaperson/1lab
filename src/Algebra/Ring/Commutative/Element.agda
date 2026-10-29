@@ -1,5 +1,4 @@
 -- Helper module for working with elements of commutative rings
-
 open import Algebra.Ring.Commutative
 
 import Algebra.Ring.Element

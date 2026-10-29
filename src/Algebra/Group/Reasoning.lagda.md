@@ -1,8 +1,8 @@
 ```agda
 open import 1Lab.Prelude hiding (_*_)
 
-open import Algebra.Group.Solver
 open import Algebra.Group.Notation
+open import Algebra.Group.Solver
 open import Algebra.Group
 
 module Algebra.Group.Reasoning {ℓ} {G : Type ℓ} (Gᵍ : Group-on G) where

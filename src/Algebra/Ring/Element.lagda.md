@@ -1,8 +1,9 @@
 <!--
 ```agda
+open import 1Lab.Prelude hiding (_*_)
+
 open import Algebra.Ring.Commutative
 open import Algebra.Ring
-open import 1Lab.Prelude hiding (_*_)
 
 import Algebra.Monoid.Element as Me
 import Algebra.Ring.Reasoning as Rr
