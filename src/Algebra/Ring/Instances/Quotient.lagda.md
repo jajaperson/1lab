@@ -1,7 +1,7 @@
 <!--
 ```agda
 open import Algebra.Group.Cat.Base
-open import Algebra.Group.Subgroup
+open import Algebra.Group.Subgroup hiding (incl)
 open import Algebra.Ring.Ideal
 open import Algebra.Group
 open import Algebra.Ring
@@ -42,7 +42,9 @@ way! In that case, we refer to $R/I$ as a **quotient ring**.
 <!--
 ```agda
 module _ {I : ℙ ⌞ R ⌟} (idl : is-ideal R I) where
-  private module I = is-ideal idl
+  private module I where
+    open is-ideal idl public
+    open Congruence (normal-subgroup→congruence R.additive-group ideal→normal) public
 ```
 -->
 
@@ -130,3 +132,37 @@ decidable quotient sets, but we mention it here regardless:
     (normal-subgroup→congruence R.additive-group I.ideal→normal)
     (λ x y → dec∈I (x R.- y))
 ```
+
+The natural projection `inc`{.Agda} defines a ring homomorphism
+$\mathrm{incl} R \to R/I$.
+
+<!--
+```agda
+  open is-ring-hom
+```
+-->
+
+```agda
+  incl : Rings.Hom R R/I
+  incl .fst = inc
+  incl .snd .pres-+ _ _ = refl
+  incl .snd .pres-id = refl
+  incl .snd .pres-* _ _ = refl
+```
+
+:::{.definition #ideals-are-kernels}
+
+The [[kernel|ring kernel]] of `incl`{.Agda} is... the ideal $I$! As a
+corollary, ideals of rings are precisely kernels of ring homomorphisms.
+
+```agda
+  𝔨𝔢𝔯[incl]≡I : 𝔨𝔢𝔯 incl ≡ I
+  𝔨𝔢𝔯[incl]≡I = funext λ x → Ω-ua
+    (elim! λ fx≡0 → subst (_∈ I)
+      (ap (x R.+_) R.a.inv-unit ∙ R.+-idr)
+      (I.effective fx≡0))
+    (elim! λ x∈I → inc (quot $ subst (_∈ I)
+      (sym (ap (x R.+_) R.a.inv-unit ∙ R.+-idr))
+      x∈I))
+```
+:::

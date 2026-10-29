@@ -4,6 +4,7 @@ open import Algebra.Ring.Module.Action
 open import Algebra.Group.Subgroup
 open import Algebra.Ring.Module
 open import Algebra.Group.Ab
+open import Algebra.Group.Cat.Base
 open import Algebra.Group
 open import Algebra.Ring
 
@@ -164,3 +165,39 @@ it must commute with every element of the ring.
             , ap (R._* x) q ∙ R.m.extendr (comm x))
     }
 ```
+
+## Kernels {defines="ring-kernel"}
+
+If $f : R \to S$ is a [[ring homomorphism]], then its `kernel`{.Agda ident="kerℙ"}
+(as a group homomorphism) is an ideal.
+
+<!--
+```agda
+module _ {ℓ} {R S : Ring ℓ} (f : Rings.Hom R S) where
+  private
+    module R = Ringr R
+    module S = Ringr S
+
+    module f where
+      open is-ring-hom (f .snd) public
+
+      gr : Groups.Hom R.additive-group S.additive-group
+      gr = ∫hom (f .fst) ring-hom→group-hom
+
+  open is-ideal
+```
+-->
+
+```agda
+  𝔨𝔢𝔯 : ℙ ⌞ R ⌟
+  𝔨𝔢𝔯 = kerℙ f.gr
+
+  𝔨𝔢𝔯-ideal : is-ideal R 𝔨𝔢𝔯
+  𝔨𝔢𝔯-ideal .has-rep-subgroup = ker-normal f.gr .normal-subgroup.has-rep
+  𝔨𝔢𝔯-ideal .has-*ₗ x {y} = elim! λ fy≡0 → inc
+    (f.pres-* x y ∙∙ ap (f · x S.*_) fy≡0 ∙∙ S.*-zeror)
+  𝔨𝔢𝔯-ideal .has-*ᵣ x {y} = elim! λ fy≡0 → inc
+    (f.pres-* y x ∙∙ ap (S._* f · x) fy≡0 ∙∙ S.*-zerol)
+```
+
+In fact, we show elsewhere that _all_ [[ideals-are-kernels]].
