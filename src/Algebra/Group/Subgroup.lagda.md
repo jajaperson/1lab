@@ -335,23 +335,28 @@ homomorphism $\Sigma G \mono G$. All we need to figure out is whether
 there exists a group $H$ and a map $f : G \to H$, such that $\Sigma G
 \cong \ker f$ as subgroups of $G$.
 
+<!--
 ```agda
-private module ker-rep {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where
-  module f = is-group-hom (f .snd)
-  open Group-on (A .snd)
-  module B = Group-on (B .snd)
+private module ker-rep {ℓ} {G H : Group ℓ} (f : Groups.Hom G H) where
+  private
+    module f = is-group-hom (f .snd)
+    module H = Group-on (H .snd)
+  open Group-on (G .snd)
+```
+-->
 
-  kerℙ : ℙ ⌞ A ⌟
-  kerℙ x = elΩ (f · x ≡ B.unit)
+```agda
+  kerℙ : ℙ ⌞ G ⌟
+  kerℙ x = elΩ (f · x ≡ H.unit)
 
   open represents-subgroup
 
-  has-rep : represents-subgroup A kerℙ
+  has-rep : represents-subgroup G kerℙ
   has-rep .has-unit = inc f.pres-id
   has-rep .has-⋆ {x} {y} = elim! λ fx≡1 fy≡1 →
-    inc ((f.pres-⋆ x y) ∙∙ ap₂ B._⋆_ fx≡1 fy≡1 ∙∙ B.idl)
+    inc ((f.pres-⋆ x y) ∙∙ ap₂ H._⋆_ fx≡1 fy≡1 ∙∙ H.idl)
   has-rep .has-inv {x} = elim! λ fx≡1 →
-    inc (f.pres-inv ∙∙ (ap B._⁻¹ fx≡1) ∙∙ B.inv-unit)
+    inc (f.pres-inv ∙∙ (ap H._⁻¹ fx≡1) ∙∙ H.inv-unit)
 ```
 
 It turns out that $\ker f$ is also closed under _conjugation_ by
@@ -363,13 +368,13 @@ f(yy\inv) = f(1) = 1$$.
 ```agda
   has-conjugate : ∀ {x y} → x ∈ kerℙ → (y ⋆ x ⋆ y ⁻¹) ∈ kerℙ
   has-conjugate {x} {y} = elim! λ fx≡1 → inc (
-    f · (y ⋆ x ⋆ y ⁻¹)                      ≡⟨ f.pres-⋆ _ _ ∙ ap (_ B.⋆_) (f.pres-⋆ _ _) ⟩
-    (f · y) B.⋆ ⌜ f · x ⌝ B.⋆ (f · (y ⁻¹))  ≡⟨ ap! fx≡1 ⟩
-    (f · y) B.⋆ ⌜ B.unit B.⋆ (f · (y ⁻¹)) ⌝ ≡⟨ ap! B.idl ⟩
-    (f · y) B.⋆ (f · (y ⁻¹))                ≡˘⟨ f.pres-⋆ _ _ ⟩
+    f · (y ⋆ x ⋆ y ⁻¹)                      ≡⟨ f.pres-⋆ _ _ ∙ ap (_ H.⋆_) (f.pres-⋆ _ _) ⟩
+    (f · y) H.⋆ ⌜ f · x ⌝ H.⋆ (f · (y ⁻¹))  ≡⟨ ap! fx≡1 ⟩
+    (f · y) H.⋆ ⌜ H.unit H.⋆ (f · (y ⁻¹)) ⌝ ≡⟨ ap! H.idl ⟩
+    (f · y) H.⋆ (f · (y ⁻¹))                ≡˘⟨ f.pres-⋆ _ _ ⟩
     f · (y ⋆ y ⁻¹)                          ≡⟨ ap· f inverser ⟩
     f · unit                                ≡⟨ f.pres-id ⟩
-    B.unit                                  ∎
+    H.unit                                  ∎
     )
 ```
 
