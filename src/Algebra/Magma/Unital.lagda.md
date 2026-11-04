@@ -3,6 +3,12 @@
 open import 1Lab.Prelude
 
 open import Algebra.Magma
+
+open import Cat.Displayed.Univalence.Thin
+open import Cat.Univalent
+open import Cat.Base
+
+import Cat.Reasoning as Cr
 ```
 -->
 
@@ -14,7 +20,7 @@ module Algebra.Magma.Unital where
 ```agda
 private variable
   ℓ ℓ₁ : Level
-  A : Type ℓ
+  A B : Type ℓ
 ```
 -->
 
@@ -76,7 +82,7 @@ identities-equal
 identities-equal e e' {_⋆_ = _⋆_} unital unital' =
   e      ≡⟨ sym (idr unital') ⟩
   e ⋆ e' ≡⟨ idl unital ⟩
-  e' ∎
+  e'     ∎
 ```
 
 We also show that the type of two-sided identities of a magma,
@@ -112,12 +118,6 @@ record Unital-magma-on (A : Type ℓ) : Type ℓ where
   has-Magma-on .Magma-on.has-is-magma = has-is-unital-magma .has-is-magma
 
   open is-unital-magma has-is-unital-magma public
-
-Unital-magma : (ℓ : Level) → Type (lsuc ℓ)
-Unital-magma ℓ = Σ (Type ℓ) Unital-magma-on
-
-Unital-magma→Magma : {ℓ : _} → Unital-magma ℓ → Magma ℓ
-Unital-magma→Magma (A , unital-mgm) = A , Unital-magma-on.has-Magma-on unital-mgm
 ```
 
 This allows us to define **equivalences of unital magmas** - two unital
@@ -126,20 +126,59 @@ that preserves both the magma operation (which implies it is a magma
 homomorphism) and the identity element.
 
 ```agda
-record
-  Unital-magma≃ (A B : Unital-magma ℓ) (e : A .fst ≃ B .fst) : Type ℓ where
+record is-unital-magma-hom
+  (Aᵐ : Unital-magma-on A) (Bᵐ : Unital-magma-on B) (f : A → B) : Type (level-of A ⊔ level-of B)
+  where
   private
-    module A = Unital-magma-on (A .snd)
-    module B = Unital-magma-on (B .snd)
+    module A = Unital-magma-on Aᵐ 
+    module B = Unital-magma-on Bᵐ
 
   field
-    pres-⋆ : (x y : A .fst) → e .fst (x A.⋆ y) ≡ e .fst x B.⋆ e .fst y
-    pres-identity : e .fst A.identity ≡ B.identity
+    pres-⋆ : ∀ x y → f (x A.⋆ y) ≡ f x B.⋆ f y
+    pres-identity : f A.identity ≡ B.identity
+```
 
-  has-magma≃ : Magma≃ (Unital-magma→Magma A) (Unital-magma→Magma B) e
-  has-magma≃ .Magma≃.pres-⋆ = pres-⋆
+<!--
+```agda
+module _ {Aᵐ : Unital-magma-on A} {Bᵐ : Unital-magma-on B} {f} where
+  private
+    module A = Unital-magma-on Aᵐ
+    module B = Unital-magma-on Bᵐ
+  open is-unital-magma-hom
 
-open Unital-magma≃
+  is-unital-magma-hom-is-prop : is-prop (is-unital-magma-hom Aᵐ Bᵐ f)
+  is-unital-magma-hom-is-prop a b i .pres-⋆ x y = B.has-is-set _ _ (a .pres-⋆ x y) (b .pres-⋆ x y) i
+  is-unital-magma-hom-is-prop a b i .pres-identity = B.has-is-set _ _ (a .pres-identity) (b .pres-identity) i
+
+module _ where
+  open Unital-magma-on
+  open is-unital-magma-hom
+```
+-->
+
+```agda
+  Unital-magma-structure : ∀ ℓ → Thin-structure ℓ Unital-magma-on
+  Unital-magma-structure _ = λ where
+    .is-hom f Aᵐ Bᵐ → el (is-unital-magma-hom Aᵐ Bᵐ f) is-unital-magma-hom-is-prop
+    .id-is-hom .pres-⋆ _ _ → refl
+    .id-is-hom .pres-identity → refl
+    .∘-is-hom f g fᵐ gᵐ → λ where
+      .pres-⋆ x y → ap f (gᵐ .pres-⋆ x y) ∙ fᵐ .pres-⋆ _ _
+      .pres-identity → (ap f (gᵐ .pres-identity)) ∙ (fᵐ .pres-identity)
+    .id-hom-unique α β i .identity → α .pres-identity i
+    .id-hom-unique α β i ._⋆_ x y → α .pres-⋆ x y i
+    .id-hom-unique {s = s} {t} α β i .has-is-unital-magma → is-prop→pathp
+      (λ i → is-unital-magma-is-prop {e = α .pres-identity i} {λ x y → α .pres-⋆ x y i})
+      (s .has-is-unital-magma) (t .has-is-unital-magma) i
+
+Unital-magmas : ∀ ℓ → Precategory (lsuc ℓ) ℓ
+Unital-magmas _ = Structured-objects (Unital-magma-structure _)
+module Unital-magmas {ℓ} = Cr (Unital-magmas ℓ)
+
+Unital-magmas-is-category : is-category (Unital-magmas ℓ)
+Unital-magmas-is-category = Structured-objects-is-category (Unital-magma-structure _)
+
+Unital-magma = Unital-magmas.Ob
 ```
 
 ## One-sided identities

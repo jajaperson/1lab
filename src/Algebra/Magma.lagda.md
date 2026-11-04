@@ -2,6 +2,12 @@
 ```agda
 open import 1Lab.Univalence.SIP
 open import 1Lab.Prelude
+
+open import Cat.Displayed.Univalence.Thin
+open import Cat.Univalent
+open import Cat.Base
+
+import Cat.Reasoning as Cr
 ```
 -->
 
@@ -13,52 +19,17 @@ module Algebra.Magma where
 ```agda
 private variable
   ℓ ℓ₁ : Level
-  A : Type ℓ
+  A B : Type ℓ
 ```
 -->
 
-# ∞-Magmas {defines="magma ∞-magma"}
-
-In common mathematical parlance, a **magma** is a set equipped with a
-binary operation. In HoTT, we free ourselves from considering sets as a
-primitive, and generalise to ∞-groupoids: An **∞-magma** is a _type_
-equipped with a binary operation.
-
-```agda
-is∞Magma : Type ℓ → Type ℓ
-is∞Magma X = X → X → X
-```
-
-Since we can canonically identify the predicate `is∞Magma`{.Agda} with a
-`Structure`{.Agda} built with the structure language, we automatically
-get a notion of ∞-Magma homomorphism, and a proof that
-`∞MagmaStr`{.Agda} is a `univalent structure`{.Agda ident=is-univalent}.
-
-```agda
-∞MagmaStr : Structure ℓ is∞Magma
-∞MagmaStr = Term→structure (s∙ s→ (s∙ s→ s∙))
-
-∞MagmaStr-univ : is-univalent (∞MagmaStr {ℓ = ℓ})
-∞MagmaStr-univ = Term→structure-univalent (s∙ s→ (s∙ s→ s∙))
-```
-
-∞-magmas form a viable structure because magmas (and therefore their
-higher version) do not axiomatize any _paths_ that would require
-further coherence conditions. However, when considering structures with
-equalities, like semigroups or loops, we must restrict ourselves to sets
-to get a reasonable object, hence the field `has-is-set`{.Agda}.
-To be able to properly generalize over these notions, we define magmas
-as ∞-magmas whose carrier type is a set.
-
-# Magmas
-```agda
-record is-magma {A : Type ℓ} (_⋆_ : A → A → A) : Type ℓ where
-```
+# Magmas {defines="magma"}
 
 A **magma** is a `set`{.Agda ident=is-set} equipped with an arbitrary
 binary operation `⋆`, on which no further laws are imposed.
 
 ```agda
+record is-magma {A : Type ℓ} (_⋆_ : A → A → A) : Type ℓ where
   field
     has-is-set : is-set A
 
@@ -73,20 +44,17 @@ open is-magma
 ```
 
 Note that we do not generally benefit from the [[set truncation]] of
-arbitrary magmas - however, practically all structures built upon
-`is-magma`{.Agda} do, since they contain paths which would require
-complicated, if not outright undefinable, coherence conditions.
+arbitrary magmas — see [[∞-magmas]] — however, practically all
+structures built upon `is-magma`{.Agda} do, since they contain paths
+which would require complicated, if not outright undefinable, coherence
+conditions.
 
-It also allows us to show that being a magma is a _property_:
-
+<!--
 ```agda
 is-magma-is-prop : {_⋆_ : A → A → A} → is-prop (is-magma _⋆_)
 is-magma-is-prop x y i .has-is-set =
   is-hlevel-is-prop 2 (x .has-is-set) (y .has-is-set) i
-```
 
-<!--
-```agda
 instance
   H-Level-is-magma
     : ∀ {ℓ} {A : Type ℓ} {_⋆_ : A → A → A} {n}
@@ -107,33 +75,52 @@ record Magma-on (A : Type ℓ) : Type ℓ where
     has-is-magma : is-magma _⋆_
 
   open is-magma has-is-magma public
-
-Magma : (ℓ : Level) → Type (lsuc ℓ)
-Magma ℓ = Σ (Type ℓ) Magma-on
 ```
 
-We then define what it means for an equivalence between the carrier
-types of two given magmas to be an **equivalence of magmas**: it has to
-preserve the magma operation.
+A magma homomorphism is a map preserving the binary operation.
 
 ```agda
-record
-  Magma≃ (A B : Magma ℓ) (e : A .fst ≃ B .fst) : Type ℓ where
-  private
-    module A = Magma-on (A .snd)
-    module B = Magma-on (B .snd)
-
-  field
-    pres-⋆ : (x y : A .fst) → e .fst (x A.⋆ y) ≡ e .fst x B.⋆ e .fst y
-
-open Magma≃
+is-magma-hom
+  : (Aᵐ : Magma-on A) (Bᵐ : Magma-on B) (f : A → B)
+  → Type (level-of A ⊔ level-of B)
+is-magma-hom Aᵐ Bᵐ f = ∀ x y → f (x A.⋆ y) ≡ f x B.⋆ f y where
+  module A = Magma-on Aᵐ
+  module B = Magma-on Bᵐ
 ```
 
 <!--
 ```agda
-_ = Str-desc
+is-magma-hom-is-prop : ∀ (Aᵐ : Magma-on A) (Bᵐ : Magma-on B) f
+                     → is-prop (is-magma-hom Aᵐ Bᵐ f)
+is-magma-hom-is-prop _ Bᵐ _ a b i x y = Magma-on.has-is-set Bᵐ _ _ (a x y) (b x y) i
+
+open Magma-on
 ```
 -->
+
+It follows that magmas and their homomorphisms assemble into a category.
+
+```agda
+Magma-structure : ∀ ℓ → Thin-structure ℓ Magma-on
+Magma-structure ℓ .is-hom f Aᵐ Bᵐ = el (is-magma-hom Aᵐ Bᵐ f) (is-magma-hom-is-prop Aᵐ Bᵐ f)
+Magma-structure ℓ .id-is-hom _ _ = refl
+Magma-structure ℓ .∘-is-hom f g fᵐ gᵐ x y = (ap f (gᵐ x y)) ∙ (fᵐ (g x) (g y))
+Magma-structure ℓ .id-hom-unique α _ i ._⋆_ x y = α x y i
+Magma-structure ℓ .id-hom-unique {s = s} {t} α _ i .has-is-magma =
+  is-prop→pathp
+    (λ i → is-magma-is-prop {_⋆_ = λ x y → α x y i})
+    (s .has-is-magma) (t .has-is-magma) i
+
+Magmas : ∀ ℓ → Precategory  (lsuc ℓ) ℓ
+Magmas _ = Structured-objects (Magma-structure _)
+module Magmas {ℓ} = Cr (Magmas ℓ)
+
+Magmas-is-category : is-category (Magmas ℓ)
+Magmas-is-category = Structured-objects-is-category (Magma-structure _)
+
+Magma : ∀ ℓ → Type (lsuc ℓ)
+Magma ℓ = Magmas.Ob
+```
 
 ## The boolean implication magma
 
