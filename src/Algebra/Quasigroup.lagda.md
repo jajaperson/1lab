@@ -9,7 +9,6 @@ open import 1Lab.Type.Sigma
 open import Algebra.Magma
 
 open import Cat.Displayed.Univalence.Thin
-open import Cat.Displayed.Total
 open import Cat.Prelude hiding (_/_)
 
 import Cat.Reasoning
@@ -301,8 +300,10 @@ This observation lets us neatly organize right quasigroups into a [[category]].
 ```agda
 Right-quasigroups : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Right-quasigroups ℓ = Structured-objects (Right-quasigroup-structure ℓ)
-
 module Right-quasigroups {ℓ} = Cat.Reasoning (Right-quasigroups ℓ)
+
+Right-quasigroups-is-category : ∀ ℓ → is-category (Right-quasigroups ℓ)
+Right-quasigroups-is-category ℓ = Structured-objects-is-category (Right-quasigroup-structure ℓ)
 
 Right-quasigroup : (ℓ : Level) → Type (lsuc ℓ)
 Right-quasigroup ℓ = Right-quasigroups.Ob {ℓ}
@@ -592,8 +593,10 @@ This observation lets us assemble left quasigroups into a [[category]].
 ```agda
 Left-quasigroups : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Left-quasigroups ℓ = Structured-objects (Left-quasigroup-structure ℓ)
-
 module Left-quasigroups {ℓ} = Cat.Reasoning (Left-quasigroups ℓ)
+
+Left-quasigroups-is-category : ∀ ℓ → is-category (Left-quasigroups ℓ)
+Left-quasigroups-is-category ℓ = Structured-objects-is-category (Left-quasigroup-structure ℓ)
 
 Left-quasigroup : (ℓ : Level) → Type (lsuc ℓ)
 Left-quasigroup ℓ = Left-quasigroups.Ob {ℓ}
@@ -833,8 +836,10 @@ This gives us a tidy way to construct the category of quasigroups.
 ```agda
 Quasigroups : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Quasigroups ℓ = Structured-objects (Quasigroup-structure ℓ)
-
 module Quasigroups {ℓ} = Cat.Reasoning (Quasigroups ℓ)
+
+Quasigroups-is-category : ∀ ℓ → is-category (Quasigroups ℓ)
+Quasigroups-is-category ℓ = Structured-objects-is-category (Quasigroup-structure ℓ)
 
 Quasigroup : (ℓ : Level) → Type (lsuc ℓ)
 Quasigroup ℓ = Quasigroups.Ob {ℓ}
