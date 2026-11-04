@@ -46,7 +46,7 @@ open Cr Asets
 With a little effort, we can show that `Asets`{.Agda} is indeed a
 [[univalent category]]
 
-```
+```agda
 Asets-is-category : is-category Asets
 Asets-is-category .to-path {A} {B} h = Σ-pathp S R where
   module A = Tight-apartness (A .snd)

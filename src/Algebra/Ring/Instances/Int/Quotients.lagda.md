@@ -21,7 +21,7 @@ module Algebra.Ring.Instances.Int.Quotients where
 
 # Rings of integers modulo $n$
 
-```
+```agda
 ℤ/⟨_⟩ : ∀ n ⦃ _ : Positive n ⦄ → Ring lzero
 ℤ/⟨ n ⟩ = to-ring {R = Fin n} record
   { ring-is-set = hlevel 2

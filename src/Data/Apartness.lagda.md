@@ -118,7 +118,7 @@ relation is equality. An apartness relation with this property is called
 **tight**, and a type equipped with such an apartness relation is called
 an **aset**.
 
-```
+```agda
 is-tight : ∀ (_#_ : A → A → Type ℓ#) → Type (level-of A ⊔ ℓ#)
 is-tight _#_ = ∀ {x y} → ¬(x # y) → x ≡ y
 

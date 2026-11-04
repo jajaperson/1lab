@@ -38,8 +38,8 @@ open CRing R
 -->
 
 Let $R$ be a commutative ring, $S$ be a set of elements, and consider
-the [[localisation|localisation of a commutative ring]] $L := R[S\inv]$.
-By construction, if $x \in S$, then $x / 1$ is invertible $L$.
+the [[localisation|localisation of a ring]] $L := R[S\inv]$. By
+construction, if $x \in S$, then $x / 1$ is invertible $L$.
 
 ```agda
 /1-invertible : ∀ x (p : x ∈ S) → L.is-invertible (x /1)

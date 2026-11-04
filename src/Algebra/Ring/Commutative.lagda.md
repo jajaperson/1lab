@@ -25,7 +25,7 @@ open Ring-on using (_*_)
 -->
 
 
-# Commutative rings
+# Commutative rings {defines="commutative-ring"}
 
 This module is not very mathematically interesting: All it exists to do
 is to package commutative rings together into one datum.

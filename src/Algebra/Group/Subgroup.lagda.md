@@ -29,7 +29,7 @@ private module _ {ℓ} where open Cat.Displayed.Instances.Subobjects (Groups ℓ
 ```
 -->
 
-# Subgroups
+# Subgroups {defines="subgroup"}
 
 A **subgroup** $m$ of a group $G$ is a [[monomorphism]] $H \xto{m} G$,
 that is, an object of the [[poset of subobjects]] $\Sub(G)$. Since group
@@ -411,7 +411,7 @@ record normal-subgroup (G : Group ℓ) (H : ℙ ⌞ G ⌟) : Type ℓ where
 ```
 
 <!--
-```
+```agda
 module _ {ℓ} {A B : Group ℓ} (f : Groups.Hom A B) where
   open ker-rep f using (kerℙ) public
 

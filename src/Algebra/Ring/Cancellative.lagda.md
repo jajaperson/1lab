@@ -49,10 +49,10 @@ epic. Classically, an element of a nonzero ring is cancellable iff it is
 not a zero divisor.
 
 :::{.definition #approximate-cancellative-ring}
+
 An **approximate cancellative ring** is a nonzero ring for which being
 callencable is _coadditive_, i.e. $x + y$ being cancellable implies
 either $x$ or $y$ is cancellable.
-:::
 
 ```agda
   record is-approx-cancellative : Type ℓ where
@@ -62,6 +62,8 @@ either $x$ or $y$ is cancellable.
       cancellable-+ᶜ : ∀ {x y} → is-cancellable (x + y)
                      → (is-cancellable x) ∗ (is-cancellable y)
 ```
+
+:::
 
 These properties give us exactly what we need for
 
@@ -81,10 +83,10 @@ to be an [[apartness relation]].
 ```
 
 :::{.definition #cancellative-ring}
+
 A **cancellative ring** has the additional property that $0$ is the only
 non-cancellative element. Equivalently, `_#_`{.Agda} is a [[tight
 apartness relation]].
-:::
 
 ```agda
   record is-cancellative : Type ℓ where
@@ -100,6 +102,10 @@ apartness relation]].
 
     tight-apartness = to-tight-apartness #-is-apartness #-is-tight
 ```
+
+:::
+
+:::{.definition #discrete-cancellative-ring}
 
 A **discrete cancellative ring** is a cancellative ring for which this
 apartnesws relation is `decidable`{.Agda ident="#-is-decidable"}.
@@ -137,11 +143,12 @@ every element is either zero or cancellable.
     #-is-decidable x y = ⊎-map id zero-diff $ cancellable? (x - y)
 ```
 
+:::
 
-:::{.definition #integral-domain alias="approximate-integral-domain"}
+:::{.definition #integral-domain alias="approximate-integral-domain discrete-integral-domain"}
+
 A commutative cancellative ring (resp. approximate, discrete) is called
 an **integral domain** (resp. approximate, discrete).[^domain]
-:::
 
 <!--
 ```agda
@@ -161,3 +168,5 @@ is-discrete-integral-domain R = is-discrete-cancellative (ring R)
 ```
 
 [^domain]: Unrelated to domain theory.
+
+:::

@@ -10,7 +10,7 @@ open import Algebra.Ring.Field
 open import Algebra.Ring
 
 open import Data.Set.Coequaliser hiding (_/_)
-open import Data.Set.Apartness
+open import Data.Apartness
 open import Data.Sum.Base
 
 open import Homotopy.Join
@@ -26,10 +26,10 @@ module Algebra.Ring.Instances.Fractions {ℓ} (R : CRing ℓ) where
 
 # Ring of fractions
 
-Let $R$ be a [[commutative ring]] and $S$ be its set of `cancellable`{.Agda ident="is-cancellable"}
+Let $R$ be a [[commutative ring]] and $S$ be its set of `cancellable`{.Agda ident="R.is-cancellable"}
 elements. Since $1 \in S$ and $S$ is closed under multiplication, we may
-consider the localisation $\rm{Q}(R) := R[S\inv]$, called the **ring of
-fractions** of $R$.
+consider the [[localisation|localisation of a ring]] $\rm{Q}(R) :=
+R[S\inv]$, called the **ring of fractions** of $R$.
 
 <--
 ```agda 
@@ -171,7 +171,7 @@ In this case, `_/1`{.Agda} is a [[strongly extensional function]] and
 [[strong injection]] with respect to the canonical apartness relations
 on $R$ and $\rm{Q}(R)$, as
 
-```
+```agda
   /1-strong-ext : is-strongly-ext Rᶜ.tight-apartness (tight-apartness Q-is-field) _/1
   /1-strong-ext {x} {y} x-y-inv = R.monic→cancellable λ a b p →
     let

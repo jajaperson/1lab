@@ -46,6 +46,8 @@ far, as denial inequality just isn't that useful. We would like our
 fields to be equipped with tight apartness relations so that elements
 _apart_ from zero are invertible.
 
+:::{.definition #local-ring}
+
 We begin with the weaker notion of a **local ring**. These are nonzero
 rings with the property that $x + y = 1$ implies $x$ is invertible or
 $y$ is invertible.
@@ -57,6 +59,8 @@ $y$ is invertible.
       0≠1 : 0r ≠ 1r
       locality : ∀ {x y} → x + y ≡ 1r → (is-invertible x) ∗ (is-invertible y)
 ```
+
+:::
 
 These properties give us exactly what we need to show that
 
@@ -106,6 +110,8 @@ property that $x-y$ is invertible.
     apartness = to-apartness #-is-apartness
 ```
 
+:::{.definition #skewfield}
+
 A local ring is called a (Heyting) **skewfield** iff the canonical
 apartness relation `_#_`{.Agda} is `tight`{.Agda ident="#-is-tight"}.
 Equivalently, every noninvertible element is equal to zero.
@@ -125,6 +131,10 @@ Equivalently, every noninvertible element is equal to zero.
 
     tight-apartness = to-tight-apartness #-is-apartness #-is-tight
 ```
+
+:::
+
+:::{.definition #discrete-skewfield}
 
 A **discrete skewfield** is a skewfield for which this apartness
 relation is `decidable`{.Agda ident="#-is-decidable"}. Equivalently,
@@ -164,6 +174,7 @@ either zero or invertible.
     #-is-decidable x y = ⊎-map id zero-diff $ invertible? (x - y)
 ```
 
+:::
 
 <!--
 ```agda
@@ -175,6 +186,8 @@ either zero or invertible.
 ```
 -->
 
+
+:::{.definition #field alias="discrete-field"}
 
 A **field** (resp. **discrete field**) is simply a commutative skewfield
 (discrete skewfield).
@@ -192,3 +205,5 @@ is-field R = is-skewfield (ring R)
 is-discrete-field : ∀ {ℓ} → CRing ℓ → Type ℓ
 is-discrete-field R = is-discrete-skewfield (ring R)
 ```
+
+:::

@@ -118,6 +118,8 @@ instance
 ```
 -->
 
+:::{.definition #ring-homomorphism}
+
 There is a natural notion of ring homomorphism, which we get by smashing
 together that of a monoid homomorphism (for the multiplicative part) and
 of group homomorphism; Every map of rings has an underlying map of
@@ -139,6 +141,8 @@ record is-ring-hom
     pres-+  : ∀ x y → f (x A.+ y) ≡ f x B.+ f y
     pres-*  : ∀ x y → f (x A.* y) ≡ f x B.* f y
 ```
+
+:::
 
 <!--
 ```agda
@@ -263,6 +267,8 @@ open make-ring using (to-is-ring; to-ring-on; to-ring) public
 ```
 -->
 
+:::{.definition #zero-ring}
+
 This data is missing (by design, actually!) one condition which we would
 expect: $0 \ne 1$. We exploit this to give our first example of a ring,
 the **zero ring**, which has carrier set the `unit`{.Agda ident=⊤} ---
@@ -297,6 +303,8 @@ Zero-ring = to-ring {R = ⊤} λ where
   .make-ring.*-distribl _ _ _ _      → tt
   .make-ring.*-distribr _ _ _ _      → tt
 ```
+
+:::
 
 Rings, unlike other categories of algebraic structures (like that of
 [groups] or [abelian groups]), are structured enough to differentiate
