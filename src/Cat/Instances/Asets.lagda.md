@@ -12,7 +12,7 @@ import Cat.Reasoning as Cr
 module Cat.Instances.Asets (ℓ ℓ# : Level) where
 ```
 
-# Category of asets {.defines="category-of-asets"}
+# Category of asets {defines="category-of-asets"}
 
 [[Asets]] and [[strongly extensional functions]] assemble into a
 category.
