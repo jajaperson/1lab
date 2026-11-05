@@ -18,7 +18,7 @@ import Meta.Idiom
 -->
 
 ```agda
-module Algebra.Monoid.Instances.Free where
+module Algebra.Monoid.Free where
 ```
 
 <!--

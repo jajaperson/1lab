@@ -68,7 +68,7 @@ open import Homotopy.Base
 
 open import Order.Base
 
-import Algebra.Monoid.Instances.Free as Monoid
+import Algebra.Monoid.Free as Monoid
 import Algebra.Group.Free as Group
 ```
 -->
