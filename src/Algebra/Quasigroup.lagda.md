@@ -846,6 +846,7 @@ Quasigroup ℓ = Quasigroups.Ob {ℓ}
 ```
 
 <!--
+n
 ```agda
 module Quasigroup {ℓ} (A : Quasigroup ℓ) where
   open Quasigroup-on (A .snd) public
