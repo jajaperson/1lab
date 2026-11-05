@@ -3,7 +3,6 @@
 open import 1Lab.Prelude
 
 open import Algebra.Monoid.Instances.Transformation
-open import Algebra.Monoid.Category
 open import Algebra.Monoid
 
 open import Cat.Displayed.Univalence.Thin
@@ -22,12 +21,6 @@ import Cat.Reasoning as Cr
 module Algebra.Monoid.Instances.Transformation.Fin where
 ```
 
-<!--
-```agda
-private module Monoids = Cr (Monoids lzero)
-```
--->
-
 # Finite full transformation monoids {defines="finite-full-transformation-monoid"}
 
 The finite full transformation monoid $\cT_n$ represents the endomaps
@@ -42,7 +35,7 @@ module _ (n : Nat) where
 
 ```agda
   End[n] : Monoid lzero
-  End[n] = (Fin n → Fin n) , End (el! (Fin n))
+  End[n] = el! (Fin n → Fin n) , End (el! (Fin n))
 ```
 
 However, the definition of the [[full transformation monoid]] `End[n]`{.Agda}
@@ -77,7 +70,7 @@ coordinates in $\operatorname{Fin}(n)$.
   End≃𝒯 = Equiv.inverse Vec≃Fun
 
   𝒯 : Monoid lzero
-  𝒯 = Vec (Fin n) n , monoid-transport End≃𝒯 (End[n] .snd)
+  𝒯 = el! (Vec (Fin n) n) , monoid-transport End≃𝒯 (End[n] .snd)
 ```
 
 Since the monoid structure on $\cT_n$ was constructed directly from the
@@ -85,7 +78,7 @@ monoid structure on `End[n]`{.Agda}, it is clear that these give
 isomorphic monoids:
 
 ```agda
-  End≅𝒯 : (el! (End[n] .fst) , End[n] .snd) Monoids.≅ (el! (𝒯 .fst) , 𝒯 .snd)
+  End≅𝒯 : End[n] Monoids.≅ 𝒯
   End≅𝒯 = total-iso End≃𝒯 (monoid-transport-hom End≃𝒯 (End[n] .snd))
 ```
 

@@ -90,7 +90,7 @@ give the unit, both on the left and on the right:
       monoid-inverse-unique has-is-monoid _ _ _ p inversel
 
   underlying-monoid : Monoid ℓ
-  underlying-monoid = A , record
+  underlying-monoid = el! A , record
     { identity = unit ; _⋆_ = _*_ ; has-is-monoid = has-is-monoid }
 
   open Mon underlying-monoid public

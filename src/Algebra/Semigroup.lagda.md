@@ -93,7 +93,7 @@ instance
 ```
 
 A **semigroup structure on** a type packages up the binary operation and
-the axiom in a way equivalent to a `structure`{.Agda ident=Structure}.
+the axiom.
 
 ```agda
 record Semigroup-on (A : Type ℓ) : Type ℓ where

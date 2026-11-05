@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import Algebra.Monoid.Category
 open import Algebra.Semigroup
 open import Algebra.Monoid
 open import Algebra.Magma
@@ -45,7 +44,7 @@ module _
   open Cartesian-category cartesian
   open Monoid-ob
   open internal-monoid-hom
-  open Monoid-hom
+  open is-monoid-hom
   open Functor
   open _=>_
   open ∫Hom
@@ -136,7 +135,7 @@ answer is yes!
   precompose-hom-mon-hom
     : ∀ {x y m} {mon : C-Monoid m}
     → (f : Hom x y)
-    → Monoid-hom (Mon→Hom-mon y mon) (Mon→Hom-mon x mon) (_∘ f)
+    → is-monoid-hom (Mon→Hom-mon y mon) (Mon→Hom-mon x mon) (_∘ f)
   precompose-hom-mon-hom {mon = mon} f .pres-id =
     (mon .η ∘ !) ∘ f ≡⟨ pullr (sym (!-unique (! ∘ f))) ⟩
     mon .η ∘ !       ∎
@@ -198,7 +197,7 @@ homomorphism.... which it is!
   internal-mon-hom→hom-mon-hom
     : ∀ {x m n} {f : Hom m n} {m-mon : C-Monoid m} {n-mon : C-Monoid n}
     → C-Monoid-hom f m-mon n-mon
-    → Monoid-hom (Mon→Hom-mon x m-mon) (Mon→Hom-mon x n-mon) (f ∘_)
+    → is-monoid-hom (Mon→Hom-mon x m-mon) (Mon→Hom-mon x n-mon) (f ∘_)
   internal-mon-hom→hom-mon-hom {f = f} {m-mon} {n-mon} hom .pres-id =
     f ∘ m-mon .η ∘ ! ≡⟨ pulll (hom .pres-η) ⟩
     n-mon .η ∘ !     ∎

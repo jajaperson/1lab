@@ -14,7 +14,6 @@ open import Cat.Monoidal.Base
 open import Cat.Bi.Base
 open import Cat.Prelude
 
-import Algebra.Monoid.Category as Mon
 import Algebra.Monoid as Mon
 
 import Cat.Functor.Reasoning
@@ -247,7 +246,7 @@ Mon[Sets]≡Mon {ℓ} = Displayed-path F (iso[] ff (λ a → is-iso→is-equiv (
   open Monoid-on
   open is-monoid-hom
 
-  open Mon.Monoid-hom
+  open Mon.is-monoid-hom
   open Mon.Monoid-on
 ```
 
@@ -290,7 +289,7 @@ into an identification.
   ff : ∀ {a b : Set _} {f : ∣ a ∣ → ∣ b ∣} {a' b'}
      → is-equiv (F₁' F {a} {b} {f} {a'} {b'})
   ff {a} {b} {f} {a'} {b'} = biimp-is-equiv! (λ z → F₁' F z) invs where
-    invs : Mon.Monoid-hom (F .F₀' a') (F .F₀' b') f → is-monoid-hom Setsₓ f a' b'
+    invs : Mon.is-monoid-hom (F .F₀' a') (F .F₀' b') f → is-monoid-hom Setsₓ f a' b'
     invs m .pres-η = funext λ _ → m .pres-id
     invs m .pres-μ = funext λ _ → m .pres-⋆ _ _
 ```

@@ -56,5 +56,5 @@ Therefore, every join semilattice is a monoid.
 ∪-monoid .Monoid-on._⋆_ = _∪_
 ∪-monoid .Monoid-on.has-is-monoid = ∪-is-monoid
 
-module ∪ = Algebra.Monoid.Reasoning (⌞ P ⌟ , ∪-monoid)
+module ∪ = Algebra.Monoid.Reasoning (el! ⌞ P ⌟ , ∪-monoid)
 ```

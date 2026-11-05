@@ -87,7 +87,7 @@ record is-ring {ℓ} {R : Type ℓ} (1r : R) (_*_ _+_ : R → R → R) : Type �
   group .snd .Abelian-group-on.has-is-ab = +-group
 
   multiplicative-monoid : Monoid ℓ
-  multiplicative-monoid .fst = R
+  multiplicative-monoid .fst = el! R
   multiplicative-monoid .snd = record { has-is-monoid = *-monoid }
 
   module m = Mon multiplicative-monoid

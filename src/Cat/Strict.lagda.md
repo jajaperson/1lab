@@ -34,9 +34,8 @@ category] on a directed graph is naturally regarded as strict. Moreover,
 
 This is in contrast with the "categories-as-universes", or _gros_, view
 on categories. From this perspective, categories serve to organise
-objects at the set-level, like [$\thecat{Mon}$] or [$\Grp$]. These
-categories tend to be [[univalent|univalent category]], with a proper
-underlying _groupoid_ of objects.
+objects at the set-level, like [[$\thecat{Mon}$|category of monoids]] or
+[$\Grp$]. These categories tend to be [[univalent|univalent category]],
+with a proper underlying _groupoid_ of objects.
 
-[$\thecat{Mon}$]: Algebra.Monoid.Category.html
 [$\Grp$]: Algebra.Group.Cat.Base.html

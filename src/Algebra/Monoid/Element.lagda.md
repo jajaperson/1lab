@@ -13,17 +13,17 @@ import Cat.Morphism as Cm
 
 
 ```agda
-module Algebra.Monoid.Element {ℓ} {(M , Mᴹ) : Monoid ℓ} where
+module Algebra.Monoid.Element {ℓ} {M : Monoid ℓ} where
 ```
 
 # Elements of monoids
 
 <!--
 ```agda
-open Monoid-on Mᴹ renaming (_⋆_ to _*_)
+open Monoid-on (M .snd) renaming (_⋆_ to _*_ ; identity to 1m)
 
 private variable
-  x y : M
+  x y : ⌞ M ⌟
 ```
 -->
 
@@ -40,9 +40,7 @@ this `<details>` tag.
 </summary>
 
 ```agda
-open Monoid-on Mᴹ using () renaming (identity to 1m)
-
-open Cm (B Mᴹ) using
+open Cm (B $ M .snd) using
     ( is-invertible ; is-invertible-inverse ; is-invertible-is-prop
     ; Inverses ; Inverses-are-prop ; _invertible⁻¹
     ; make-inverses ; make-invertible ; inverses→invertible
@@ -95,7 +93,7 @@ An invertible element is also called a **unit**.[^1]
 [^1]: Not to be confused with the unit of an adjunction)
 
 ```agda
-Unit = Cm.Isomorphism (B Mᴹ) tt tt
+Unit = Cm.Isomorphism (B $ M .snd) tt tt
 ```
 
 ## Elements of commutative monoids

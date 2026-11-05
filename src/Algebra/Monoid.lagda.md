@@ -1,9 +1,12 @@
 <!--
 ```agda
-open import 1Lab.Prelude
-
 open import Algebra.Semigroup
 open import Algebra.Magma
+
+open import Cat.Displayed.Univalence.Thin
+open import Cat.Prelude
+
+import Cat.Reasoning as Cr
 ```
 -->
 
@@ -66,8 +69,7 @@ instance
 
 A `monoid structure on`{.Agda ident=Monoid-on} a type is given by the
 choice of identity element, the choice of binary operation, and the
-witness that these choices form a monoid. A `Monoid`{.Agda}, then, is a
-`type with`{.Agda ident=Σ} a monoid structure.
+witness that these choices form a monoid.
 
 ```agda
 record Monoid-on (A : Type ℓ) : Type ℓ where
@@ -78,9 +80,92 @@ record Monoid-on (A : Type ℓ) : Type ℓ where
     has-is-monoid : is-monoid identity _⋆_
 
   open is-monoid has-is-monoid public
+```
 
-Monoid : (ℓ : Level) → Type (lsuc ℓ)
-Monoid ℓ = Σ (Type ℓ) Monoid-on
+As mentioned above, a monoid homomorphism has to preserve both
+multiplication _and_ the identity.
+
+```agda
+record is-monoid-hom
+  (Aᵐ : Monoid-on A) (Bᵐ : Monoid-on B) (f : A → B)
+  : Type (level-of A ⊔ level-of B)
+  where
+  private
+    module A = Monoid-on Aᵐ
+    module B = Monoid-on Bᵐ
+
+  field
+    pres-id : f A.identity ≡ B.identity
+    pres-⋆ : (x y : A) → f (x A.⋆ y) ≡ f x B.⋆ f y
+```
+
+<!--
+```agda
+module _ where
+  open Monoid-on
+  open is-monoid-hom
+
+  is-monoid-hom-is-prop : ∀ {Aᵐ : Monoid-on A} {Bᵐ : Monoid-on B} {f}
+                        → is-prop $ is-monoid-hom Aᵐ Bᵐ f
+  is-monoid-hom-is-prop {Bᵐ = Bᵐ} {f} α β i = λ where
+    .pres-id → has-is-set Bᵐ _ _ (α .pres-id) (β .pres-id) i
+    .pres-⋆ x y → has-is-set Bᵐ _ _ (α .pres-⋆ x y) (β .pres-⋆ x y) i
+
+  instance
+    H-Level-monoid-hom
+      : ∀ {Aᵐ : Monoid-on A} {Bᵐ : Monoid-on B} {f} {n}
+      → H-Level (is-monoid-hom Aᵐ Bᵐ f) (suc n)
+    H-Level-monoid-hom = prop-instance is-monoid-hom-is-prop
+```
+-->
+
+:::{.definition #category-of-monoids}
+
+Monoids and their homomorphisms assemble into a category.
+
+```agda
+  Monoid-structure : ∀ ℓ → Thin-structure ℓ Monoid-on
+  Monoid-structure _ = λ where
+    .is-hom f Aᵐ Bᵐ → el! (is-monoid-hom Aᵐ Bᵐ f)
+    .id-is-hom .pres-⋆ _ _ → refl
+    .id-is-hom .pres-id → refl
+    .∘-is-hom f g fᵐ gᵐ → λ where
+      .pres-⋆ x y → ap f (gᵐ .pres-⋆ x y) ∙ fᵐ .pres-⋆ _ _
+      .pres-id → (ap f (gᵐ .pres-id)) ∙ fᵐ .pres-id
+    .id-hom-unique {s = Aᵐ} {Bᵐ} α β i → λ where
+      .identity → α .pres-id i
+      ._⋆_ x y → α .pres-⋆ x y i
+      .has-is-monoid →
+        is-prop→pathp
+          (λ i → hlevel {T = is-monoid (α .pres-id i) λ x y → α .pres-⋆ x y i} 1)
+          (Aᵐ .has-is-monoid) (Bᵐ .has-is-monoid) i
+
+  instance
+    Monoid-equational : ∀ {ℓ} → is-equational (Monoid-structure ℓ)
+    Monoid-equational {ℓ = ℓ} .is-equational.invert-id-hom {s = Aᵐ} {Bᵐ} fᵐ = fᵐ⁻¹ where
+      fᵐ⁻¹ : is-monoid-hom Bᵐ Aᵐ λ x → x
+      fᵐ⁻¹ .pres-id = sym (fᵐ .pres-id)
+      fᵐ⁻¹ .pres-⋆ x y = sym (fᵐ .pres-⋆ x y)
+
+  Monoids : ∀ ℓ → Precategory (lsuc ℓ) ℓ
+  Monoids ℓ = Structured-objects (Monoid-structure ℓ)
+  module Monoids {ℓ} = Cr (Monoids ℓ)
+
+  Monoids-is-category : is-category (Monoids ℓ)
+  Monoids-is-category = Structured-objects-is-category _
+
+  Monoid : ∀ ℓ → Type (lsuc ℓ)
+  Monoid _ = Monoids.Ob
+```
+
+:::
+
+By standard nonsense, then, the category of monoids admits a [[faithful
+functor]] into the category of sets.
+
+```agda
+Mon↪Sets : ∀ {ℓ} → Functor (Monoids ℓ) (Sets ℓ)
+Mon↪Sets = Forget-structure (Monoid-structure _)
 ```
 
 ## Constructing monoids
@@ -113,32 +198,13 @@ record make-monoid {ℓ} (A : Type ℓ) : Type ℓ where
 open make-monoid using (to-is-monoid; to-monoid-on) public
 ```
 
-## Monoid homomorphisms
-
-As mentioned above, a monoid homomorphism has to preserve both
-multiplication _and_ the identity.
-
-```agda
-record
-  Monoid-hom (s : Monoid-on A) (t : Monoid-on B)
-             (e : A → B)
-           : Type (level-of A ⊔ level-of B) where
-  private
-    module A = Monoid-on s
-    module B = Monoid-on t
-
-  field
-    pres-id : e A.identity ≡ B.identity
-    pres-⋆ : (x y : A) → e (x A.⋆ y) ≡ e x B.⋆ e y
-```
-
 Given an equivalence $e : A \simeq B$, we can transport a monoid
 structure on $A$ to one on $B$ so that $e$ becomes a homomorphism.
 
 ```agda
 module _ (e : A ≃ B) (mA : Monoid-on A) where
   open make-monoid
-  open Monoid-hom
+  open is-monoid-hom
   open Equiv e
   private module mA = Monoid-on mA
 
@@ -149,9 +215,9 @@ module _ (e : A ≃ B) (mA : Monoid-on A) where
     m ._⋆_ x y = to (from x mA.⋆ from y)
     m .1M = to mA.identity
     m .⋆-assoc x y z =
-      to (from x mA.⋆ ⌜ from (to (from y mA.⋆ from z)) ⌝) ≡⟨ ap! (η _) ⟩ 
-      to (from x mA.⋆ (from y mA.⋆ from z))               ≡⟨ ap to mA.associative ⟩ 
-      to (⌜ from x mA.⋆ from y ⌝ mA.⋆ from z)             ≡˘⟨ ap¡ (η _) ⟩ 
+      to (from x mA.⋆ ⌜ from (to (from y mA.⋆ from z)) ⌝) ≡⟨ ap! (η _) ⟩
+      to (from x mA.⋆ (from y mA.⋆ from z))               ≡⟨ ap to mA.associative ⟩
+      to (⌜ from x mA.⋆ from y ⌝ mA.⋆ from z)             ≡˘⟨ ap¡ (η _) ⟩
       to (from (to (from x mA.⋆ from y)) mA.⋆ from z)     ∎
     m .⋆-idl x =
       to (⌜ from (to mA.identity) ⌝ mA.⋆ from x)  ≡⟨ ap! (η _) ⟩
@@ -164,10 +230,10 @@ module _ (e : A ≃ B) (mA : Monoid-on A) where
       to (from x)                                 ≡⟨ ε _ ⟩
       x                                           ∎
 
-  monoid-transport-hom : Monoid-hom mA monoid-transport to
+  monoid-transport-hom : is-monoid-hom mA monoid-transport to
   monoid-transport-hom .pres-id = refl
-  monoid-transport-hom .pres-⋆ x y = 
-    to (⌜ x ⌝ mA.⋆ y)                 ≡˘⟨ ap¡ (η _) ⟩ 
+  monoid-transport-hom .pres-⋆ x y =
+    to (⌜ x ⌝ mA.⋆ y)                 ≡˘⟨ ap¡ (η _) ⟩
     to (from (to x) mA.⋆ ⌜ y ⌝)       ≡˘⟨ ap¡ (η _) ⟩
     to (from (to x) mA.⋆ from (to y)) ∎
 ```
@@ -239,4 +305,3 @@ monoid-inverse-unique {1M = 1M} {_⋆_} m e x y li1 ri2 =
   1M ⋆ y        ≡⟨ m .idl ⟩
   y             ∎
 ```
-

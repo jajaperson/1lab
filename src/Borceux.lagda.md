@@ -5,7 +5,7 @@ description: |
 <!--
 ```agda
 open import Algebra.Group.Cat.FinitelyComplete
-open import Algebra.Monoid.Category
+open import Algebra.Monoid.Instances.Free
 open import Algebra.Group.Cat.Base
 open import Algebra.Group.Free hiding (_◆_)
 open import Algebra.Group.Ab
