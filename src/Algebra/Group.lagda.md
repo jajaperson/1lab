@@ -1,14 +1,18 @@
 <!--
 ```agda
 {-# OPTIONS -vtactic.hlevel:10 #-}
-open import 1Lab.Prelude
-
 open import Algebra.Magma.Unital hiding (idl ; idr)
 open import Algebra.Semigroup
 open import Algebra.Monoid
 open import Algebra.Magma
 
+open import Cat.Displayed.Univalence.Thin
+open import Cat.Functor.Properties
+open import Cat.Prelude
+
 import Algebra.Monoid.Reasoning as Mon
+
+import Cat.Reasoning as Cat
 
 open is-monoid hiding (idl ; idr)
 ```
@@ -17,6 +21,13 @@ open is-monoid hiding (idl ; idr)
 ```agda
 module Algebra.Group where
 ```
+
+<!--
+```agda
+private variable
+  ℓ : Level
+```
+-->
 
 # Groups {defines=group}
 
@@ -239,19 +250,62 @@ instance
       {G : Group-on A} {H : Group-on B} {f}
     → H-Level (is-group-hom G H f) (suc n)
   H-Level-group-hom = prop-instance is-group-hom-is-prop
+
+module _ where
+  open is-group-hom
+  open Group-on
 ```
 -->
 
-An `equivalence`{.Agda ident=≃} is an equivalence of groups when its
-underlying map is a group homomorphism.
+:::{.definition #category-of-groups}
+
+It follows that groups and their homomorphisms form a category.
 
 ```agda
-Group≃
-  : ∀ {ℓ} (A B : Σ (Type ℓ) Group-on) (e : A .fst ≃ B .fst) → Type ℓ
-Group≃ A B (f , _) = is-group-hom (A .snd) (B .snd) f
+  Group-structure : ∀ ℓ → Thin-structure ℓ Group-on
+  Group-structure ℓ .is-hom f G G' = el! (is-group-hom G G' f)
+  Group-structure ℓ .id-is-hom        .pres-⋆ x y = refl
+  Group-structure ℓ .∘-is-hom f g α β .pres-⋆ x y =
+    ap f (β .pres-⋆ x y) ∙ α .pres-⋆ _ _
+  Group-structure ℓ .id-hom-unique {s = s} {t = t} α β i =
+    record
+      { _⋆_          = λ x y → α .pres-⋆ x y i
+      ; has-is-group =
+        is-prop→pathp (λ i → is-group-is-prop {_*_ = λ x y → α .pres-⋆ x y i})
+          (s .has-is-group)
+          (t .has-is-group)
+          i
+      }
+  Groups : ∀ ℓ → Precategory (lsuc ℓ) ℓ
+  Groups ℓ = Structured-objects (Group-structure ℓ)
+  module Groups {ℓ} = Cat (Groups ℓ)
 
-Group[_⇒_] : ∀ {ℓ} (A B : Σ (Type ℓ) Group-on) → Type ℓ
-Group[ A ⇒ B ] = Σ (A .fst → B .fst) (is-group-hom (A .snd) (B .snd))
+  Groups-is-category : ∀ {ℓ} → is-category (Groups ℓ)
+  Groups-is-category = Structured-objects-is-category (Group-structure _)
+
+  instance
+    Groups-equational : ∀ {ℓ} → is-equational (Group-structure ℓ)
+    Groups-equational .is-equational.invert-id-hom x .pres-⋆ a b = sym (x .pres-⋆ a b)
+
+  Group : ∀ ℓ → Type (lsuc ℓ)
+  Group _ = Groups.Ob
+```
+
+:::
+
+The category of groups admits a `faithful`{.Agda ident=is-faithful}
+functor into the category of sets, written $U : \rm{Groups} \to
+\Sets$, which projects out the underlying set of the group. Faithfulness
+of this functor says, in more specific words, that equality of group
+homomorphisms can be tested by comparing the underlying morphisms of
+sets.
+
+```agda
+Grp↪Sets : Functor (Groups ℓ) (Sets ℓ)
+Grp↪Sets = Forget-structure (Group-structure _)
+
+Grp↪Sets-is-faithful : is-faithful (Grp↪Sets {ℓ})
+Grp↪Sets-is-faithful = Structured-hom-path (Group-structure _)
 ```
 
 # Making groups
@@ -306,5 +360,39 @@ record make-group {ℓ} (G : Type ℓ) : Type ℓ where
   to-group-on .Group-on._⋆_ = mul
   to-group-on .Group-on.has-is-group = to-is-group
 
-open make-group using (to-is-group; to-group-on) public
+  to-group : Group ℓ
+  to-group = (el G group-is-set) , to-group-on
+
+open make-group using (to-is-group; to-group-on ; to-group) public
 ```
+
+<!--
+```agda
+open Group-on
+open is-group-hom
+
+Lift-group : ∀ {ℓ} ℓ' → Group ℓ → Group (ℓ ⊔ ℓ')
+Lift-group {ℓ} ℓ' G = G' where
+  module G = Group-on (G .snd)
+  open is-group
+  open is-monoid
+  open is-semigroup
+  open is-magma
+
+  G' : Group (ℓ ⊔ ℓ')
+  G' .fst = el! (Lift ℓ' ⌞ G ⌟)
+  G' .snd ._⋆_ (lift x) (lift y) = lift (x G.⋆ y)
+  G' .snd .has-is-group .unit = lift G.unit
+  G' .snd .has-is-group .inverse (lift x) = lift (G.inverse x)
+  G' .snd .has-is-group .has-is-monoid .has-is-semigroup .has-is-magma .has-is-set = hlevel 2
+  G' .snd .has-is-group .has-is-monoid .has-is-semigroup .associative = ap lift G.associative
+  G' .snd .has-is-group .has-is-monoid .idl = ap lift G.idl
+  G' .snd .has-is-group .has-is-monoid .idr = ap lift G.idr
+  G' .snd .has-is-group .inversel = ap lift G.inversel
+  G' .snd .has-is-group .inverser = ap lift G.inverser
+
+G→LiftG : ∀ {ℓ} (G : Group ℓ) → Groups.Hom G (Lift-group lzero G)
+G→LiftG G .fst = lift
+G→LiftG G .snd .pres-⋆ _ _ = refl
+```
+-->

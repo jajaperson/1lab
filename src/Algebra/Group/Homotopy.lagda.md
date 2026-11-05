@@ -3,12 +3,13 @@
 open import 1Lab.Reflection.Induction
 open import 1Lab.Prelude
 
-open import Algebra.Group.Cat.Base
 open import Algebra.Semigroup
 open import Algebra.Group.Ab
 open import Algebra.Monoid
 open import Algebra.Group
 open import Algebra.Magma
+
+open import Cat.Displayed.Univalence.Thin
 
 open import Data.Set.Truncation
 

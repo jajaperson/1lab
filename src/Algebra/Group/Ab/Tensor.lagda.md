@@ -1,7 +1,6 @@
 <!--
 ```agda
 open import Algebra.Group.Instances.Integers
-open import Algebra.Group.Cat.Base
 open import Algebra.Group.Ab.Hom
 open import Algebra.Group.Ab
 open import Algebra.Group

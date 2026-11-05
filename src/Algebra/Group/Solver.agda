@@ -6,7 +6,6 @@ open import Data.Fin
 open import Data.Nat
 open import Data.Dec
 
-open import Algebra.Group.Cat.Base
 open import Algebra.Group
 
 open import 1Lab.Reflection

@@ -1,10 +1,10 @@
 <!--
 ```agda
-open import Algebra.Group.Cat.Base
 open import Algebra.Group.Free
 open import Algebra.Monoid
 open import Algebra.Group
 
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Adjoint.Monadic
 open import Cat.Functor.Adjoint.Monad
 open import Cat.Functor.Equivalence
@@ -12,8 +12,6 @@ open import Cat.Functor.Properties
 open import Cat.Functor.Adjoint
 open import Cat.Diagram.Monad
 open import Cat.Prelude
-
-import Algebra.Group.Cat.Base as Grp
 
 import Cat.Reasoning
 ```
@@ -153,7 +151,7 @@ Group-is-monadic = is-precat-iso→is-equivalence
   ff : is-fully-faithful K
   ff = is-iso→is-equiv $ iso k₁inv
     (λ x → ext λ _ → refl)
-    (λ x → Grp.Grp↪Sets-is-faithful refl)
+    (λ x → Grp↪Sets-is-faithful refl)
 ```
 
 To show that the object mapping of the comparison functor is invertible,

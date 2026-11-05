@@ -1,8 +1,8 @@
 <!--
 ```agda
-open import Algebra.Group.Cat.Base
 open import Algebra.Group
 
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Instances.Sets.Complete as SL
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Initial
@@ -23,6 +23,8 @@ open Group-on
 open Groups._↪_
 private variable
   G H K : Group ℓ
+
+_ = Grp↪Sets
 ```
 -->
 
@@ -31,10 +33,10 @@ private variable
 We present explicit computations of [[finite limits]] in the category of
 groups, though do note that the [[terminal|terminal object]] group is
 also [initial] (i.e.  it is a [zero object]). Knowing that the category
-of groups admits a [[right adjoint]] functor into the category of sets
-(the [underlying set] functor) drives us in computing limits of groups
-as limits of sets, and equipping those with a group structure: we are
-_forced_ to do this since [right adjoints preserve limits].
+of groups admits a [[right adjoint]] functor `Grp↪Sets`{.Agda} into the
+category of sets drives us in computing limits of groups as limits of
+sets, and equipping those with a group structure: we are _forced_ to do
+this since [right adjoints preserve limits].
 
 [terminal]: Cat.Diagram.Terminal.html
 [initial]: Cat.Diagram.Initial.html

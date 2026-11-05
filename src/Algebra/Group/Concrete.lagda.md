@@ -2,10 +2,10 @@
 ```agda
 open import 1Lab.Path.Reasoning
 
-open import Algebra.Group.Cat.Base
 open import Algebra.Group.Homotopy
 open import Algebra.Group
 
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Equivalence
 open import Cat.Functor.Properties
 open import Cat.Morphism

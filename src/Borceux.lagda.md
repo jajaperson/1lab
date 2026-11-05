@@ -6,9 +6,9 @@ description: |
 ```agda
 open import Algebra.Group.Cat.FinitelyComplete
 open import Algebra.Monoid.Instances.Free
-open import Algebra.Group.Cat.Base
 open import Algebra.Group.Free hiding (_◆_)
 open import Algebra.Group.Ab
+open import Algebra.Group
 
 open import Cat.Morphism.Factorisation.Orthogonal
 open import Cat.Diagram.Coequaliser.RegularEpi

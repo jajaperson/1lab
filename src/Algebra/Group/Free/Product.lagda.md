@@ -3,9 +3,9 @@
 open import 1Lab.Reflection.Induction
 
 open import Algebra.Group.Cat.FinitelyComplete
-open import Algebra.Group.Cat.Base
 open import Algebra.Group
 
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Diagram.Colimit.Finite
 open import Cat.Diagram.Coproduct
 open import Cat.Diagram.Pushout

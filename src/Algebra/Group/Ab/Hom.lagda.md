@@ -33,12 +33,12 @@ the _functions_ $G \to H$, and more interested in the homomorphisms $G
 [groups]: Algebra.Group.html
 
 It turns out that the answer is no: if you try to make $\hom$ into a
-functor on [$\Grp$], equipping $A \to B$ the pointwise group structure,
-you find out that the sum of group homomorphisms can not be shown to be
-a homomorphism. But when considering [[abelian groups]], i.e. the category
-[$\Ab$], this _does_ work:
+functor on [[$\Grp$|category of groups]], equipping $A \to B$ the
+pointwise group structure, you find out that the sum of group
+homomorphisms can not be shown to be a homomorphism. But when
+considering [[abelian groups]], i.e. the category [$\Ab$], this _does_
+work:
 
-[$\Grp$]: Algebra.Group.Cat.Base.html
 [$\Ab$]: Algebra.Group.Ab.html
 
 <!--

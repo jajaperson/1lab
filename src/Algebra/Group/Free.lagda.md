@@ -2,9 +2,9 @@
 ```agda
 open import 1Lab.Reflection.Induction
 
-open import Algebra.Group.Cat.Base
 open import Algebra.Group
 
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Diagram.Initial
 open import Cat.Functor.Adjoint
 open import Cat.Prelude
@@ -177,7 +177,7 @@ associativity, identity and inverse laws that provide the cases for
 ```
 
 Now, given a set $S$, we must come up with a group $G$, with a map
-$\eta : S \to U(G)$ (in $\Sets$, where $U$ is the [underlying set functor]),
+$\eta : S \to U(G)$ (in $\Sets$, where $U$ is `Grp↪Sets`{.Agda}),
 such that, for any other group $H$, any map $S \to U(H)$ can be factored
 uniquely as $S \xrightarrow{\eta} U(G) \to U(H)$. As hinted above, we
 pick $G = \rm{Free}(S)$, the free group with $S$ as its set of

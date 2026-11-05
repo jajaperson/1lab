@@ -5,18 +5,17 @@ open import Algebra.Group.Ab
 open import Algebra.Monoid
 open import Algebra.Group
 
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Diagram.Equaliser.Kernel
 open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Biproduct
 open import Cat.Diagram.Coproduct
 open import Cat.Diagram.Terminal
 open import Cat.Diagram.Product
-open import Cat.Displayed.Total
 open import Cat.Instances.Slice
 open import Cat.Diagram.Zero
 open import Cat.Prelude hiding (_+_ ; _*_ ; _-_)
 
-import Algebra.Group.Cat.Base as Grp
 import Algebra.Group.Ab.Hom as Ab
 
 import Cat.Reasoning as Cat

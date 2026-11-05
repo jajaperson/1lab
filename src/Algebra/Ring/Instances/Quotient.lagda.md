@@ -1,11 +1,11 @@
 <!--
 ```agda
-open import Algebra.Group.Cat.Base
 open import Algebra.Group.Subgroup hiding (incl)
 open import Algebra.Ring.Ideal
 open import Algebra.Group
 open import Algebra.Ring
 
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Prelude hiding (_*_ ; _+_)
 
 open import Data.Power

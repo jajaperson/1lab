@@ -1,8 +1,8 @@
 <!--
 ```agda
-open import Algebra.Group.Cat.Base
 open import Algebra.Group
 
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Properties
 open import Cat.Prelude hiding (_*_ ; _+_)
 

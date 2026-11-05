@@ -3,7 +3,6 @@
 open import 1Lab.Prelude
 
 open import Algebra.Group.Instances.Symmetric
-open import Algebra.Group.Cat.Base
 open import Algebra.Group
 ```
 -->

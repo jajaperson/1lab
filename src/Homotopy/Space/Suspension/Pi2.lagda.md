@@ -3,10 +3,11 @@
 open import 1Lab.Path.Reasoning
 open import 1Lab.Prelude
 
-open import Algebra.Group.Cat.Base
 open import Algebra.Group.Concrete
 open import Algebra.Group.Homotopy
 open import Algebra.Group
+
+open import Cat.Displayed.Univalence.Thin
 
 open import Data.Set.Truncation
 

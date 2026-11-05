@@ -1,11 +1,11 @@
 <!--
 ```agda
 open import Algebra.Group.Cat.FinitelyComplete
-open import Algebra.Group.Cat.Base
 open import Algebra.Group.Subgroup
 open import Algebra.Group.Ab.Sum
 open import Algebra.Group.Ab
 
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Diagram.Coequaliser
 open import Cat.Diagram.Equaliser
 open import Cat.Diagram.Terminal

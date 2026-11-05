@@ -2,9 +2,9 @@
 ```agda
 open import 1Lab.Prelude
 
-open import Algebra.Group.Cat.Base
 open import Algebra.Group
 
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Adjoint
 
 open import Data.List.Properties

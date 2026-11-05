@@ -1,11 +1,11 @@
 <!--
 ```agda
 open import Algebra.Group.Instances.Integers
-open import Algebra.Group.Cat.Base
 open import Algebra.Group.Concrete
 open import Algebra.Group.Homotopy
 open import Algebra.Group
 
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Functor.Base
 open import Cat.Prelude
 

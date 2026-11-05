@@ -1,8 +1,8 @@
 <!--
 ```agda
 open import Algebra.Group.Cat.FinitelyComplete
-open import Algebra.Group.Cat.Base
 open import Algebra.Group.Concrete
+open import Algebra.Group
 
 open import Cat.Functor.Equivalence.Path
 open import Cat.Diagram.Limit.Finite

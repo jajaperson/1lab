@@ -3,11 +3,11 @@
 open import 1Lab.Reflection.Induction
 open import 1Lab.Prelude
 
-open import Algebra.Group.Cat.Base
 open import Algebra.Group.Homotopy
 open import Algebra.Group.Ab
 open import Algebra.Group
 
+open import Cat.Displayed.Univalence.Thin
 open import Cat.Base
 
 open import Data.Set.Truncation
