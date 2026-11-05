@@ -1,10 +1,9 @@
 <!--
 ```agda
-open import 1Lab.Prelude
-
 open import Cat.Displayed.Univalence.Thin
+open import Cat.Functor.Properties
 open import Cat.Univalent
-open import Cat.Base
+open import Cat.Prelude
 
 import Cat.Reasoning as Cr
 ```
@@ -119,6 +118,17 @@ Magmas-is-category = Structured-objects-is-category (Magma-structure _)
 
 Magma : ∀ ℓ → Type (lsuc ℓ)
 Magma ℓ = Magmas.Ob
+```
+
+By standard nonsense, there is a forgetful functor taking magmas to
+their underlying sets
+
+```agda
+Magmas↪Sets : Functor (Magmas ℓ) (Sets ℓ)
+Magmas↪Sets = Forget-structure (Magma-structure _)
+
+Magmas↪Sets-is-faithful : is-faithful (Magmas↪Sets {ℓ})
+Magmas↪Sets-is-faithful = Structured-hom-path (Magma-structure _)
 ```
 
 ## The boolean implication magma
