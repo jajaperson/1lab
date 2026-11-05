@@ -1,6 +1,5 @@
 <!--
 ```agda
-open import 1Lab.Univalence.SIP
 open import 1Lab.Prelude
 
 open import Cat.Displayed.Univalence.Thin
