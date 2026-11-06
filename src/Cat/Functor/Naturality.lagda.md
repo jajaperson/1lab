@@ -223,6 +223,32 @@ We also give the following helper functions:
     G .F₁ g                                           ∎
 ```
 
+The images of naturally isomorphic functors on morphisms are related by
+conjugation.
+
+```agda
+  module _ {F G : Functor C D} (η : F ≅ⁿ G) where
+```
+
+<!--
+```agda
+    private
+      module η = Isoⁿ η
+      module F = Functor F
+      module G = Functor G
+```
+-->
+
+```agda
+    nat-conj
+      : ∀ {X Y} (f : C.Hom X Y)
+      → F .F₁ f ≡ η.from · Y D.∘ G .F₁ f D.∘ η · X
+    nat-conj {X} {Y} f =
+      F.F₁ f                            ≡⟨ D.introl (η.invr ηₚ Y) ⟩
+      (η.from · Y D.∘ η · Y) D.∘ F.F₁ f ≡⟨ D.pullr (η.to .is-natural X Y f) ⟩
+      η.from · Y D.∘ G .F₁ f D.∘ η · X  ∎
+```
+
 Natural endomorphisms of the identity functor commute in the following
 sense:
 

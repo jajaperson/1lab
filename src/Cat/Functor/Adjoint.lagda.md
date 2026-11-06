@@ -437,6 +437,9 @@ the functor $\cD(X,U(-))$.
       .is-iso.from f → U.₁ f D.∘ unit
       .is-iso.rinv _ → unique _ refl
       .is-iso.linv _ → commute
+
+    fold-equiv : ∀ {B} → D.Hom X (U.₀ B) ≃ C.Hom free B
+    fold-equiv {B} = _ , fold-is-equiv B
 ```
 
 <!--

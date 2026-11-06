@@ -439,3 +439,37 @@ equiv-on-objects→split-eso {D = D} F eqv y =
 equiv-on-objects→eso : ∀ (F : Functor C D) → is-equiv-on-objects F → is-eso F
 equiv-on-objects→eso F eqv y = inc (equiv-on-objects→split-eso F eqv y)
 ```
+
+## Naturality
+
+Since natural isomorphisms give the correct notion of sameness for
+functors, categorical properties of functors can be transported along
+natural isomorphisms.
+
+<!--
+```agda
+module _ {o ℓ o' ℓ'}
+  {C : Precategory o ℓ} {D : Precategory o' ℓ'}
+  where
+
+  private
+    module C = Cat.Reasoning C
+    module D = Cat.Reasoning D
+    variable
+      F G : Functor C D
+```
+-->
+
+```agda
+  substⁿ-≡ : F ≅ⁿ G
+           → ∀ {X Y} {f g : C.Hom X Y}
+           → F .F₁ f ≡ F .F₁ g → G .F₁ f ≡ G .F₁ g
+  substⁿ-≡ {F} {G} η {X} {Y} {f} {g} p =
+    G .F₁ f                                    ≡⟨ nat-conj (η ni⁻¹) f ⟩
+    η · Y D.∘ ⌜ F .F₁ f ⌝ D.∘ η .Isoⁿ.from · X ≡⟨ ap! p ⟩
+    η · Y D.∘ F .F₁ g  D.∘ η .Isoⁿ.from · X    ≡˘⟨ nat-conj (η ni⁻¹) g ⟩
+    G .F₁ g                                    ∎
+
+  substⁿ-faithful : F ≅ⁿ G → is-faithful F → is-faithful G
+  substⁿ-faithful η p q = p (substⁿ-≡ (η ni⁻¹) q)
+```
