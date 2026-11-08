@@ -168,6 +168,14 @@ Mon↪Sets : ∀ {ℓ} → Functor (Monoids ℓ) (Sets ℓ)
 Mon↪Sets = Forget-structure (Monoid-structure _)
 ```
 
+Alternatively, we can view monoids as a [[displayed category]] over
+sets.
+
+```agda
+Monoids-on : ∀ ℓ → Displayed (Sets ℓ) ℓ ℓ
+Monoids-on ℓ = Thin-structure-over (Monoid-structure ℓ)
+```
+
 ## Constructing monoids
 
 The interface to `Monoid-on`{.Agda} is contains some annoying nesting,
@@ -195,51 +203,11 @@ record make-monoid {ℓ} (A : Type ℓ) : Type ℓ where
   to-monoid-on .Monoid-on._⋆_ = _⋆_
   to-monoid-on .Monoid-on.has-is-monoid = to-is-monoid
 
-open make-monoid using (to-is-monoid; to-monoid-on) public
+  to-monoid : Monoid ℓ
+  to-monoid = el A monoid-is-set , to-monoid-on
+
+open make-monoid using (to-is-monoid; to-monoid-on ; to-monoid) public
 ```
-
-Given an equivalence $e : A \simeq B$, we can transport a monoid
-structure on $A$ to one on $B$ so that $e$ becomes a homomorphism.
-
-```agda
-module _ (e : A ≃ B) (mA : Monoid-on A) where
-  open make-monoid
-  open is-monoid-hom
-  open Equiv e
-  private module mA = Monoid-on mA
-
-  monoid-transport : Monoid-on B
-  monoid-transport = to-monoid-on m where
-    m : make-monoid B
-    m .monoid-is-set = Equiv→is-hlevel 2 inverse mA.has-is-set
-    m ._⋆_ x y = to (from x mA.⋆ from y)
-    m .1M = to mA.identity
-    m .⋆-assoc x y z =
-      to (from x mA.⋆ ⌜ from (to (from y mA.⋆ from z)) ⌝) ≡⟨ ap! (η _) ⟩
-      to (from x mA.⋆ (from y mA.⋆ from z))               ≡⟨ ap to mA.associative ⟩
-      to (⌜ from x mA.⋆ from y ⌝ mA.⋆ from z)             ≡˘⟨ ap¡ (η _) ⟩
-      to (from (to (from x mA.⋆ from y)) mA.⋆ from z)     ∎
-    m .⋆-idl x =
-      to (⌜ from (to mA.identity) ⌝ mA.⋆ from x)  ≡⟨ ap! (η _) ⟩
-      to (mA.identity mA.⋆ from x)                ≡⟨ ap to mA.idl ⟩
-      to (from x)                                 ≡⟨ ε _ ⟩
-      x                                           ∎
-    m .⋆-idr x =
-      to (from x mA.⋆ ⌜ from (to mA.identity) ⌝)  ≡⟨ ap! (η _) ⟩
-      to (from x mA.⋆ mA.identity)                ≡⟨ ap to mA.idr ⟩
-      to (from x)                                 ≡⟨ ε _ ⟩
-      x                                           ∎
-
-  monoid-transport-hom : is-monoid-hom mA monoid-transport to
-  monoid-transport-hom .pres-id = refl
-  monoid-transport-hom .pres-⋆ x y =
-    to (⌜ x ⌝ mA.⋆ y)                 ≡˘⟨ ap¡ (η _) ⟩
-    to (from (to x) mA.⋆ ⌜ y ⌝)       ≡˘⟨ ap¡ (η _) ⟩
-    to (from (to x) mA.⋆ from (to y)) ∎
-```
-
-Monoids of a given universe level and their morphisms are assembled into
-the [[category of monoids]].
 
 ## Relationships to unital magmas
 

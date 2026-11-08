@@ -1,13 +1,12 @@
 <!--
 ```agda
-open import 1Lab.Prelude hiding (_*_ ; _+_)
-
 open import Algebra.Semigroup
 open import Algebra.Group.Ab
 open import Algebra.Monoid
 open import Algebra.Group
 
 open import Cat.Displayed.Univalence.Thin
+open import Cat.Prelude hiding (_*_ ; _+_)
 open import Cat.Base
 
 open import Data.Int.Properties
@@ -192,8 +191,19 @@ Rings : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Rings _ = Structured-objects (Ring-structure _)
 module Rings {ℓ} = Cat.Reasoning (Rings ℓ)
 
+rings-is-category : ∀ {ℓ} → is-category (Rings ℓ)
+rings-is-category = Structured-objects-is-category (Ring-structure _)
+
 Ring : ∀ ℓ → Type (lsuc ℓ)
 Ring ℓ = Rings.Ob
+```
+
+Alternatively, we can view rings as a [[displayed category]] over
+sets.
+
+```agda
+Rings-on : ∀ ℓ → Displayed (Sets ℓ) ℓ ℓ
+Rings-on ℓ = Thin-structure-over (Ring-structure ℓ)
 ```
 
 ## In components
@@ -221,7 +231,7 @@ record make-ring {ℓ} (R : Type ℓ) : Type ℓ where
     +-assoc : ∀ x y z → x + (y + z) ≡ (x + y) + z
     +-comm  : ∀ x y → x + y ≡ y + x
 
-    -- R is a commutative monoid:
+    -- R is a monoid:
     1R      : R
     _*_     : R → R → R
     *-idl   : ∀ x → 1R * x ≡ x

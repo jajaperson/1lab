@@ -39,8 +39,8 @@ module _
   ∫ᶠ : Functor (∫ ℰ) (∫ ℱ)
   ∫ᶠ .F₀ (x , x') = ₀ F x , ₀' F' x'
   ∫ᶠ .F₁ (∫hom f f') = ∫hom _ (₁' F' f')
-  ∫ᶠ .F-id = ∫Hom-path ℱ _ (F' .F-id')
-  ∫ᶠ .F-∘ (∫hom f f') (∫hom g g') = ∫Hom-path ℱ _ (F' .F-∘')
+  ∫ᶠ .F-id = ∫Hom-path ℱ _ $ F' .F-id'
+  ∫ᶠ .F-∘ (∫hom f f') (∫hom g g') = ∫Hom-path ℱ _ $ F' .F-∘'
 ```
 
 The total functor respects the projection `πᶠ`{.Agda} to the base
@@ -163,9 +163,9 @@ module _
 
 ```agda
   ∫ⁿ : ∫ᶠ F' => ∫ᶠ G'
-  ∫ⁿ = record where
-    η (x , x') = ∫hom _ (η' x')
-    is-natural (x , x') (y , y') (∫hom f f') = ∫Hom-path ℱ _ (is-natural' x' y' f')
+  ∫ⁿ = NT
+    (λ (x , x') → ∫hom _ (η' x'))
+    λ (x , x') (y , y') (∫hom f f') → ∫Hom-path ℱ _ $ is-natural' x' y' f'
 ```
 
 Applying the projection `πᶠ`{.Agda} to the total natural transformation
@@ -177,4 +177,45 @@ $\int\eta'$ gives back $\eta$ in the following sense:
     (ηⁿ ◂ πᶠ ℰ) (πᶠ ℱ ▸ ∫ⁿ)
   ∫ⁿ-preserves-base = Nat-pathp
     (∫ᶠ-preserves-base F') (∫ᶠ-preserves-base G') λ x → refl
+```
+
+# Total functor of a vertical functor
+
+<!--
+```agda
+module _ 
+  {oa ℓa oe ℓe of ℓf}
+  {A : Precategory oa ℓa} {ℰ : Displayed A oe ℓe} {ℱ : Displayed A of ℓf}
+  (F' : Vertical-functor ℰ ℱ)
+  where
+```
+-->
+
+The same constructions work mutatis mutandis for [[vertical functors]]
+and [[vertical natural transformations]].
+
+```agda
+  ∫ᶠ↓ : Functor (∫ ℰ) (∫ ℱ)
+  ∫ᶠ↓ = ∫ᶠ F'
+```
+
+<!--
+```agda
+module _
+  {oa ℓa oe ℓe of ℓf}
+  {A : Precategory oa ℓa} {ℰ : Displayed A oe ℓe} {ℱ : Displayed A of ℓf}
+  {F' : Vertical-functor ℰ ℱ}
+  {G' : Vertical-functor ℰ ℱ}
+  (η'ⁿ : F' =>↓ G')
+  where
+
+  open _=>↓_ η'ⁿ
+```
+-->
+
+```agda
+  ∫ⁿ↓ : ∫ᶠ↓ F' => ∫ᶠ↓ G'
+  ∫ⁿ↓ = NT
+    (λ (x , x') → ∫hom _ (η' x'))
+    λ (x , x') (y , y') (∫hom f f') → ∫Hom-path ℱ _ $ is-natural' x' y' f'
 ```

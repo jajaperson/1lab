@@ -114,12 +114,17 @@ Abelian-group-structure ℓ .id-hom-unique {s = s} {t} α _ = p where
 
 Ab : ∀ ℓ → Precategory (lsuc ℓ) ℓ
 Ab ℓ = Structured-objects (Abelian-group-structure ℓ)
-
 module Ab {ℓ} = Cat.Reasoning (Ab ℓ)
+
+Ab-is-category : ∀ {ℓ} → is-category (Ab ℓ)
+Ab-is-category = Structured-objects-is-category (Abelian-group-structure _)
 
 instance
   Ab-equational : ∀ {ℓ} → is-equational (Abelian-group-structure ℓ)
   Ab-equational .is-equational.invert-id-hom = Groups-equational .is-equational.invert-id-hom
+
+Abelian-groups-on : ∀ ℓ → Displayed (Sets ℓ) ℓ ℓ
+Abelian-groups-on ℓ = Thin-structure-over (Abelian-group-structure ℓ)
 ```
 
 <!--

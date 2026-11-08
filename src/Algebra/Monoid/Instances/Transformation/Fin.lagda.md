@@ -1,12 +1,13 @@
 <!--
 ```agda
-open import 1Lab.Prelude
-
 open import Algebra.Monoid.Instances.Transformation
+open import Algebra.Monoid.Cat.Isofibration
 open import Algebra.Monoid
 
-open import Cat.Displayed.Univalence.Thin
+open import Cat.Displayed.Isofibration
 open import Cat.Displayed.Total
+open import Cat.Instances.Sets
+open import Cat.Prelude
 
 open import Data.Vec.Properties
 open import Data.Product.NAry
@@ -14,12 +15,20 @@ open import Data.Fin.Base
 open import Data.Vec.Base
 
 import Cat.Reasoning as Cr
+
+open Isofibration (Monoids-isofibration lzero)
 ```
 -->
 
 ```agda
 module Algebra.Monoid.Instances.Transformation.Fin where
 ```
+
+<!--
+```agda
+private module Sets = Cr (Sets lzero)
+```
+-->
 
 # Finite full transformation monoids {defines="finite-full-transformation-monoid"}
 
@@ -35,7 +44,7 @@ module _ (n : Nat) where
 
 ```agda
   End[n] : Monoid lzero
-  End[n] = el! (Fin n → Fin n) , End (el! (Fin n))
+  End[n] = el! _ , End (el! (Fin n))
 ```
 
 However, the definition of the [[full transformation monoid]] `End[n]`{.Agda}
@@ -59,18 +68,19 @@ something similar in Mikan. Secondly, the product of two elements of
 to an element of $\operatorname{Fin}(n)$. We would like equal elements
 of $\cT_n$ to be _definitionally_ equal whenever possible.
 
-We can solve both these problems using the equivalence between the
-underlying set of `End[n]`{.Agda} and [vectors] of length $n$ with
+We can solve both these problems using the [[monoids isofibration]] by
+transporting the monoid structure on the underlying set of `End[n]`{.Agda}
+along the equivalence to the set of [vectors] of length $n$ with
 coordinates in $\operatorname{Fin}(n)$.
 
 [vectors]: Data.Vec.Base.html
 
 ```agda
-  End≃𝒯 : ⌞ End[n] ⌟ ≃ Vec (Fin n) n
-  End≃𝒯 = Equiv.inverse Vec≃Fun
+  ⌞End⌟≅⌞𝒯⌟ : End[n] .fst Sets.≅ el! (Vec (Fin n) n)
+  ⌞End⌟≅⌞𝒯⌟ = equiv→iso $ Equiv.inverse Vec≃Fun
 
   𝒯 : Monoid lzero
-  𝒯 = el! (Vec (Fin n) n) , monoid-transport End≃𝒯 (End[n] .snd)
+  𝒯 = el! _ , ⌞End⌟≅⌞𝒯⌟ ^* (End[n] .snd)
 ```
 
 Since the monoid structure on $\cT_n$ was constructed directly from the
@@ -79,7 +89,7 @@ isomorphic monoids:
 
 ```agda
   End≅𝒯 : End[n] Monoids.≅ 𝒯
-  End≅𝒯 = total-iso End≃𝒯 (monoid-transport-hom End≃𝒯 (End[n] .snd))
+  End≅𝒯 = iso[]→total-iso (Monoids-on lzero) (^*-lifts ⌞End⌟≅⌞𝒯⌟ (End[n] .snd))
 ```
 
 Using [[list syntax for vectors]], the element $a$ above can be written

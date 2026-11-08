@@ -109,8 +109,8 @@ Magma-structure ℓ .id-hom-unique {s = s} {t} α _ i .has-is-magma =
     (λ i → is-magma-is-prop {_⋆_ = λ x y → α x y i})
     (s .has-is-magma) (t .has-is-magma) i
 
-Magmas : ∀ ℓ → Precategory  (lsuc ℓ) ℓ
-Magmas _ = Structured-objects (Magma-structure _)
+Magmas : ∀ ℓ → Precategory (lsuc ℓ) ℓ
+Magmas ℓ = Structured-objects (Magma-structure ℓ)
 module Magmas {ℓ} = Cr (Magmas ℓ)
 
 Magmas-is-category : is-category (Magmas ℓ)
@@ -129,6 +129,13 @@ Magmas↪Sets = Forget-structure (Magma-structure _)
 
 Magmas↪Sets-is-faithful : is-faithful (Magmas↪Sets {ℓ})
 Magmas↪Sets-is-faithful = Structured-hom-path (Magma-structure _)
+```
+
+Alternatively, we can view magmas as a [[displayed category]] over sets.
+
+```agda
+Magmas-on : ∀ ℓ → Displayed (Sets ℓ) ℓ ℓ
+Magmas-on ℓ = Thin-structure-over (Magma-structure ℓ)
 ```
 
 ## The boolean implication magma

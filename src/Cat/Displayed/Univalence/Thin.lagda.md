@@ -118,7 +118,10 @@ By construction, such a category of structured objects admits a
 
   Structured-hom-path : is-faithful Forget-structure
   Structured-hom-path p = ∫Hom-path Thin-structure-over p prop!
+```
 
+<!--
+```agda
 module _ {ℓ o' ℓ'} {S : Type ℓ → Type o'} {spec : Thin-structure ℓ' S} where
   private
     module So = Precategory (Structured-objects spec)
@@ -131,13 +134,28 @@ module _ {ℓ o' ℓ'} {S : Type ℓ → Type o'} {spec : Thin-structure ℓ' S}
     Extensional-Hom ⦃ sa ⦄ = injection→extensional!
       (Structured-hom-path spec) sa
     {-# OVERLAPPABLE Extensional-Hom #-}
+```
+-->
 
+In particular, a homomorphism is monic if its underlying function is
+injective.
+
+```agda
   Homomorphism-monic
     : ∀ {x y} (f : So.Hom x y)
     → (∀ {x y} (p : f · x ≡ f · y) → x ≡ y)
     → Som.is-monic f
   Homomorphism-monic f wit g h p = ext λ x → wit (ap fst p $ₚ x)
+```
 
+## Equational structures
+
+We call a thin structure $S$ **equational** if any bijective
+$S$-homomorphism $f : A \to B$ is $S$-isomorphisms. In fact, it is
+sufficient to prove the case where $A$ and $B$ have the same underlying
+set and $f$ is the identity function.
+
+```agda
 record is-equational {ℓ o' ℓ'} {S : Type ℓ → Type o'} (spec : Thin-structure ℓ' S) : Type (lsuc ℓ ⊔ o' ⊔ ℓ') where
   field
     invert-id-hom : ∀ {x} {s t : S x} → ∣ spec .is-hom (λ x → x) s t ∣ → ∣ spec .is-hom (λ x → x) t s ∣

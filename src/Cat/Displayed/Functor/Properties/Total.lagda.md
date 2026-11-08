@@ -52,6 +52,10 @@ interact with the corresponding [properties of the base functor] $F :
 [properties of the base functor]: Cat.Functor.Properties.html
 
 ```agda
+∫-faithful : is-faithful F → is-faithful[] F' → is-faithful ∫F'
+∫-faithful  faith faith' {x = _} {x = f} {g} p = ∫Hom-path ℰ
+  (faith $ ap (∫Hom.fst) p) (faith' $ ℱ.cast[] $ ap (∫Hom.snd) p)
+
 ∫-ff : is-fully-faithful F → is-ff[] F' → is-fully-faithful ∫F'
 ∫-ff ff ff' {x = (x , x')} {y = (y , y')} = is-iso→is-equiv (iso inv invr invl) where
   module ff = Equiv (F.₁ {x} {y} , ff)

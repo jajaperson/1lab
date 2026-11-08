@@ -276,6 +276,7 @@ It follows that groups and their homomorphisms form a category.
           (t .has-is-group)
           i
       }
+
   Groups : ∀ ℓ → Precategory (lsuc ℓ) ℓ
   Groups ℓ = Structured-objects (Group-structure ℓ)
   module Groups {ℓ} = Cat (Groups ℓ)
@@ -289,6 +290,13 @@ It follows that groups and their homomorphisms form a category.
 
   Group : ∀ ℓ → Type (lsuc ℓ)
   Group _ = Groups.Ob
+```
+
+Alternatively, we can view groups as a [[displayed category]] over sets.
+
+```agda
+Groups-on : ∀ ℓ → Displayed (Sets ℓ) ℓ ℓ
+Groups-on ℓ = Thin-structure-over (Group-structure ℓ)
 ```
 
 :::
