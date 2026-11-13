@@ -37,9 +37,9 @@ Submagma : Magma ℓ → Type (lsuc ℓ)
 Submagma = Subobject
 ```
 
-One can adopt the alternative point of view that a submagma is a
-predicate $S : A \to \prop$: We say $S$ _represents_ a submagma if it
-is closed under the binary operation.
+One can adopt the alternative point of view that a submagma is a special
+kind of predicate $S : A \to \prop$: We say $S$ _represents_ a submagma
+if it is closed under the binary operation.
 
 ```agda
 represents-submagma : (A : Magma ℓ) (S : ℙ ⌞ A ⌟) → Type ℓ
@@ -48,13 +48,13 @@ represents-submagma A S = ∀ {x y} → x ∈ S → y ∈ S → (x ⋆ y) ∈ S 
 ```
 
 If $S$ represents a submagma, then its total space inherits a magma
-structure from $A$ so that the first projection $\Sigma S \xto{m} A$ is
-a submagma.
+structure from $A$ so that the first projection $\int_p S \xto{m} A$ is
+a magma homomorphism.
 
 ```agda
 rep-submagma→magma-on
   : (A : Magma ℓ) (S : ℙ ⌞ A ⌟) → represents-submagma A S
-  → Magma-on (Σ[ x ∈ A ] x ∈ S)
+  → Magma-on (∫ₚ S)
 rep-submagma→magma-on A H sm = let open Magma-on (A .snd) in λ where
     .Magma-on._⋆_ (x , x∈S) (y , y∈S) → (x ⋆ y) , sm x∈S y∈S
     .Magma-on.has-is-magma .is-magma.has-is-set → hlevel 2
@@ -68,7 +68,7 @@ predicate→submagma A S sm = record { map = it ; monic = ism } where
   it .snd x y = refl
 
   ism : Magmas.is-monic it
-  ism = Homomorphism-monic it λ p → Σ-prop-path! p
+  ism = Homomorphism-monic it Σ-prop-path!
 ```
 
 ## Images
