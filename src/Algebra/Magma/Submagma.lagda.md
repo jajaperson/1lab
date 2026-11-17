@@ -27,7 +27,7 @@ private
 ```
 -->
 
-# Submagmas
+# Submagmas {defines="submagma"}
 
 A **submagma** $m$ of a magma $A$ is a [[monomorphism]] $S \xto{m} R$,
 that is, an object of the [[poset of subobjects]] $\Sub(G)$.

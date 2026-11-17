@@ -13,7 +13,17 @@ open import Data.Nat.Base
 module Data.Fin.Arithmetic where
 ```
 
-# Modular arithmetic on finite sets
+# Modular arithmetic on finite sets {defines="modular-arithmetic"}
+
+This module defines the basic operations of modular arithmetic on the
+[[standard finite sets]] and proves some of its elementary properties.
+[Elsewhere] we assemble these results into a [[ring]] structure on
+$\operatorname{Fin}(n)$.
+
+[Elsewhere]: Algebra.Ring.Instances.Int.Quotients.html
+
+We start by defining a version of `_%_`{.Agda} whose codomain is
+$\operatorname{Fin}(n)$.
 
 ```agda
 _%ᶠ_ : (x n : Nat) ⦃ _ : Positive n ⦄ → Fin n
@@ -23,12 +33,21 @@ infixl 8 _%ᶠ_
 
 %ᶠ-pres-0 : ∀ {n} ⦃ _ : Positive n ⦄ → 0 %ᶠ n ≡ 0
 %ᶠ-pres-0 {suc _} = refl
+```
 
+For a fixed modulus $n$, we locally adopt the notation $[x]$ for the
+remainder of $x : \NN$.
+
+```agda
 module _ {n : Nat} ⦃ n-pos : Positive n ⦄ where
   private
     [_] : Nat → Fin n
     [_] = (_%ᶠ n)
+```
 
+We can now define the operations of modular arithmetic.
+
+```agda
   _+ₘ_ : Fin n → Fin n → Fin n
   x +ₘ y = [ lower x + lower y ]
 
@@ -46,19 +65,30 @@ module _ {n : Nat} ⦃ n-pos : Positive n ⦄ where
 
   infixl 8 _+ₘ_ _-ₘ_
   infixl 9 _*ₘ_
-  
+```
+
+We will make use of the following lemmata.
+
+```agda
   lower-%ᶠ : (x : Fin n) → [ lower x ] ≡ x
-  lower-%ᶠ (fin x ⦃ x<b ⦄) = fin-ap $ x<y→x%y≡x x n x<b
+  lower-%ᶠ x = fin-ap $ Fin-% x
 
   %ᶠ-clear : ∀ x y → [ x * n + y ] ≡ [ y ]
   %ᶠ-clear x y = fin-ap $ (%-clear n x y)
 
   %ᶠ-ker : ∀ x → [ x * n ] ≡ 0
   %ᶠ-ker x = ap [_] (sym (+-zeror (x * n))) ∙∙ %ᶠ-clear x 0 ∙∙ %ᶠ-pres-0
+```
 
+We can show that the addition and multiplication operations have the
+usual properties by showing that the operation $x \mapsto [x]$ respects
+these operations, and then appealing to the corresponding properties of
+`Nat`.{Agda}
+
+```agda
   %ᶠ-pres-+ : ∀ x y → [ x + y ] ≡ [ x ] +ₘ [ y ]
   %ᶠ-pres-+ x y = fin-ap $ %-pres-+ n x y
-  
+
   %ᶠ-pres-* : ∀ x y → [ x * y ] ≡ [ x ] *ₘ [ y ]
   %ᶠ-pres-* x y = fin-ap $ %-pres-* n x y
 
@@ -73,7 +103,7 @@ module _ {n : Nat} ⦃ n-pos : Positive n ⦄ where
 
   +ₘ-zerol : ∀ x → 0 +ₘ x ≡ x
   +ₘ-zerol x = lower-%ᶠ x
-  
+
   +ₘ-zeror : ∀ x → x +ₘ 0 ≡ x
   +ₘ-zeror x =
     x +ₘ 0      ≡⟨ (ap (_%ᶠ n) $ +-zeror (lower x)) ⟩

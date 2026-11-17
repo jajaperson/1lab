@@ -228,3 +228,19 @@ divides→rem-zero : ∀ n x → ⦃ _ : Positive n ⦄ → n ∣ℤ x → x %�
 divides→rem-zero n@(suc _) x ⦃ p ⦄ n∣x = divides-diff→same-rem n x 0 ⦃ p ⦄
   (subst (fibre (_*ℤ pos n)) (sym (+ℤ-zeror x)) (∣ℤ→fibre n∣x))
 ```
+
+The following lemma is useful for showing that two remainders for a
+common modulus are equal.
+
+```agda
+%ℤ-clear : ∀ n ⦃ _ : Positive n ⦄ x y → (x *ℤ pos n +ℤ y) %ℤ n ≡ y %ℤ n
+%ℤ-clear n x y = ap remℤ $ DivModℤ-unique (x *ℤ pos n +ℤ y) n
+  (divide-posℤ (x *ℤ pos n +ℤ y) n)
+  $ divmodℤ (x +ℤ y /ℤ n) (y %ℤ n) (forget p) (x%ℤy<y y n)
+  where
+    p =
+      x *ℤ pos n +ℤ ⌜ y ⌝                               ≡⟨ ap! $ is-divmodℤ y n ⟩
+      x *ℤ pos n +ℤ (y /ℤ n *ℤ pos n +ℤ pos (y %ℤ n))   ≡⟨ +ℤ-assoc (x *ℤ pos n) _ _ ⟩
+      ⌜ x *ℤ pos n +ℤ y /ℤ n *ℤ pos n ⌝ +ℤ pos (y %ℤ n) ≡˘⟨ ap¡ $ *ℤ-distribr (pos n) x (y /ℤ n) ⟩
+      (x +ℤ y /ℤ n) *ℤ pos n +ℤ pos (y %ℤ n)            ∎
+```

@@ -68,3 +68,15 @@ Lift-ring-hom-r f-hom .pres-id    = ap lift $ f-hom .pres-id
 Lift-ring-hom-r f-hom .pres-* x y = ap lift $ f-hom .pres-* x y
 Lift-ring-hom-r f-hom .pres-+ x y = ap lift $ f-hom .pres-+ x y
 ```
+
+<!--
+```agda
+Unlift-ring-hom-l
+  : ∀ {a b a'} {A : Type a} {Aᴿ : Ring-on A} {B : Type b} {Bᴿ : Ring-on B} {f}
+  → is-ring-hom (Lift-ring-on a' Aᴿ) Bᴿ f
+  → is-ring-hom Aᴿ Bᴿ (f ∘ lift)
+Unlift-ring-hom-l f-hom .pres-id    = f-hom .pres-id
+Unlift-ring-hom-l f-hom .pres-* x y = f-hom .pres-* (lift x) (lift y)
+Unlift-ring-hom-l f-hom .pres-+ x y = f-hom .pres-+ (lift x) (lift y)
+```
+-->

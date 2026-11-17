@@ -44,7 +44,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
 
     module R = Kit R'
 
-    ℤ↪R-rh = Int-is-initial R' .centre
+    ℤ↪R-rh = Liftℤ-is-initial R' .centre
     module ℤ↪R = is-ring-hom (ℤ↪R-rh .snd)
 
     open CRing-on cring using (*-commutes)
@@ -56,7 +56,7 @@ module Impl {ℓ} {R : Type ℓ} (cring : CRing-on R) where
     : {h' : Int → R}
     → is-ring-hom (Liftℤ {ℓ} .snd) (R' .snd) (h' ⊙ lower)
     → ∀ x → embed-coe x ≡ h' x
-  embed-lemma p x = Int-is-initial R' .paths (∫hom _ p) ·ₚ lift x
+  embed-lemma p x = Liftℤ-is-initial R' .paths (∫hom _ p) ·ₚ lift x
 
   data Poly   : Nat → Type ℓ
   data Normal : Nat → Type ℓ

@@ -19,37 +19,34 @@ import Data.Nat as Nat
 -->
 
 ```agda
-module Algebra.Ring.Cat.Initial {ℓ} where
+module Algebra.Ring.Cat.Initial where
 ```
 
 # The initial ring {defines="initial-ring"}
 
 We have, in the introduction to rings, mentioned offhand that the ring
 $\ZZ$ is an initial object. This turns out to be a fairly nontrivial
-theorem to formalise, so we have decided to do so in this module. For
-starters, note that the ring $\ZZ$ is an object of the category of
-"rings in the zeroth universe", whereas we would like any category of
-$\kappa$-compact rings to have its own initial object. So, the first
-thing to do is lift $\ZZ$ to the larger universe:
+theorem to formalise, so we have decided to do so in this module.
 
-```agda
-Liftℤ : Ring ℓ
-Liftℤ = Lift-ring ℓ ℤ
-```
+The theorem we are interested in is as follows: For a ring $R$, there is
+a contractible space of homomorphisms $\ZZ \to R$. The definition of
+this construction is _fairly_ involved, as algebra tends to be, so let's
+see it in parts: The first thing we must do is write a procedure to turn
+natural numbers into elements of $R$. There's really only one choice,[^rem]
+so here it is:
 
-With that set up out of the way, we can now proceed to the _actual_
-theorem we're interested in: For a ring $R$, there is a contractible
-space of homomorphisms $\ZZ \to R$. The definition of this construction
-is _fairly_ involved, as algebra tends to be, so let's see it in parts:
-The first thing we must do is write a procedure to turn natural numbers
-into elements of $R$. There's really only one choice^[though the fact
-that there's only one choice is sorta the theorem we are trying to
-prove...], so here it is:
+[^rem]:
+  Though the fact that there's only one choice is sorta the
+  theorem we are trying to prove...
 
-```agda
-Int-is-initial : is-initial (Rings ℓ) Liftℤ
-Int-is-initial R = contr z→r λ x → ext (lemma x) where
+
+ℤ-is-initial : is-initial (Rings lzero) ℤ
+ℤ-is-initial R = contr z→r λ x → ext (lemma x) where
   module R = Kit R
+
+```agda
+private module _ {ℓ} {R : Type ℓ} (Rʳ : Ring-on R)  where
+  module R = Kit (el R (Rʳ .Ring-on.has-is-set) , Rʳ)
 ```
 
 Note that we treat 1 with care: we could have this map 1 to `1r + 0r`,
@@ -170,11 +167,10 @@ paper, following the ring laws.
     R.- (e (suc x) R.* ℤ↪R (negsuc y))  ≡˘⟨ R.*-negatel ⟩
     ℤ↪R (negsuc x) R.* ℤ↪R (negsuc y)   ∎
 
-  z→r : Rings.Hom Liftℤ R
-  z→r .fst (lift x) = ℤ↪R x
-  z→r .snd .pres-id = refl
-  z→r .snd .pres-+ (lift x) (lift y) = z-add x y
-  z→r .snd .pres-* (lift x) (lift y) = z-mul x y
+  ¡-is-ring-hom : is-ring-hom (ℤ .snd) Rʳ ℤ↪R
+  ¡-is-ring-hom .pres-id = refl
+  ¡-is-ring-hom .pres-+ x y = z-add x y
+  ¡-is-ring-hom .pres-* x y = z-mul x y
 ```
 
 The last thing we must show is that this is the _unique_ ring
@@ -191,17 +187,47 @@ f(n) = f(1 + \cdots + 1) = f(1) + \cdots + f(1) = 1 + \cdots + 1
 $$,
 
 and that last expression is pretty exactly what our canonical map
-evaluates to on $n$. So we're done!
+evaluates to on $n$.
 
 ```agda
-  module _ (f : Rings.Hom Liftℤ R) where
-    private module f = is-ring-hom (f .snd)
+  module _ {f} (fʳ : is-ring-hom (ℤ .snd) Rʳ f) where
+    private module f = is-ring-hom fʳ
 
-    f-pos : ∀ x → e x ≡ f · lift (pos x)
+    f-pos : ∀ x → e x ≡ f (pos x)
     f-pos zero = sym f.pres-0
-    f-pos (suc x) = e-suc x ∙ sym (f.pres-+ (lift 1) (lift (pos x)) ∙ ap₂ R._+_ f.pres-id (sym (f-pos x)))
+    f-pos (suc x) = e-suc x ∙ sym (f.pres-+ 1 (pos x) ∙ ap₂ R._+_ f.pres-id (sym (f-pos x)))
 
-    lemma : ∀ i → z→r · lift i ≡ f · lift i
+    lemma : ∀ i → ℤ↪R i ≡ f i
     lemma (pos x) = f-pos x
-    lemma (negsuc x) = sym (f.pres-neg {lift (possuc x)} ∙ ap R.-_ (sym (f-pos (suc x))))
+    lemma (negsuc x) = sym (f.pres-neg {possuc x} ∙ ap R.-_ (sym (f-pos (suc x))))
 ```
+
+And with that, we're done!
+
+```agda
+ℤ-is-initial : is-initial (Rings lzero) ℤ
+ℤ-is-initial R = contr (∫hom (ℤ↪R (R .snd)) (¡-is-ring-hom (R .snd)))
+  λ x → ext (lemma (R .snd) (x .snd))
+```
+
+<!--
+```agda
+module ℤ-is-initial = is-initial (Rings lzero) ℤ-is-initial
+```
+-->
+
+## Lifting it
+
+So far we have only worked in $\Rings_0$, but we would like to give the
+initial object of $\Rings_\kappa$ for any universe level $\kappa$.
+
+```agda
+module _ {ℓ : Level} where
+  Liftℤ : Ring ℓ
+  Liftℤ = Lift-ring ℓ ℤ
+
+  Liftℤ-is-initial : is-initial (Rings ℓ) Liftℤ
+  Liftℤ-is-initial R = contr (∫hom _ (Lift-ring-hom-l (¡-is-ring-hom (R .snd))))
+    λ x → ext (lemma (R .snd) (Unlift-ring-hom-l (x .snd)))
+```
+

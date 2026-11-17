@@ -124,7 +124,7 @@ $\mathfrak{a}$ is a sub-$R$-module of $R$:
     }
 ```
 
-## Principal ideals
+## Principal ideals {defines="principal-ideal}
 
 Every element $a : R$ generates an ideal: that of its multiples, which
 we denote $(a)$. You'll note that we have to use the $\exists$

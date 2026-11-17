@@ -7,6 +7,7 @@ open import Data.Nat.Divisible
 open import Data.Nat.Solver
 open import Data.Nat.Order
 open import Data.Dec.Base
+open import Data.Fin.Base using (Fin ; fin ; lower)
 open import Data.Nat.Base
 open import Data.Sum.Base
 open import Data.Irr
@@ -200,41 +201,43 @@ private module _ where
       {x = _ , _ , α , β} {y = _ , _ , α' , β'}
       (p ,ₚ q ,ₚ prop! ,ₚ prop!)
 
+DivMod-unique : ∀ a b → ⦃ _ : Positive b ⦄ → is-prop (DivMod a b)
+DivMod-unique a b@(suc b') = λ where
+  (divmod q r α β) (divmod q' r' α' β') → case ≤-split r r' of λ where
+    (inr (inr r=r')) → divmod-ap (*-injr b q q' (+-injl r (q * b) (q' * b) (+-commutative r (q * b) ∙ sym (recover α) ∙ recover α' ∙ +-commutative (q' * b) r' ∙ ap (_+ q' * b) (sym r=r')))) r=r'
+    (inr (inl r'<r)) → absurd (lemma' q q' b r r' r'<r β (sym (recover α) ∙ recover α'))
+    (inl r<r')       → absurd (lemma' q' q b r' r r<r' β' (sym (recover α') ∙ recover α))
+   where
+    lemma : ∀ x y z → x < y → x ≡ y * z → z ≡ 0
+    lemma x y zero p q = refl
+    lemma zero (suc y) (suc z) x<y q = absurd (zero≠suc q)
+    lemma (suc x) (suc y) (suc z) x<y q = absurd (¬sucx≤x y (≤-trans r' (≤-trans (≤-refl' (sym q)) (≤-peel x<y)))) where
+      r : z + y * suc z ≡ y + (z + y * z)
+      r = nat!
+
+      r' : suc y ≤ suc (z + y * suc z)
+      r' = s≤s (≤-trans (+-≤l y (z + y * z)) (≤-refl' (sym r)))
+
+    lemma' : ∀ q q' b r r' → r' < r → r < b → q * b + r ≡ q' * b + r' → ⊥
+    lemma' q q' b r r' r'<r r<b β = <-≤-asym q<q' q'≤q where
+      r-r'<b : r - r' < b
+      r-r'<b = ≤-trans (s≤s (monus-≤ r r')) r<b
+
+      q<q' : q < q'
+      q<q' = *-reflects-<r b ⦃ ≤-trans (s≤s 0≤x) r<b ⦄ $
+        +-balance-<l (q' * b) r' (q * b) r (sym β) (r'<r)
+
+      q'≤q : q' ≤ q
+      q'≤q = monus-zero→≤ q' q $ lemma (r - r') b (q' - q) r-r'<b $ sym $
+        monus-swapr (b * (q' - q)) 0 (r - r') $
+          b * (q' - q) + 0 ≡⟨ +-zeror _ ∙ *-commutative b (q' - q) ⟩
+          (q' - q) * b     ≡⟨ monus-distribr q' q b ⟩
+          q' * b - q * b   ≡˘⟨ monus-swapl (q * b) (r - r') (q' * b) (monus-exchanger (q * b) r (q' * b) r' β (<-weaken r'<r)) ⟩
+          r - r'           ∎
+
 instance
   H-Level-DivMod : ∀ {a b n} ⦃ _ : Positive b ⦄ → H-Level (DivMod a b) (suc n)
-  H-Level-DivMod {a} {b@(suc b')} =
-    prop-instance λ where
-      (divmod q r α β) (divmod q' r' α' β') → case ≤-split r r' of λ where
-        (inr (inr r=r')) → divmod-ap (*-injr b q q' (+-injl r (q * b) (q' * b) (+-commutative r (q * b) ∙ sym (recover α) ∙ recover α' ∙ +-commutative (q' * b) r' ∙ ap (_+ q' * b) (sym r=r')))) r=r'
-        (inr (inl r'<r)) → absurd (lemma' q q' b r r' r'<r β (sym (recover α) ∙ recover α'))
-        (inl r<r')       → absurd (lemma' q' q b r' r r<r' β' (sym (recover α') ∙ recover α))
-    where
-      lemma : ∀ x y z → x < y → x ≡ y * z → z ≡ 0
-      lemma x y zero p q = refl
-      lemma zero (suc y) (suc z) x<y q = absurd (zero≠suc q)
-      lemma (suc x) (suc y) (suc z) x<y q = absurd (¬sucx≤x y (≤-trans r' (≤-trans (≤-refl' (sym q)) (≤-peel x<y)))) where
-        r : z + y * suc z ≡ y + (z + y * z)
-        r = nat!
-
-        r' : suc y ≤ suc (z + y * suc z)
-        r' = s≤s (≤-trans (+-≤l y (z + y * z)) (≤-refl' (sym r)))
-
-      lemma' : ∀ q q' b r r' → r' < r → r < b → q * b + r ≡ q' * b + r' → ⊥
-      lemma' q q' b r r' r'<r r<b β = <-≤-asym q<q' q'≤q where
-        r-r'<b : r - r' < b
-        r-r'<b = ≤-trans (s≤s (monus-≤ r r')) r<b
-
-        q<q' : q < q'
-        q<q' = *-reflects-<r b ⦃ ≤-trans (s≤s 0≤x) r<b ⦄ $
-          +-balance-<l (q' * b) r' (q * b) r (sym β) (r'<r)
-
-        q'≤q : q' ≤ q
-        q'≤q = monus-zero→≤ q' q $ lemma (r - r') b (q' - q) r-r'<b $ sym $
-          monus-swapr (b * (q' - q)) 0 (r - r') $
-            b * (q' - q) + 0 ≡⟨ +-zeror _ ∙ *-commutative b (q' - q) ⟩
-            (q' - q) * b     ≡⟨ monus-distribr q' q b ⟩
-            q' * b - q * b   ≡˘⟨ monus-swapl (q * b) (r - r') (q' * b) (monus-exchanger (q * b) r (q' * b) r' β (<-weaken r'<r)) ⟩
-            r - r'           ∎
+  H-Level-DivMod {a} {b} = prop-instance (DivMod-unique a b)
 ```
 -->
 
@@ -254,34 +257,19 @@ instance
 
 <!--
 ```agda
-x<y→x%y≡x : ∀ x y → (x<y : x < y) → (x % y) ⦃ ≤-trans (s≤s 0≤x) x<y ⦄ ≡ x
-x<y→x%y≡x x y x<y = ap DivMod.rem p≡q where
-  instance
-    y-Pos : Positive y
-    y-Pos = ≤-trans (s≤s 0≤x) x<y
+Fin-% : ∀ {n} (a : Fin n) → ⦃ _ : Positive n ⦄ → a .lower % n ≡ a .lower
+Fin-% {n} (fin a ⦃ p ⦄) = ap DivMod.rem $ DivMod-unique a n (divide-pos a n)
+  $ divmod 0 a (forget refl) p
 
-  p q : DivMod x y
-  p = divide-pos x y
-  q = divmod 0 x (forget refl) x<y
-
-  p≡q : p ≡ q
-  p≡q = prop!
-
-abstract
-  %-clear : ∀ n ⦃ _ : Positive n ⦄ x y → (x * n + y) % n ≡ y % n
-  %-clear n x y = ap DivMod.rem p≡q where
-    p q : DivMod (x * n + y) n
-    p = divide-pos (x * n + y) n
-    q = divmod (x + y /ₙ n) (y % n)
-      (forget (
-        x * n + ⌜ y ⌝                ≡⟨ ap! (is-divmod y n) ⟩
-        x * n + (y /ₙ n * n + y % n) ≡⟨ nat! ⟩
-        (x + y /ₙ n) * n + y % n     ∎
-        ))
-      (x%y<y y n)
-
-    p≡q : p ≡ q
-    p≡q = prop!
+%-clear : ∀ n ⦃ _ : Positive n ⦄ x y → (x * n + y) % n ≡ y % n
+%-clear n x y = ap DivMod.rem $ DivMod-unique (x * n + y) n
+  (divide-pos (x * n + y) n)
+  $ divmod (x + y /ₙ n) (y % n) (forget p) (x%y<y y n)
+  where
+    p =
+      x * n + ⌜ y ⌝                ≡⟨ ap! (is-divmod y n) ⟩
+      x * n + (y /ₙ n * n + y % n) ≡⟨ nat! ⟩
+      (x + y /ₙ n) * n + y % n     ∎
 
 %-pres-+ : ∀ n ⦃ _ : Positive n ⦄ x y → (x + y) % n ≡ (x % n + y % n) % n
 %-pres-+ n x y =

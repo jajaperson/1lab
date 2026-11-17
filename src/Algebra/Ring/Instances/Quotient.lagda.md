@@ -6,7 +6,7 @@ open import Algebra.Group
 open import Algebra.Ring
 
 open import Cat.Displayed.Univalence.Thin
-open import Cat.Prelude hiding (_*_ ; _+_)
+open import Cat.Prelude hiding (_*_ ; _+_ ; _-_)
 
 open import Data.Power
 open import Data.Dec
@@ -26,7 +26,7 @@ private module R = Kit R
 ```
 -->
 
-# Quotient rings
+# Quotient rings {defines="quotient-ring"}
 
 Let $R$ be a [[ring]] and $I \sube R$ be an ideal. Because rings have an
 underlying [[abelian group]], the ideal $I \sube R$ determines a normal
@@ -69,7 +69,7 @@ comprehensibility's sake).
       Coeq-rec₂ squash (λ x y → inc (x R.* y))
         (λ a (_ , _ , r) → p1 a r)
         (λ a (_ , _ , r) → p2 a r)
-      where
+        where
 ```
 
 On one side, we must show that $[ax] = [ay]$ supposing that $[x] = [y]$,
@@ -95,23 +95,23 @@ not non-trivial, so we keep in this `<details>`{.Agda} fold. Most of the proof i
 quotients into propositions, then applying $R$'s laws.</summary>
 
 ```agda
-  open make-ring
   make-R/I : make-ring ⌞ quot-grp ⌟
-  make-R/I .ring-is-set = squash
-  make-R/I .0R = inc 0r
-  make-R/I ._+_ = R/I._⋆_
-  make-R/I .-_ = R/I.inverse
-  make-R/I .+-idl x = R/I.idl
-  make-R/I .+-invr x = R/I.inverser {x}
-  make-R/I .+-assoc x y z = R/I.associative {x} {y} {z}
-  make-R/I .1R = inc R.1r
-  make-R/I ._*_ = quot-mul
-  make-R/I .+-comm = elim! λ x y → ap Coeq.inc R.+-commutes
-  make-R/I .*-idl = elim! λ x → ap Coeq.inc R.*-idl
-  make-R/I .*-idr = elim! λ x → ap Coeq.inc R.*-idr
-  make-R/I .*-assoc = elim! λ x y z → ap Coeq.inc R.*-associative
-  make-R/I .*-distribl = elim! λ x y z → ap Coeq.inc R.*-distribl
-  make-R/I .*-distribr = elim! λ x y z → ap Coeq.inc R.*-distribr
+  make-R/I = let open make-ring in λ where
+    .ring-is-set → squash
+    .0R → inc 0r
+    ._+_ → R/I._⋆_
+    .-_ → R/I.inverse
+    .+-idl x → R/I.idl
+    .+-invr x → R/I.inverser {x}
+    .+-assoc x y z → R/I.associative {x} {y} {z}
+    .1R → inc R.1r
+    ._*_ → quot-mul
+    .+-comm → elim! λ x y → ap Coeq.inc R.+-commutes
+    .*-idl → elim! λ x → ap Coeq.inc R.*-idl
+    .*-idr → elim! λ x → ap Coeq.inc R.*-idr
+    .*-assoc → elim! λ x y z → ap Coeq.inc R.*-associative
+    .*-distribl → elim! λ x y z → ap Coeq.inc R.*-distribl
+    .*-distribr → elim! λ x y z → ap Coeq.inc R.*-distribr
 ```
 
 </details>
@@ -165,4 +165,120 @@ corollary, ideals of rings are precisely kernels of ring homomorphisms.
       (sym (ap (x R.+_) R.a.inv-unit ∙ R.+-idr))
       x∈I))
 ```
+
 :::
+
+## Universal property
+
+One can adopt the alternate point of view that the quotient ring _with
+respect to a predicate_ $I : \bb P(R)$ is a ring homomorphism $\pi : R
+\to R/I$ satisfying a universal property. Namely, $\pi$ annihilates $I$,
+
+<!--
+```agda
+module _ (I : ℙ ⌞ R ⌟) where
+```
+-->
+
+```agda
+  I→0 : ∀ {S} (f : Rings.Hom R S) → Type ℓ
+  I→0 {S} f = let module S = Ring-on (S .snd) in ∀ {x} → x ∈ I → f · x ≡ S.0r
+```
+
+and if $f : R \to S$ is a ring homomorphism annihilating $I$, then there
+exists a unique homomorphism $\bar{f} : R/I \to S$ factoring $f$.
+
+~~~{.quiver}
+\[\begin{tikzcd}
+  R && S \\
+  \\
+  {R/I}
+  \arrow["f", from=1-1, to=1-3]
+  \arrow["{\rm{incl}}"', two heads, from=1-1, to=3-1]
+  \arrow["{\bar{f}}"', dashed, from=3-1, to=1-3]
+\end{tikzcd}\]
+~~~
+
+```agda
+  record is-quotient-ring {Q} (π : Rings.Hom R Q) : Type (lsuc ℓ) where
+    private module Q = Ring-on (Q .snd)
+    field
+      πI→0 : I→0 π
+      universal : ∀ {S} (f : Rings.Hom R S) → I→0 f → Rings.Hom Q S
+      factors
+        : ∀ {S} {f : Rings.Hom R S} {fI→0 : I→0 f}
+        → universal f fI→0 Rings.∘ π ≡ f
+      unique
+        : ∀ {S} {f : Rings.Hom R S} {fI→0 : I→0 f} {h : Rings.Hom Q S}
+        → h Rings.∘ π ≡ f → universal f fI→0 ≡ h
+
+    unique₂
+      : ∀ {S} {f : Rings.Hom R S} {fI→0 : I→0 f} {h h' : Rings.Hom Q S}
+      → h Rings.∘ π ≡ f → h' Rings.∘ π ≡ f
+      → h ≡ h'
+    unique₂ {S} {f} {fI→0} p q = sym (unique {fI→0 = fI→0} p) ∙ (unique q)
+```
+
+It then follows that any two quotient rings for the same $R$ and $I$ are
+isomorphic.
+
+```agda
+  quotient-ring-unique : ∀ {Q π} (Q𐞥 : is-quotient-ring {Q} π) {Q' π'} (Q'𐞥 : is-quotient-ring {Q'} π') → Q Rings.≅ Q'
+  quotient-ring-unique {Q} {π} Q𐞥 {Q'} {π'} Q'𐞥 = Rings.make-iso Q→Q' Q'→Q Q'→Q→Q' Q→Q'→Q where
+    module Q = is-quotient-ring Q𐞥
+    module Q' = is-quotient-ring Q'𐞥
+    Q→Q' : Rings.Hom Q Q'
+    Q→Q' = Q.universal π' Q'.πI→0
+
+    Q'→Q : Rings.Hom Q' Q
+    Q'→Q = Q'.universal π Q.πI→0
+
+    Q→Q'→Q : Q'→Q Rings.∘ Q→Q' ≡ Rings.id
+    Q→Q'→Q = Q.unique₂ {fI→0 = Q.πI→0}
+      (
+        (Q'→Q Rings.∘ Q→Q') Rings.∘ π   ≡˘⟨ Rings.assoc Q'→Q Q→Q' π ⟩
+        Q'→Q Rings.∘ ⌜ Q→Q' Rings.∘ π ⌝ ≡⟨ ap! Q.factors ⟩
+        Q'→Q Rings.∘ π'                 ≡⟨ Q'.factors ⟩
+        π                               ∎
+      ) (Rings.idl π)
+
+    Q'→Q→Q' : Q→Q' Rings.∘ Q'→Q ≡ Rings.id
+    Q'→Q→Q' = Q'.unique₂ {fI→0 = Q'.πI→0}
+      (
+        (Q→Q' Rings.∘ Q'→Q) Rings.∘ π'   ≡˘⟨ Rings.assoc Q→Q' Q'→Q π' ⟩
+        Q→Q' Rings.∘ ⌜ Q'→Q Rings.∘ π' ⌝ ≡⟨ ap! Q'.factors ⟩
+        Q→Q' Rings.∘ π                   ≡⟨ Q.factors ⟩
+        π'                               ∎
+      ) (Rings.idl π')
+```
+
+The construction of `R/I`{.Agda} above shows that the quotient ring
+always exists, provided $I$ is an ideal.
+
+<!--
+```agda
+module _ {I : ℙ ⌞ R ⌟} (idl : is-ideal R I) where
+```
+-->
+
+```agda
+  R/I-is-quotient : is-quotient-ring I (incl idl)
+  R/I-is-quotient = let open is-quotient-ring in λ where
+    .πI→0 {x} → elim! λ x∈I → quot $ subst (_∈ I)
+      (sym (ap (x R.+_) R.a.inv-unit ∙ R.+-idr)) x∈I
+    .universal {S} f fI→0 →
+      let module S = Ring-on (S .snd)
+          module f = is-ring-hom (f .snd)
+      in λ where
+        .fst → Quot-elim (λ _ → hlevel 2) (f .fst) λ x y x-y∈I → S.zero-diff $
+          f · x S.+ ⌜ S.- f · y ⌝ ≡˘⟨ ap¡ f.pres-neg ⟩
+          f · x S.+ f · (- y)     ≡˘⟨ f.pres-+ x (R.- y) ⟩
+          f · (x - y)             ≡⟨ fI→0 x-y∈I ⟩
+          S.0r                    ∎
+        .snd → let open is-ring-hom in λ where
+          .pres-+ → elim! f.pres-+
+          .pres-* → elim! f.pres-*
+          .pres-id → f.pres-id
+    .factors → Structured-hom-path (Ring-structure ℓ) refl
+    .unique p → reext! (sym p)
+```
